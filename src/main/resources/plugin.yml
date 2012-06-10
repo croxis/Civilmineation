@@ -2,7 +2,7 @@ author: croxis
 database: true
 description: Basic City/Nation plugin.
 generator: http://dinnerbone.com/minecraft/tools/pluginator/
-main: me.croxis.plugins.civilnations.Civilnations
-name: CivilNations
+main: net.croxis.plugins.civilmineation.Civilmineation
+name: Civilmineation
 startup: postworld
 version: '1.0'

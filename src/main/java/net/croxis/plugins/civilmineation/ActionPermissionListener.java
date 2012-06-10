@@ -1,4 +1,4 @@
-package net.croxis.plugins.civilminenation;
+package net.croxis.plugins.civilmineation;
 
 import org.bukkit.Chunk;
 import org.bukkit.block.Block;

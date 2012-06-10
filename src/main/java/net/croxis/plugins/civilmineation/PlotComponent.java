@@ -1,4 +1,4 @@
-package net.croxis.plugins.civilminenation;
+package net.croxis.plugins.civilmineation;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

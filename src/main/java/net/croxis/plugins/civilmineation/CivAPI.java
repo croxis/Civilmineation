@@ -1,4 +1,4 @@
-package net.croxis.plugins.civilminenation;
+package net.croxis.plugins.civilmineation;
 
 import java.util.List;
 import java.util.Set;
@@ -11,8 +11,8 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 public class CivAPI {
-	public static Civilnations plugin;
-	public CivAPI(Civilnations p){
+	public static Civilmineation plugin;
+	public CivAPI(Civilmineation p){
 		plugin = p;
 	}
 	

@@ -1,4 +1,4 @@
-package net.croxis.plugins.civilminenation;
+package net.croxis.plugins.civilmineation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,6 @@ import javax.persistence.PersistenceException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Civilnations extends JavaPlugin implements Listener {
+public class Civilmineation extends JavaPlugin implements Listener {
 	public static CivAPI api;
 	private static final Logger logger = Logger.getLogger("Minecraft");
 	
@@ -247,6 +246,7 @@ public class Civilnations extends JavaPlugin implements Listener {
 			plot.setName(resident.getCity().getName());
 			getDatabase().save(plot);
 			event.setLine(0, resident.getCity().getName());
+			
     	}
     }
 
