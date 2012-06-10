@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 .classpath
 .project
 .settings/
 target/
 build.sh
+=======
+target/
+>>>>>>> eca909503fff4c836ba0ae1ed18aa8b68b6fc86e
