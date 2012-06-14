@@ -9,6 +9,10 @@
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
         </repository>
+        <repository>
+            <id>local-repo</id>
+            <url>http://localhost:8080/plugin/repository</url>
+        </repository>
     </repositories>
     <build>
         <plugins>
@@ -35,6 +39,13 @@
             <groupId>org.avaje</groupId>
             <artifactId>ebean</artifactId>
             <version>2.7.3</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.croxis.plugins.research</groupId>
+            <artifactId>Research</artifactId>
+            <version>2.2</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
