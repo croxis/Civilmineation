@@ -26,7 +26,7 @@ public class ActionPermissionListener implements Listener{
 			return;
 		// Determine player's relationship to chunk
 		 CityComponent city = plot.getCity();
-		 CivilizationComponent civ = city.getCivilization();
+		 //CivilizationComponent civ = city.getCivilization();
 		 
 		 PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());
 		 
