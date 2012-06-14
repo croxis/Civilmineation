@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -17,41 +18,42 @@ import javax.persistence.Table;
 public class CivilizationComponent{
 	@Id
 	private int id;
+	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name;
 	@OneToMany(mappedBy="civAssistant")
     private List<ResidentComponent> assistants = new ArrayList<ResidentComponent>();
 	@OneToMany(mappedBy="civilization")
     private List<CityComponent> cities = new ArrayList<CityComponent>();
-/*@OneToMany(cascade=CascadeType.ALL)
-@JoinTable(
-		name="CIV_ALLIES",
-		joinColumns = @JoinColumn(name="CIV_ID", referencedColumnName="ID"),
-		inverseJoinColumns = @JoinColumn(name="ALLY_ID", referencedColumnName="ID") 
-		)*/
-@ManyToMany(targetEntity=CivilizationComponent.class)
-@JoinTable(
-		name="civ_civ_ally_map",
-		joinColumns=@JoinColumn(name="civ_id", referencedColumnName="ID"),
-		inverseJoinColumns=@JoinColumn(name="ally_id", referencedColumnName="ID")
-		)
-    private List<CivilizationComponent> allies = new ArrayList<CivilizationComponent>();
-/*@OneToMany(cascade=CascadeType.ALL)
-@JoinTable(
-		name="CIV_ENEMIES",
-		joinColumns = @JoinColumn(name="CIV_ID", referencedColumnName="ID"),
-		inverseJoinColumns = @JoinColumn(name="ENEMY_ID", referencedColumnName="ID") 
-		)*/
-@ManyToMany(targetEntity=CivilizationComponent.class)
-@JoinTable(
-		name="civ_civ_enemy_map",
-		joinColumns=@JoinColumn(name="civ_id", referencedColumnName="ID"),
-		inverseJoinColumns=@JoinColumn(name="enemy_id", referencedColumnName="ID")
-		)
+	/*@OneToMany(cascade=CascadeType.ALL)
+	@JoinTable(
+			name="CIV_ALLIES",
+			joinColumns = @JoinColumn(name="CIV_ID", referencedColumnName="ID"),
+			inverseJoinColumns = @JoinColumn(name="ALLY_ID", referencedColumnName="ID") 
+			)*/
+	@ManyToMany(targetEntity=CivilizationComponent.class)
+	@JoinTable(
+			name="civ_civ_ally_map",
+			joinColumns=@JoinColumn(name="civ_id", referencedColumnName="ID"),
+			inverseJoinColumns=@JoinColumn(name="ally_id", referencedColumnName="ID")
+			)
+	    private List<CivilizationComponent> allies = new ArrayList<CivilizationComponent>();
+	/*@OneToMany(cascade=CascadeType.ALL)
+	@JoinTable(
+			name="CIV_ENEMIES",
+			joinColumns = @JoinColumn(name="CIV_ID", referencedColumnName="ID"),
+			inverseJoinColumns = @JoinColumn(name="ENEMY_ID", referencedColumnName="ID") 
+			)*/
+	@ManyToMany(targetEntity=CivilizationComponent.class)
+	@JoinTable(
+			name="civ_civ_enemy_map",
+			joinColumns=@JoinColumn(name="civ_id", referencedColumnName="ID"),
+			inverseJoinColumns=@JoinColumn(name="enemy_id", referencedColumnName="ID")
+			)
     private List<CivilizationComponent> enemies = new ArrayList<CivilizationComponent>();
-	@OneToOne
-	@JoinColumn(name="CITY_ID")
-    private CityComponent capital;
+	//@OneToOne
+	//@JoinColumn(name="CITY_ID")
+    //private CityComponent capital;
     private double taxes;
     private boolean neutral = false;
     private String tag;
@@ -85,12 +87,12 @@ public class CivilizationComponent{
 	public void setEnemies(List<CivilizationComponent> enemies) {
 		this.enemies = enemies;
 	}
-	public CityComponent getCapital() {
-		return capital;
-	}
-	public void setCapital(CityComponent capital) {
-		this.capital = capital;
-	}
+	//public CityComponent getCapital() {
+	//	return capital;
+	//}
+	//public void setCapital(CityComponent capital) {
+	//	this.capital = capital;
+	//}
 	public double getTaxes() {
 		return taxes;
 	}

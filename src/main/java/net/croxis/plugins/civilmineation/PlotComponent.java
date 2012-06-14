@@ -14,7 +14,7 @@ public class PlotComponent {
 	@Id
 	private int id;
 	private Ent entityID;
-	private String name;
+	private String name = "Wilds";
 	//@ManyToOne
 	//@JoinColumn(name="WORLD_ID")
 	private String world;

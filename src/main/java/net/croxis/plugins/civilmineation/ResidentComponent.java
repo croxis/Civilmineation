@@ -39,6 +39,7 @@ public class ResidentComponent{
 	private String musicNode;
 	private boolean repeateMusic;
 	
+	private boolean mayor;
 	private boolean cityAssistant;
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="civAssistant_ID")
@@ -50,7 +51,7 @@ public class ResidentComponent{
 			joinColumns=@JoinColumn(name="resident_id", referencedColumnName="ID"),
 			inverseJoinColumns=@JoinColumn(name="friend_id", referencedColumnName="ID")
 			)
-	    private List<ResidentComponent> friends = new ArrayList<ResidentComponent>();
+    private List<ResidentComponent> friends = new ArrayList<ResidentComponent>();
 
 	public CityComponent getCity() {
 		return city;
@@ -140,14 +141,6 @@ public class ResidentComponent{
 		this.repeateMusic = repeateMusic;
 	}
 
-	public boolean getCityAssistant() {
-		return cityAssistant;
-	}
-
-	public void setCityAssistant(boolean cityAssistant) {
-		this.cityAssistant = cityAssistant;
-	}
-
 	public CivilizationComponent getCivAssistant() {
 		return civAssistant;
 	}
@@ -181,6 +174,22 @@ public class ResidentComponent{
 
 	public void setFriends(List<ResidentComponent> friends) {
 		this.friends = friends;
+	}
+
+	public boolean isCityAssistant() {
+		return cityAssistant;
+	}
+
+	public void setCityAssistant(boolean cityAssistant) {
+		this.cityAssistant = cityAssistant;
+	}
+
+	public boolean isMayor() {
+		return mayor;
+	}
+
+	public void setMayor(boolean mayor) {
+		this.mayor = mayor;
 	}
 	
 

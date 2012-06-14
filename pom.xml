@@ -3,7 +3,7 @@
     <groupId>net.croxis.plugins.civilmineation</groupId>
     <artifactId>Civilmineation</artifactId>
     <version>1.0</version>
-    <name>CivilNations</name>
+    <name>Civilmineation</name>
     <repositories>
         <repository>
             <id>bukkit-repo</id>

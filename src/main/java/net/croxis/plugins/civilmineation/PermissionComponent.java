@@ -2,6 +2,7 @@ package net.croxis.plugins.civilmineation;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity()
@@ -10,6 +11,7 @@ public class PermissionComponent{
 	
 	@Id
 	private int id;
+	@OneToOne
 	private Ent entityID;
 	private String name;
 	public boolean residentBuild, residentDestroy, residentSwitch, residentItemUse,

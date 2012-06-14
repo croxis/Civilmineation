@@ -1,10 +1,12 @@
 package net.croxis.plugins.civilmineation;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -36,6 +38,12 @@ public class CivAPI {
     	return plugin.getDatabase().find(CivilizationComponent.class).where().ieq("name", name).findUnique();
     }
     
+    public static CityComponent getCity(Location charterLocation){
+    	return plugin.getDatabase().find(CityComponent.class).where().eq("charter_x", charterLocation.getX())
+    			.eq("charter_y", charterLocation.getY())
+    			.eq("charter_z", charterLocation.getZ()).findUnique();
+    }
+    
     public static Set<CityComponent> getCities(){
     	return plugin.getDatabase().find(CityComponent.class).findSet();
     }
@@ -55,10 +63,16 @@ public class CivAPI {
     }
     
     public static void updateCityCharter(CityComponent city){
+    	if (city == null){
+    		Civilmineation.log("Error. No city at that charter");
+    		return;
+    	}
     	Block charter = plugin.getServer().getWorld(city.getCharterWorld()).getBlockAt(city.getCharter_x(), city.getCharter_y(), city.getCharter_z());
     	Sign block = (Sign) charter.getRelative(BlockFace.DOWN).getState();
 		block.setLine(0, "=Demographics=");
 		block.setLine(1, "Population: " + Integer.toString(city.getResidents().size()));
+		block.setLine(2, "=Immigration=");
+		block.setLine(3, ChatColor.GREEN + "Open");
 		block.update();
 		if (city.getCharterRotation() == 4 || city.getCharterRotation() == 5){
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, city.getCharterRotation(), true);
@@ -99,4 +113,28 @@ public class CivAPI {
     		plugin.getServer().getPlayer(resident.getName()).sendMessage(message);
     	}
     }
+
+	public static void disbandCity(CityComponent city) {
+		broadcastToCity("City disbanding", city);
+		String name = city.getName();
+		for (ResidentComponent resident : city.getResidents()){
+			resident.setCity(null);
+			resident.setMayor(false);
+			resident.setCityAssistant(false);
+			resident.setCivAssistant(null);
+			plugin.getDatabase().save(resident);
+		}
+		for (PlotComponent plot : getPlots(city)){
+			plot.setCity(null);
+			plot.setResident(null);
+			plugin.getDatabase().save(plot);
+		}
+		Ent civEnt = city.getCivilization().getEntityID();
+		plugin.getDatabase().delete(city.getCivilization());
+		plugin.getDatabase().delete(civEnt);
+		Ent cityEnt = city.getEntityID();
+		plugin.getDatabase().delete(city);
+		plugin.getDatabase().delete(cityEnt);
+		plugin.getServer().broadcastMessage(name + " has fallen to dust!"); 
+	}
 }

@@ -131,6 +131,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			civ.setName(event.getLine(1));
 			//addComponent(civEntity, civ);
 			civ.setEntityID(civEntity);
+			civ.setRegistered(System.currentTimeMillis());
+			civ.setTaxes(0);
 	    	getDatabase().save(civ);
 			
 			PermissionComponent civPerm = new PermissionComponent();
@@ -165,7 +167,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			city.setName(event.getLine(2));
 			city.setCivilization(civ);
 			city.setTaxes(0);
-			city.setMayor(mayor);
+			//city.setMayor(mayor);
 			city.setName(event.getLine(2));
 			city.setRegistered(System.currentTimeMillis());
 			city.setTownBoard("Change me");
@@ -180,15 +182,11 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			city.setCharter_z(event.getBlock().getZ());
 			byte rotation = event.getBlock().getData();
 			city.setCharterRotation(rotation);
+			city.setCapital(true);
 			getDatabase().save(city);
-			
-			civ = CivAPI.getCiv(event.getLine(1));
-			civ.setCapital(city);
-			civ.setRegistered(System.currentTimeMillis());
-			civ.setTaxes(0);
-			getDatabase().save(civ);
 
 			mayor.setCity(city);
+			mayor.setMayor(true);
 			getDatabase().save(mayor);
 			
 			
@@ -213,10 +211,10 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
     		if (resident.getCity() == null){
     			event.setCancelled(true);
-    			event.getPlayer().sendMessage("You must be a city admin");
+    			event.getPlayer().sendMessage("You must be part of a city admin");
     			return;
-    		} else if (!resident.getCityAssistant()
-    				|| resident.getCity().getMayor().getName() != resident.getName()){
+    		} else if (!resident.isCityAssistant()
+    				&& !resident.isMayor()){
     			event.setCancelled(true);
     			event.getPlayer().sendMessage("You must be a city admin");
     			return;
@@ -228,12 +226,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
     				event.getPlayer().sendMessage("A city has already claimed this chunk");
     				return;
     			}
-    		} else if (resident.getCity().getCulture() < Math.sqrt(CivAPI.getPlots(resident.getCity()).size()*10)){
+    		} else if (resident.getCity().getCulture() < Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)){
     			event.setCancelled(true);
 				event.getPlayer().sendMessage("You do not have enough culture");
 				return;
     		}
-    		CivAPI.addCulture(resident.getCity(), (int) -(Math.sqrt(CivAPI.getPlots(resident.getCity()).size()*10)));
+    		//CivAPI.addCulture(resident.getCity(), (int) -(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
     		if (plot == null){
 				Ent plotEnt = createEntity();
 				plot = new PlotComponent();
@@ -269,9 +267,15 @@ public class Civilmineation extends JavaPlugin implements Listener {
     public void onPlayerMove(PlayerMoveEvent event){
     	if (event.getFrom().getWorld().getChunkAt(event.getFrom()).getX() 
     			!= event.getTo().getWorld().getChunkAt(event.getTo()).getX() 
-    			&& event.getFrom().getWorld().getChunkAt(event.getFrom()).getZ() 
+    			|| event.getFrom().getWorld().getChunkAt(event.getFrom()).getZ() 
     			!= event.getTo().getWorld().getChunkAt(event.getTo()).getZ()){
-    		event.getPlayer().sendMessage("Message will go here");
+    		//event.getPlayer().sendMessage("Message will go here");
+    		PlotComponent plot = CivAPI.getPlot(event.getTo().getChunk());
+    		if (plot == null){
+    			event.getPlayer().sendMessage("Wilds");
+    		} else {
+    			event.getPlayer().sendMessage(plot.getName());
+    		}
     	}
     	
     	

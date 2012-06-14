@@ -19,24 +19,25 @@ import org.bukkit.Location;
 public class CityComponent{
 	@Id
 	private int id;
+	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name;
-	@OneToMany(mappedBy="city")
+	@OneToMany(mappedBy="city", fetch = FetchType.LAZY)
 	private List<ResidentComponent> residents = new ArrayList<ResidentComponent>();
 	//@OneToMany(mappedBy="cityAssistant")
 	//private List<ResidentComponent> assistants = new ArrayList<ResidentComponent>();
-	@OneToOne(fetch=FetchType.LAZY)
+	//@OneToOne(fetch=FetchType.LAZY)
 	//@JoinColumn(name="mayor_ID")
-	private ResidentComponent mayor;
+	//private ResidentComponent mayor;
 	private int bonusBlocks;
 	private int purchasedBlocks;
 	private double taxes, plotTax, commercialPlotTax, embassyPlotTax,
 		plotPrice, commercialPlotPrice, embassyPlotPrice;
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private CivilizationComponent civilization;
 	private boolean hasUpkeep, isPublic, isTaxPercentage;
 	private String townBoard = "/city set board [msg]", tag;
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	private PlotComponent homeBlock;
 	@Transient
 	private Location spawn;
@@ -61,6 +62,8 @@ public class CityComponent{
 	private String capeNode;    	
 	private String musicNode;
 	
+	private boolean capital;
+	
 	
 	public List<ResidentComponent> getResidents() {
 		return residents;
@@ -74,12 +77,12 @@ public class CityComponent{
 	//public void setAssistants(List<ResidentComponent> assistants) {
 	//	this.assistants = assistants;
 	//}
-	public ResidentComponent getMayor() {
-		return mayor;
-	}
-	public void setMayor(ResidentComponent mayor) {
-		this.mayor = mayor;
-	}
+	//public ResidentComponent getMayor() {
+	//	return mayor;
+	//}
+	//public void setMayor(ResidentComponent mayor) {
+	//	this.mayor = mayor;
+	//}
 	public int getBonusBlocks() {
 		return bonusBlocks;
 	}
@@ -284,6 +287,12 @@ public class CityComponent{
 	}
 	public void setCharterWorld(String charterWorld) {
 		this.charterWorld = charterWorld;
+	}
+	public boolean isCapital() {
+		return capital;
+	}
+	public void setCapital(boolean capital) {
+		this.capital = capital;
 	}
 
 }
