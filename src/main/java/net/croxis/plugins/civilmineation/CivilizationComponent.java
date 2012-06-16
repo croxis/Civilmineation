@@ -21,8 +21,8 @@ public class CivilizationComponent{
 	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name;
-	@OneToMany(mappedBy="civAssistant")
-    private List<ResidentComponent> assistants = new ArrayList<ResidentComponent>();
+	//@OneToMany(mappedBy="civAssistant")
+    //private List<ResidentComponent> assistants = new ArrayList<ResidentComponent>();
 	//@OneToMany(mappedBy="civilization")
     //private List<CityComponent> cities = new ArrayList<CityComponent>();
 	/*@OneToMany(cascade=CascadeType.ALL)
@@ -63,12 +63,12 @@ public class CivilizationComponent{
     private String texturePackNode;
 	private String capeNode;    	
 	private String musicNode;
-	public List<ResidentComponent> getAssistants() {
-		return assistants;
-	}
-	public void setAssistants(List<ResidentComponent> assistants) {
-		this.assistants = assistants;
-	}
+	//public List<ResidentComponent> getAssistants() {
+	//	return assistants;
+	//}
+	//public void setAssistants(List<ResidentComponent> assistants) {
+	//	this.assistants = assistants;
+	//}
 	//public List<CityComponent> getCities() {
 	//	return cities;
 	//}
