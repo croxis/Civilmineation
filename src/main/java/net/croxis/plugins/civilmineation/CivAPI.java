@@ -79,6 +79,10 @@ public class CivAPI {
     	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", capital).eq("mayor", true).findUnique();
     }
     
+    public static boolean isKing(ResidentComponent resident){
+    	return resident.isMayor() && resident.getCity().isCapital();
+    }
+    
     public static void addCulture(CityComponent city, int culture){
     	city.setCulture(city.getCulture() + culture);
     	plugin.getDatabase().save(city);
@@ -177,6 +181,13 @@ public class CivAPI {
     	}
     }
     
+    public static void broadcastToCiv(String message, CivilizationComponent civ){
+    	List<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", civ).findList();
+    	for (CityComponent city : cities){
+    		broadcastToCity(message, city);
+    	}
+    }
+    
     public static void loseTechs(ResidentComponent resident){
     	HashSet<Tech> techs = TechManager.getResearched(resident.getName());
 		System.out.println("Player leaving");
@@ -218,7 +229,7 @@ public class CivAPI {
 			resident.setCity(null);
 			resident.setMayor(false);
 			resident.setCityAssistant(false);
-			resident.setCivAssistant(null);
+			resident.setCivAssistant(false);
 			loseTechs(resident);
 			plugin.getDatabase().save(resident);
 		}

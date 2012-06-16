@@ -41,9 +41,7 @@ public class ResidentComponent{
 	
 	private boolean mayor;
 	private boolean cityAssistant;
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="civAssistant_ID")
-	private CivilizationComponent civAssistant;
+	private boolean civAssistant;
 	
 	@ManyToMany(targetEntity=ResidentComponent.class)
 	@JoinTable(
@@ -141,14 +139,6 @@ public class ResidentComponent{
 		this.repeateMusic = repeateMusic;
 	}
 
-	public CivilizationComponent getCivAssistant() {
-		return civAssistant;
-	}
-
-	public void setCivAssistant(CivilizationComponent civAssistant) {
-		this.civAssistant = civAssistant;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -190,6 +180,14 @@ public class ResidentComponent{
 
 	public void setMayor(boolean mayor) {
 		this.mayor = mayor;
+	}
+
+	public boolean isCivAssistant() {
+		return civAssistant;
+	}
+
+	public void setCivAssistant(boolean civAssistant) {
+		this.civAssistant = civAssistant;
 	}
 	
 
