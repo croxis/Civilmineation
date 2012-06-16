@@ -252,6 +252,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			}
 			plot.setCity(resident.getCity());
 			plot.setName(resident.getCity().getName());
+			plot.setSignX(event.getBlock().getX());
+			plot.setSignY(event.getBlock().getY());
+			plot.setSignZ(event.getBlock().getZ());
 			getDatabase().save(plot);
 			event.setLine(0, resident.getCity().getName());
 			

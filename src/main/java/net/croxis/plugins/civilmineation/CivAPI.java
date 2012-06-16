@@ -74,6 +74,11 @@ public class CivAPI {
     	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", capital).eq("mayor", true).findUnique();
     }
     
+    public static ResidentComponent getKing(CityComponent city){
+    	CityComponent capital = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", city.getCivilization()).eq("capital", true).findUnique();
+    	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", capital).eq("mayor", true).findUnique();
+    }
+    
     public static void addCulture(CityComponent city, int culture){
     	city.setCulture(city.getCulture() + culture);
     	plugin.getDatabase().save(city);
@@ -114,7 +119,8 @@ public class CivAPI {
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.EAST).getState();
 			block.setLine(1, "Money: N/A");
-			block.setLine(2, "Research: N/A");
+			block.setLine(2, ChatColor.BLUE + "Researching: " + TechManager.getCurrentResearch(getKing(city).getName()).name);
+			block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			block.update();
 			charter.getRelative(BlockFace.WEST).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.WEST).getState();
@@ -125,7 +131,8 @@ public class CivAPI {
 			charter.getRelative(BlockFace.NORTH).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.NORTH).getState();
 			block.setLine(1, "Money: N/A");
-			block.setLine(2, "Research: N/A");
+			block.setLine(2, ChatColor.BLUE + "Researching: " + TechManager.getCurrentResearch(getKing(city).getName()).name);
+			block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			block.update();
 			charter.getRelative(BlockFace.SOUTH).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.SOUTH).getState();
