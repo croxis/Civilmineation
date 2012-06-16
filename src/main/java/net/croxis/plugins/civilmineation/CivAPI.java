@@ -1,12 +1,17 @@
 package net.croxis.plugins.civilmineation;
 
-import java.awt.Color;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.croxis.plugins.research.Tech;
+import net.croxis.plugins.research.TechManager;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -24,6 +29,14 @@ public class CivAPI {
     
     public static ResidentComponent getResident(Player player){
     	return plugin.getDatabase().find(ResidentComponent.class).where().ieq("name", player.getName()).findUnique();
+    }
+    
+    public static List<ResidentComponent> getResidents(CivilizationComponent civ){
+    	return plugin.getDatabase().find(ResidentComponent.class).where().eq("civilization", civ).findList();
+    }
+    
+    public static List<ResidentComponent> getResidents(CityComponent city){
+    	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", city).findList();
     }
     
     public static PlotComponent getPlot(Chunk chunk){
@@ -56,11 +69,34 @@ public class CivAPI {
     	return plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).findSet();
     }
     
+    public static ResidentComponent getKing(ResidentComponent resident){
+    	CityComponent capital = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", resident.getCity().getCivilization()).eq("capital", true).findUnique();
+    	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", capital).eq("mayor", true).findUnique();
+    }
+    
     public static void addCulture(CityComponent city, int culture){
     	city.setCulture(city.getCulture() + culture);
     	plugin.getDatabase().save(city);
     	updateCityCharter(city);
     }
+    
+	public static void addResearch(CityComponent city, int points) {
+		CityComponent capital = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", city.getCivilization())
+				.eq("capital", true).findUnique();
+		ResidentComponent king = plugin.getDatabase().find(ResidentComponent.class).where().eq("city", capital).eq("mayor", true).findUnique();
+		Tech learned = TechManager.addPoints(king.getName(), points);
+		if(learned != null){
+			List<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", capital.getCivilization()).findList();
+			for (CityComponent c : cities){
+				List<ResidentComponent> residents = plugin.getDatabase().find(ResidentComponent.class).where().eq("city", c).findList();
+				for (ResidentComponent r : residents){
+					TechManager.addTech(r.getName(), learned);
+					plugin.getServer().getPlayer(r.getName()).sendMessage("You have learned " + learned.name + "!");
+				}
+			}
+		}
+		
+	}
     
     public static void updateCityCharter(CityComponent city){
     	if (city == null){
@@ -104,6 +140,26 @@ public class CivAPI {
     		return false;
     	resident.setCity(city);
     	plugin.getDatabase().save(resident);
+    	HashSet<Tech> civtechs = TechManager.getResearched(getKing(resident).getName());
+    	HashSet<Tech> restechs = TechManager.getResearched(resident.getName());
+		HashSet<Tech> difference = new HashSet<Tech>(restechs);
+		difference.removeAll(civtechs);
+		Player player = Bukkit.getServer().getPlayer(resident.getName());
+		restechs.addAll(civtechs);
+		TechManager.setTech(player, restechs);
+		HashSet<Tech> gaintech = new HashSet<Tech>();
+		HashSet<Tech> canResearch = TechManager.getAvailableTech(getKing(resident).getName());
+		for (Tech t : difference){
+			if(gaintech.size() > 2)
+				break;
+			if(canResearch.contains(t))
+				gaintech.add(t);
+		}
+		for (Tech t : gaintech){
+			for (ResidentComponent r : getResidents(resident.getCity().getCivilization())){
+				TechManager.addTech(r.getName(), t);
+			}
+		}
     	return true;
     }
     
@@ -112,6 +168,40 @@ public class CivAPI {
     	for (ResidentComponent resident : residents){
     		plugin.getServer().getPlayer(resident.getName()).sendMessage(message);
     	}
+    }
+    
+    public static void loseTechs(ResidentComponent resident){
+    	HashSet<Tech> techs = TechManager.getResearched(resident.getName());
+		System.out.println("Player leaving");
+		System.out.println("Known techs: " + Integer.toString(techs.size()));
+		HashSet<Tech> fiveToLose = new HashSet<Tech>();
+		HashSet<Tech> available;
+		try {
+			available = TechManager.getAvailableTech(resident.getName());
+			for (Tech t : available){
+				for (Tech c : t.children){
+					if (fiveToLose.size() >= 5)
+						break;
+					fiveToLose.add(c);
+				}
+			}
+			
+			if (fiveToLose.size() < 5){
+				for (Tech t : fiveToLose){
+					for (Tech c : t.children){
+						if (fiveToLose.size() >= 5)
+							break;
+						fiveToLose.add(c);
+					}
+				}
+			}
+			
+			techs.removeAll(fiveToLose);
+			OfflinePlayer player = Bukkit.getServer().getOfflinePlayer(resident.getName());
+			TechManager.setTech((Player) player, techs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
 	public static void disbandCity(CityComponent city) {
@@ -122,6 +212,7 @@ public class CivAPI {
 			resident.setMayor(false);
 			resident.setCityAssistant(false);
 			resident.setCivAssistant(null);
+			loseTechs(resident);
 			plugin.getDatabase().save(resident);
 		}
 		for (PlotComponent plot : getPlots(city)){
@@ -137,4 +228,18 @@ public class CivAPI {
 		plugin.getDatabase().delete(cityEnt);
 		plugin.getServer().broadcastMessage(name + " has fallen to dust!"); 
 	}
+	
+	public static void removeResident(ResidentComponent resident){
+		if (getResidents(resident.getCity()).size() == 1){
+			disbandCity(resident.getCity());
+			return;
+		}
+		loseTechs(resident);
+		CityComponent city = resident.getCity();
+		resident.setCity(null);
+		plugin.getDatabase().save(resident);
+		broadcastToCity(resident.getName() + " has left our city!", city);
+	}
+
+
 }

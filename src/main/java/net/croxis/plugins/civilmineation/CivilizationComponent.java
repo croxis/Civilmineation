@@ -23,8 +23,8 @@ public class CivilizationComponent{
 	private String name;
 	@OneToMany(mappedBy="civAssistant")
     private List<ResidentComponent> assistants = new ArrayList<ResidentComponent>();
-	@OneToMany(mappedBy="civilization")
-    private List<CityComponent> cities = new ArrayList<CityComponent>();
+	//@OneToMany(mappedBy="civilization")
+    //private List<CityComponent> cities = new ArrayList<CityComponent>();
 	/*@OneToMany(cascade=CascadeType.ALL)
 	@JoinTable(
 			name="CIV_ALLIES",
@@ -69,12 +69,12 @@ public class CivilizationComponent{
 	public void setAssistants(List<ResidentComponent> assistants) {
 		this.assistants = assistants;
 	}
-	public List<CityComponent> getCities() {
-		return cities;
-	}
-	public void setCities(List<CityComponent> cities) {
-		this.cities = cities;
-	}
+	//public List<CityComponent> getCities() {
+	//	return cities;
+	//}
+	//public void setCities(List<CityComponent> cities) {
+	//	this.cities = cities;
+	//}
 	public List<CivilizationComponent> getAllies() {
 		return allies;
 	}

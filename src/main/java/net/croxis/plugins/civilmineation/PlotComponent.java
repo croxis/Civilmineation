@@ -27,9 +27,9 @@ public class PlotComponent {
 	@Enumerated(EnumType.STRING)
     private CityPlotType type;
 	private int x, z;
+	private int signX, signY, signZ;
 	private double plotPrice = -1;
 	
-    private boolean isChanged;
 	public String getWorld() {
 		return world;
 	}
@@ -72,12 +72,6 @@ public class PlotComponent {
 	public void setPlotPrice(double plotPrice) {
 		this.plotPrice = plotPrice;
 	}
-	public boolean isChanged() {
-		return isChanged;
-	}
-	public void setChanged(boolean isChanged) {
-		this.isChanged = isChanged;
-	}
     
 	public int getId() {
 		return id;
@@ -96,5 +90,23 @@ public class PlotComponent {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public int getSignX() {
+		return signX;
+	}
+	public void setSignX(int signX) {
+		this.signX = signX;
+	}
+	public int getSignY() {
+		return signY;
+	}
+	public void setSignY(int signY) {
+		this.signY = signY;
+	}
+	public int getSignZ() {
+		return signZ;
+	}
+	public void setSignZ(int signZ) {
+		this.signZ = signZ;
 	}
 }

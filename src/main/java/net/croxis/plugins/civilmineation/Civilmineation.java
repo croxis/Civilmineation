@@ -6,6 +6,9 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
+import net.croxis.plugins.research.Tech;
+import net.croxis.plugins.research.TechManager;
+
 import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -35,12 +38,19 @@ public class Civilmineation extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new ActionPermissionListener(), this);
         getServer().getPluginManager().registerEvents(new SignInteractListener(), this);
         
+        getCommand("tech").setExecutor(new TechCommand(this));
+        
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
         	public void run(){
         		for (Player player : getServer().getOnlinePlayers()){
         			ResidentComponent resident = CivAPI.getResident(player);
         			if (resident.getCity() != null){
         				CivAPI.addCulture(resident.getCity(), 1);
+        				CivAPI.addResearch(resident.getCity(), 1);
+        			} else {
+        				Tech learned = TechManager.addPoints(player, 1);
+        				if(learned != null)
+        					player.sendMessage("You have learned a technology!");
         			}
         		}
         	}
@@ -277,7 +287,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getPlayer().sendMessage(plot.getName());
     		}
     	}
-    	
     	
     }
 }
