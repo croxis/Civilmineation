@@ -22,8 +22,8 @@ public class CityComponent{
 	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name;
-	@OneToMany(mappedBy="city", fetch = FetchType.LAZY)
-	private List<ResidentComponent> residents = new ArrayList<ResidentComponent>();
+	//@OneToMany(mappedBy="city", fetch = FetchType.LAZY)
+	//private List<ResidentComponent> residents = new ArrayList<ResidentComponent>();
 	//@OneToMany(mappedBy="cityAssistant")
 	//private List<ResidentComponent> assistants = new ArrayList<ResidentComponent>();
 	//@OneToOne(fetch=FetchType.LAZY)
@@ -65,12 +65,12 @@ public class CityComponent{
 	private boolean capital;
 	
 	
-	public List<ResidentComponent> getResidents() {
-		return residents;
-	}
-	public void setResidents(List<ResidentComponent> residents) {
-		this.residents = residents;
-	}
+	//public List<ResidentComponent> getResidents() {
+	//	return residents;
+	//}
+	//public void setResidents(List<ResidentComponent> residents) {
+	//	this.residents = residents;
+	//}
 	//public List<ResidentComponent> getAssistants() {
 	//	return assistants;
 	//}

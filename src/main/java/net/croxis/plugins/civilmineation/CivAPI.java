@@ -115,7 +115,7 @@ public class CivAPI {
     	Block charter = plugin.getServer().getWorld(city.getCharterWorld()).getBlockAt(city.getCharter_x(), city.getCharter_y(), city.getCharter_z());
     	Sign block = (Sign) charter.getRelative(BlockFace.DOWN).getState();
 		block.setLine(0, "=Demographics=");
-		block.setLine(1, "Population: " + Integer.toString(city.getResidents().size()));
+		block.setLine(1, "Population: " + Integer.toString(CivAPI.getResidents(city).size()));
 		block.setLine(2, "=Immigration=");
 		block.setLine(3, ChatColor.GREEN + "Open");
 		block.update();
@@ -175,7 +175,7 @@ public class CivAPI {
     }
     
     public static void broadcastToCity(String message, CityComponent city){
-    	List<ResidentComponent> residents = city.getResidents();
+    	List<ResidentComponent> residents = CivAPI.getResidents(city);
     	for (ResidentComponent resident : residents){
     		plugin.getServer().getPlayer(resident.getName()).sendMessage(message);
     	}
@@ -225,7 +225,7 @@ public class CivAPI {
 	public static void disbandCity(CityComponent city) {
 		broadcastToCity("City disbanding", city);
 		String name = city.getName();
-		for (ResidentComponent resident : city.getResidents()){
+		for (ResidentComponent resident : CivAPI.getResidents(city)){
 			resident.setCity(null);
 			resident.setMayor(false);
 			resident.setCityAssistant(false);
