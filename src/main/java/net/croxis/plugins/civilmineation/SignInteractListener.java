@@ -26,7 +26,7 @@ public class SignInteractListener implements Listener{
 						.eq("charter_y", event.getClickedBlock().getY()+1)
 						.eq("charter_z", event.getClickedBlock().getZ()).findUnique();
 				if (plot.getCity().getName().equalsIgnoreCase(city.getName())){
-					Sign sign = (Sign) event.getClickedBlock().getState();
+					Sign sign = (Sign) event.getClickedBlock();
 					if (sign.getLine(3).contains("Open") && sign.getLine(0).contains("=Demographics=")){
 						ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 						if (CivAPI.addResident(resident, city))
@@ -37,7 +37,7 @@ public class SignInteractListener implements Listener{
 				
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
 				if (event.getClickedBlock().getType().equals(Material.WALL_SIGN)){
-					Sign sign = (Sign) event.getClickedBlock().getState();
+					Sign sign = (Sign) event.getClickedBlock();
 					ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 					if (sign.getLine(0).contains("=Demographics=")){
 						Civilmineation.log("Demographics update click");
