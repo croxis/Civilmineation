@@ -125,11 +125,12 @@ public class CivAPI {
 			block.setLine(1, "Money: N/A");
 			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 			if (tech == null){
-				tech = new Tech();
-				tech.name = "None";
+				block.setLine(2, ChatColor.BLUE + "Researching: None");
+				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + " / 0");
+			} else {
+				block.setLine(2, ChatColor.BLUE + "Researching: " + tech.name);
+				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			}
-			block.setLine(2, ChatColor.BLUE + "Researching: " + tech.name);
-			block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			block.update();
 			charter.getRelative(BlockFace.WEST).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.WEST).getState();
@@ -142,11 +143,12 @@ public class CivAPI {
 			block.setLine(1, "Money: N/A");
 			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 			if (tech == null){
-				tech = new Tech();
-				tech.name = "None";
+				block.setLine(2, ChatColor.BLUE + "Researching: None");
+				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + " / 0");
+			} else {
+				block.setLine(2, ChatColor.BLUE + "Researching: " + tech.name);
+				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			}
-			block.setLine(2, ChatColor.BLUE + "Researching: " + TechManager.getCurrentResearch(getKing(city).getName()).name);
-			block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			block.update();
 			charter.getRelative(BlockFace.SOUTH).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.SOUTH).getState();
