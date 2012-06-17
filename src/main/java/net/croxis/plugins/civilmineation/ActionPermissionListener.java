@@ -88,7 +88,7 @@ public class ActionPermissionListener implements Listener{
 				 return;
 			 }
 			 if (event.getBlock().getType().equals(Material.WALL_SIGN)){
-				 Sign sign = (Sign) event.getBlock();
+				 Sign sign = (Sign) event.getBlock().getState();
 				 if (sign.getLine(0).contains("Charter") && resident.isMayor())
 					 CivAPI.disbandCity(resident.getCity());
 			 }

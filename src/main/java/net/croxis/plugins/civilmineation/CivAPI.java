@@ -113,7 +113,7 @@ public class CivAPI {
     		return;
     	}
     	Block charter = plugin.getServer().getWorld(city.getCharterWorld()).getBlockAt(city.getCharter_x(), city.getCharter_y(), city.getCharter_z());
-    	Sign block = (Sign) charter.getRelative(BlockFace.DOWN);
+    	Sign block = (Sign) charter.getRelative(BlockFace.DOWN).getState();
 		block.setLine(0, "=Demographics=");
 		block.setLine(1, "Population: " + Integer.toString(CivAPI.getResidents(city).size()));
 		block.setLine(2, "=Immigration=");
@@ -121,25 +121,25 @@ public class CivAPI {
 		block.update();
 		if (city.getCharterRotation() == 4 || city.getCharterRotation() == 5){
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, city.getCharterRotation(), true);
-			block = (Sign) charter.getRelative(BlockFace.EAST);
+			block = (Sign) charter.getRelative(BlockFace.EAST).getState();
 			block.setLine(1, "Money: N/A");
 			block.setLine(2, ChatColor.BLUE + "Researching: " + TechManager.getCurrentResearch(getKing(city).getName()).name);
 			block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			block.update();
 			charter.getRelative(BlockFace.WEST).setTypeIdAndData(68, city.getCharterRotation(), true);
-			block = (Sign) charter.getRelative(BlockFace.WEST);
+			block = (Sign) charter.getRelative(BlockFace.WEST).getState();
 			block.setLine(1, "Plots: N/A");
 			block.setLine(2, "Culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(city.getCulture()));
 			block.update();
 		} else if (city.getCharterRotation() == 2 || city.getCharterRotation() == 3) {
 			charter.getRelative(BlockFace.NORTH).setTypeIdAndData(68, city.getCharterRotation(), true);
-			block = (Sign) charter.getRelative(BlockFace.NORTH);
+			block = (Sign) charter.getRelative(BlockFace.NORTH).getState();
 			block.setLine(1, "Money: N/A");
 			block.setLine(2, ChatColor.BLUE + "Researching: " + TechManager.getCurrentResearch(getKing(city).getName()).name);
 			block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			block.update();
 			charter.getRelative(BlockFace.SOUTH).setTypeIdAndData(68, city.getCharterRotation(), true);
-			block = (Sign) charter.getRelative(BlockFace.SOUTH);
+			block = (Sign) charter.getRelative(BlockFace.SOUTH).getState();
 			block.setLine(1, "Plots: N/A");
 			block.setLine(2, "Culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(city.getCulture()));
 			block.update();
