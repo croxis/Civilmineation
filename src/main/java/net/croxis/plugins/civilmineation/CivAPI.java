@@ -125,10 +125,10 @@ public class CivAPI {
 			block.setLine(1, "Money: N/A");
 			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 			if (tech == null){
-				block.setLine(2, "Researching: None");
+				block.setLine(2, "Research: None");
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + " / 0");
 			} else {
-				block.setLine(2, "Researching: " + ChatColor.BLUE + tech.name);
+				block.setLine(2, "Research: " + ChatColor.BLUE + tech.name);
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			}
 			block.update();
@@ -143,10 +143,10 @@ public class CivAPI {
 			block.setLine(1, "Money: N/A");
 			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 			if (tech == null){
-				block.setLine(2, "Researching: None");
+				block.setLine(2, "Research: None");
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + " / 0");
 			} else {
-				block.setLine(2, "Researching: " + ChatColor.BLUE + tech.name);
+				block.setLine(2, "Research: " + ChatColor.BLUE + tech.name);
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			}
 			block.update();
@@ -251,11 +251,15 @@ public class CivAPI {
 			plugin.getDatabase().save(plot);
 		}
 		Ent civEnt = city.getCivilization().getEntityID();
-		plugin.getDatabase().delete(city.getCivilization());
-		plugin.getDatabase().delete(civEnt);
+		CivilizationComponent civ = city.getCivilization();
+		
 		Ent cityEnt = city.getEntityID();
 		plugin.getDatabase().delete(city);
 		plugin.getDatabase().delete(cityEnt);
+		
+		plugin.getDatabase().delete(civ);
+		plugin.getDatabase().delete(civEnt);
+
 		plugin.getServer().broadcastMessage(name + " has fallen to dust!"); 
 	}
 	
