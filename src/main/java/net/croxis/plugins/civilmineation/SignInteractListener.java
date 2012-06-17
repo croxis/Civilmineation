@@ -21,10 +21,13 @@ public class SignInteractListener implements Listener{
 					return;
 				if (plot.getCity() == null)
 					return;
+				// Immgration
 				CityComponent city = CivAPI.plugin.getDatabase().find(CityComponent.class).where()
 						.eq("charter_x", event.getClickedBlock().getX())
 						.eq("charter_y", event.getClickedBlock().getY()+1)
 						.eq("charter_z", event.getClickedBlock().getZ()).findUnique();
+				if (city == null)
+					return;
 				if (plot.getCity().getName().equalsIgnoreCase(city.getName())){
 					Sign sign = (Sign) event.getClickedBlock().getState();
 					if (sign.getLine(3).contains("Open") && sign.getLine(0).contains("=Demographics=")){
