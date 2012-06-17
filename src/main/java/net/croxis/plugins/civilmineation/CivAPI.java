@@ -123,7 +123,12 @@ public class CivAPI {
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.EAST).getState();
 			block.setLine(1, "Money: N/A");
-			block.setLine(2, ChatColor.BLUE + "Researching: " + TechManager.getCurrentResearch(getKing(city).getName()).name);
+			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
+			if (tech == null){
+				tech = new Tech();
+				tech.name = "None";
+			}
+			block.setLine(2, ChatColor.BLUE + "Researching: " + tech.name);
 			block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			block.update();
 			charter.getRelative(BlockFace.WEST).setTypeIdAndData(68, city.getCharterRotation(), true);
@@ -135,6 +140,11 @@ public class CivAPI {
 			charter.getRelative(BlockFace.NORTH).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.NORTH).getState();
 			block.setLine(1, "Money: N/A");
+			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
+			if (tech == null){
+				tech = new Tech();
+				tech.name = "None";
+			}
 			block.setLine(2, ChatColor.BLUE + "Researching: " + TechManager.getCurrentResearch(getKing(city).getName()).name);
 			block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			block.update();
