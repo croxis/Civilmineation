@@ -37,8 +37,6 @@ public class CityComponent{
 	private CivilizationComponent civilization;
 	private boolean hasUpkeep, isPublic, isTaxPercentage;
 	private String townBoard = "/city set board [msg]", tag;
-	@OneToOne(fetch = FetchType.LAZY)
-	private PlotComponent homeBlock;
 	@Transient
 	private Location spawn;
 	
@@ -172,12 +170,6 @@ public class CityComponent{
 	}
 	public void setTag(String tag) {
 		this.tag = tag;
-	}
-	public PlotComponent getHomeBlock() {
-		return homeBlock;
-	}
-	public void setHomeBlock(PlotComponent homeBlock) {
-		this.homeBlock = homeBlock;
 	}
 	public Location getSpawn() {
 		return spawn;
