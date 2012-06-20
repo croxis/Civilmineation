@@ -14,6 +14,9 @@ public class SignInteractListener implements Listener{
 		//Left click is click, Right click is cycle
 		//Debug lines to see what the null error is from
 		//error is right clicking bottom block
+		if (event.getClickedBlock() == null){
+			return;
+		}
 		event.getClickedBlock();
 		event.getClickedBlock().getType();
 		if (event.getClickedBlock().getType().equals(Material.WALL_SIGN)
