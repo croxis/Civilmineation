@@ -27,6 +27,10 @@ public class Civilmineation extends JavaPlugin implements Listener {
 		logger.info("[Civ] " + message);
 	}
 	
+	public static void logDebug(String message){
+		logger.info("[Civ][Debug] " + message);
+	}
+	
     public void onDisable() {
         // TODO: Place any custom disable code here.
     }
@@ -42,6 +46,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
         	public void run(){
+        		logDebug("Running Turn");
         		for (Player player : getServer().getOnlinePlayers()){
         			ResidentComponent resident = CivAPI.getResident(player);
         			if (resident.getCity() != null){
