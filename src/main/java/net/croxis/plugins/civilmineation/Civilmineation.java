@@ -328,6 +328,11 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		PlotComponent plotFrom = CivAPI.getPlot(event.getFrom().getChunk());
     		if (plot == null && plotFrom != null){
     			event.getPlayer().sendMessage("Wilds");
+    		} else if (plot == null && plotFrom == null){
+    			// Needed to prevent future NPES
+    		} else if (plot != null && plotFrom == null){
+    			// TODO: City enter event
+    			event.getPlayer().sendMessage(plot.getName());
     		} else if (!plot.getName().equalsIgnoreCase(plotFrom.getName())){
     			event.getPlayer().sendMessage(plot.getName());
     		}
