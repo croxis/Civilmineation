@@ -10,11 +10,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public class ActionPermissionListener implements Listener{
+	private long time;
+
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event){
 		if (event.isCancelled())
 			return;
-		
+		time = System.currentTimeMillis();
 		Player player = event.getPlayer();
 		//Block block = event.getBlock();
 		Chunk chunk = event.getBlock().getChunk();
@@ -24,6 +26,7 @@ public class ActionPermissionListener implements Listener{
 			return;
 		if (plot.getCity() == null)
 			return;
+		
 		// Determine player's relationship to chunk
 		 CityComponent city = plot.getCity();
 		 //CivilizationComponent civ = city.getCivilization();
@@ -51,6 +54,8 @@ public class ActionPermissionListener implements Listener{
 				 return;
 			 }
 		 }
+		 if (event.getPlayer().getName().equalsIgnoreCase("croxis"))
+			 Civilmineation.logDebug("Block place event: " + Long.toString(System.currentTimeMillis() - time) + " ms");
 	}
 	
 	@EventHandler
@@ -58,7 +63,7 @@ public class ActionPermissionListener implements Listener{
 		if (event.isCancelled())
 			return;
 		
-		
+		time = System.currentTimeMillis();
 		
 		
 		Player player = event.getPlayer();
@@ -235,8 +240,8 @@ public class ActionPermissionListener implements Listener{
 				 return;
 			 }
 		 }
-		 
-		 
+		 if (event.getPlayer().getName().equalsIgnoreCase("croxis"))
+			 Civilmineation.logDebug("Block break event: " + Long.toString(System.currentTimeMillis() - time) + " ms");
 	}
 
 }
