@@ -237,7 +237,9 @@ public class CivAPI {
     public static void broadcastToCity(String message, CityComponent city){
     	List<ResidentComponent> residents = CivAPI.getResidents(city);
     	for (ResidentComponent resident : residents){
-    		plugin.getServer().getPlayer(resident.getName()).sendMessage(message);
+    		Player player = plugin.getServer().getPlayer(resident.getName());
+    		if (player != null)
+    			player.sendMessage(message);
     	}
     }
     
