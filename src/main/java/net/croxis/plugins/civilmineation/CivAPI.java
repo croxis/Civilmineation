@@ -83,6 +83,12 @@ public class CivAPI {
     	return resident.isMayor() && resident.getCity().isCapital();
     }
     
+    public static boolean isNationalAdmin(ResidentComponent resident){
+    	if (resident.isCivAssistant())
+    		return true;
+    	return isKing(resident);
+    }
+    
     public static void addCulture(CityComponent city, int culture){
     	city.setCulture(city.getCulture() + culture);
     	plugin.getDatabase().save(city);
@@ -186,6 +192,48 @@ public class CivAPI {
     	return true;
     }
     
+	public static CityComponent createCity(String name, Player player, ResidentComponent mayor, Block charter,
+			CivilizationComponent civ) {
+		Ent cityEntity = createEntity("City " + name);			
+		PermissionComponent cityPerm = new PermissionComponent();
+		cityPerm.setAll(false);
+		cityPerm.setResidentBuild(true);
+		cityPerm.setResidentDestroy(true);
+		cityPerm.setResidentItemUse(true);
+		cityPerm.setResidentSwitch(true);
+		cityPerm.setName(name + " permissions");
+		//addComponent(cityEntity, cityPerm);
+		cityPerm.setEntityID(cityEntity);
+    	plugin.getDatabase().save(cityPerm);
+		
+		CityComponent city = new CityComponent();
+		//addComponent(cityEntity, city);
+		city.setEntityID(cityEntity);
+		city.setName(name);
+		city.setCivilization(civ);
+		city.setTaxes(0);
+		city.setRegistered(System.currentTimeMillis());
+		city.setTownBoard("Change me");
+		city.setCulture(10);
+		city.setSpawn_x(player.getLocation().getX());
+		city.setSpawn_y(player.getLocation().getY());
+		city.setSpawn_z(player.getLocation().getZ());
+		
+		city.setCharterWorld(player.getLocation().getWorld().getName());
+		city.setCharter_x(charter.getX());
+		city.setCharter_y(charter.getY());
+		city.setCharter_z(charter.getZ());
+		byte rotation = charter.getData();
+		city.setCharterRotation(rotation);
+		city.setCapital(true);
+		plugin.getDatabase().save(city);
+
+		mayor.setCity(city);
+		mayor.setMayor(true);
+		plugin.getDatabase().save(mayor);
+		return city;
+	}
+    
     public static void broadcastToCity(String message, CityComponent city){
     	List<ResidentComponent> residents = CivAPI.getResidents(city);
     	for (ResidentComponent resident : residents){
@@ -275,5 +323,18 @@ public class CivAPI {
 		broadcastToCity(resident.getName() + " has left our city!", city);
 	}
 
+
+	public static Ent createEntity(){
+    	Ent ent = new Ent();
+    	plugin.getDatabase().save(ent);
+    	return ent;
+    }
+	
+	public static Ent createEntity(String name){
+    	Ent ent = new Ent();
+    	ent.setDebugName(name);
+    	plugin.getDatabase().save(ent);
+    	return ent;
+    }
 
 }

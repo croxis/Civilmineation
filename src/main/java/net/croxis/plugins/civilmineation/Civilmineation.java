@@ -156,49 +156,10 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			//addComponent(civEntity, civPerm);
 			civPerm.setEntityID(civEntity);
 	    	getDatabase().save(civPerm);
-			
-			Ent cityEntity = createEntity("City " + event.getLine(2));			
-			PermissionComponent cityPerm = new PermissionComponent();
-			cityPerm.setAll(false);
-			cityPerm.setResidentBuild(true);
-			cityPerm.setResidentDestroy(true);
-			cityPerm.setResidentItemUse(true);
-			cityPerm.setResidentSwitch(true);
-			cityPerm.setName(event.getLine(2) + " permissions");
-			//addComponent(cityEntity, cityPerm);
-			cityPerm.setEntityID(cityEntity);
-	    	getDatabase().save(cityPerm);
 	    	
 	    	ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
 			
-			CityComponent city = new CityComponent();
-			//addComponent(cityEntity, city);
-			city.setEntityID(cityEntity);
-			city.setName(event.getLine(2));
-			city.setCivilization(civ);
-			city.setTaxes(0);
-			//city.setMayor(mayor);
-			city.setName(event.getLine(2));
-			city.setRegistered(System.currentTimeMillis());
-			city.setTownBoard("Change me");
-			city.setCulture(10);
-			city.setSpawn_x(event.getPlayer().getLocation().getX());
-			city.setSpawn_y(event.getPlayer().getLocation().getY());
-			city.setSpawn_z(event.getPlayer().getLocation().getZ());
-			
-			city.setCharterWorld(event.getBlock().getWorld().getName());
-			city.setCharter_x(event.getBlock().getX());
-			city.setCharter_y(event.getBlock().getY());
-			city.setCharter_z(event.getBlock().getZ());
-			byte rotation = event.getBlock().getData();
-			city.setCharterRotation(rotation);
-			city.setCapital(true);
-			getDatabase().save(city);
-
-			mayor.setCity(city);
-			mayor.setMayor(true);
-			getDatabase().save(mayor);
-			
+	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization());
 			
 			if (plot == null){
 				Ent plotEnt = createEntity();
@@ -214,7 +175,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			
 			event.setLine(0, ChatColor.BLUE + "City Charter");
 			event.setLine(3, "Mayor " + event.getPlayer().getName());
-			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
+			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
@@ -257,7 +218,71 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			plot.setSignZ(event.getBlock().getZ());
 			getDatabase().save(plot);
 			event.setLine(0, resident.getCity().getName());
+    	} else if (event.getLine(0).equalsIgnoreCase("[new city]")){
+    		if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
+    			event.getPlayer().sendMessage("City name on second line, Mayor name on third line");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
+    		if (!CivAPI.isNationalAdmin(resident)){
+    			event.getPlayer().sendMessage("You must be a national leader or assistant.");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		ResidentComponent mayor = CivAPI.getResident(event.getLine(2));
+    		if (mayor == null){
+    			event.getPlayer().sendMessage("That player does not exist.");
+    			event.setCancelled(true);
+    			return;
+    		}
+			CityComponent cityComponent = getDatabase().find(CityComponent.class).where().ieq("name", event.getLine(2)).findUnique();
+			if (cityComponent != null){
+				event.getPlayer().sendMessage("That city name already exists");
+				event.setCancelled(true);
+				return;
+			}			
+			if (mayor.getCity() == null){
+				event.getPlayer().sendMessage("That player must be in your civ!.");
+				event.setCancelled(true);
+				return;
+			}
+			if (!mayor.getCity().getCivilization().getName().equalsIgnoreCase(resident.getCity().getCivilization().getName())){
+				event.getPlayer().sendMessage("That player must be in your civ!.");
+				event.setCancelled(true);
+				return;
+			}
+			if (mayor.isMayor()){
+				event.getPlayer().sendMessage("That player can not be am existing mayor.");
+				event.setCancelled(true);
+				return;
+			}
+			PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
+			if (plot != null){
+				if (plot.getCity() != null){
+					event.getPlayer().sendMessage("That plot is part of a city.");
+					event.setCancelled(true);
+					return;
+				}
+			}
+			CityComponent city = CivAPI.createCity(event.getLine(1), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization());
+			if (plot == null){
+				Ent plotEnt = createEntity();
+				plot = new PlotComponent();
+				plot.setX(event.getBlock().getChunk().getX());
+				plot.setZ(event.getBlock().getChunk().getZ());
+				//addComponent(plotEnt, plot);
+				plot.setEntityID(plotEnt);
+			}
+			plot.setCity(city);
+			plot.setName(city.getName() + " Founding Square");
+			getDatabase().save(plot);
 			
+			event.setLine(0, ChatColor.BLUE + "City Charter");
+			event.setLine(3, "Mayor " + event.getPlayer().getName());
+			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
+			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
+			CivAPI.updateCityCharter(city);
     	}
     }
 
