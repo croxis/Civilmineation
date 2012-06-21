@@ -31,8 +31,14 @@ public class CivAPI {
     	return plugin.getDatabase().find(ResidentComponent.class).where().ieq("name", player.getName()).findUnique();
     }
     
-    public static List<ResidentComponent> getResidents(CivilizationComponent civ){
-    	return plugin.getDatabase().find(ResidentComponent.class).where().eq("civilization", civ).findList();
+    public static HashSet<ResidentComponent> getResidents(CivilizationComponent civ){
+    	List<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", civ).findList();
+    	HashSet<ResidentComponent> residents = new HashSet<ResidentComponent>();
+    	for (CityComponent city : cities){
+    		residents.addAll(getResidents(city));
+    	}
+    	
+    	return residents;
     }
     
     public static List<ResidentComponent> getResidents(CityComponent city){
