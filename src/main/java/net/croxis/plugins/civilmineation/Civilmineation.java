@@ -11,6 +11,7 @@ import net.croxis.plugins.research.TechManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -176,6 +177,13 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			}
 			plot.setCity(city);
 			plot.setName(city.getName() + " Founding Square");
+			event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, city.getCharterRotation(), true);
+			Sign plotSign = (Sign) event.getBlock().getRelative(BlockFace.UP).getState();
+			plotSign.setLine(0, city.getName());
+			plotSign.update();
+			plot.setSignX(plotSign.getX());
+			plot.setSignY(plotSign.getY());
+			plot.setSignZ(plotSign.getZ());
 			getDatabase().save(plot);
 			
 			event.setLine(0, ChatColor.BLUE + "City Charter");
@@ -183,6 +191,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
+			
+			
+			
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
     		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
     		if (resident.getCity() == null){
@@ -314,9 +325,10 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			!= event.getTo().getWorld().getChunkAt(event.getTo()).getZ()){
     		//event.getPlayer().sendMessage("Message will go here");
     		PlotComponent plot = CivAPI.getPlot(event.getTo().getChunk());
-    		if (plot == null){
+    		PlotComponent plotFrom = CivAPI.getPlot(event.getFrom().getChunk());
+    		if (plot == null && plotFrom != null){
     			event.getPlayer().sendMessage("Wilds");
-    		} else {
+    		} else if (!plot.getName().equalsIgnoreCase(plotFrom.getName())){
     			event.getPlayer().sendMessage(plot.getName());
     		}
     	}
