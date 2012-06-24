@@ -131,7 +131,7 @@ public class CivAPI {
 		if (block.getLine(3).contains("Open"))
 			block.setLine(3, ChatColor.GREEN + "Open");
 		else
-			block.setLine(3, ChatColor.RED + "CLOSED");
+			block.setLine(3, ChatColor.RED + "Closed");
 		block.update();
 		if (city.getCharterRotation() == 4 || city.getCharterRotation() == 5){
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, city.getCharterRotation(), true);
@@ -148,7 +148,7 @@ public class CivAPI {
 			block.update();
 			charter.getRelative(BlockFace.WEST).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.WEST).getState();
-			block.setLine(1, "Plots: N/A");
+			block.setLine(1, "Plots: " + Integer.toString(getPlots(city).size()));
 			block.setLine(2, "Culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(city.getCulture()));
 			block.update();
 		} else if (city.getCharterRotation() == 2 || city.getCharterRotation() == 3) {
