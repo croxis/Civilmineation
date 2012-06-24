@@ -145,13 +145,15 @@ public class CivAPI {
 		if (city.getCharterRotation() == 4 || city.getCharterRotation() == 5){
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.EAST).getState();
-			block.setLine(1, "Money: " + Double.toString(econ.getBalance(city.getName())));
+			block.setLine(0, "Money: " + Double.toString(econ.getBalance(city.getName())));
 			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 			if (tech == null){
-				block.setLine(2, "Research: None");
+				block.setLine(1, "Research:");
+				block.setLine(2, "None");
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + " / 0");
 			} else {
-				block.setLine(2, "Research: " + ChatColor.BLUE + tech.name);
+				block.setLine(1, "Research:");
+				block.setLine(2, ChatColor.BLUE + tech.name);
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			}
 			block.update();
@@ -163,13 +165,15 @@ public class CivAPI {
 		} else if (city.getCharterRotation() == 2 || city.getCharterRotation() == 3) {
 			charter.getRelative(BlockFace.NORTH).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.NORTH).getState();
-			block.setLine(1, "Money: N/A");
+			block.setLine(0, "Money: N/A");
 			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 			if (tech == null){
-				block.setLine(2, "Research: None");
+				block.setLine(1, "Research:");
+				block.setLine(2, "None");
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + " / 0");
 			} else {
-				block.setLine(2, "Research: " + ChatColor.BLUE + tech.name);
+				block.setLine(1, "Research:");
+				block.setLine(2, ChatColor.BLUE + tech.name);
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			}
 			block.update();
