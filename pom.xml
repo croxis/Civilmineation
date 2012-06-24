@@ -13,6 +13,14 @@
             <id>local-repo</id>
             <url>http://localhost:8080/plugin/repository</url>
         </repository>
+        <repository>
+            <id>local-repo2</id>
+            <url>http://localhost:8080/plugin/repository/project/Vault/LastSuccessful/repository</url>
+        </repository>
+        <repository>
+            <id>spout-repo</id>
+            <url>http://nexus.spout.org/content/groups/public</url>
+        </repository>
     </repositories>
     <build>
         <plugins>
@@ -48,6 +56,11 @@
             <version>3.0</version>
             <type>jar</type>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.2.17-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

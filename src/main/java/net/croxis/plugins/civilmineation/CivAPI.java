@@ -6,12 +6,14 @@ import java.util.Set;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivilizationComponent;
+import net.croxis.plugins.civilmineation.components.EconomyComponent;
 import net.croxis.plugins.civilmineation.components.Ent;
 import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
+import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,6 +27,7 @@ import org.bukkit.entity.Player;
 
 public class CivAPI {
 	public static Civilmineation plugin;
+	public static Economy econ = null;
 	public CivAPI(Civilmineation p){
 		plugin = p;
 	}
@@ -142,7 +145,7 @@ public class CivAPI {
 		if (city.getCharterRotation() == 4 || city.getCharterRotation() == 5){
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, city.getCharterRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.EAST).getState();
-			block.setLine(1, "Money: N/A");
+			block.setLine(1, "Money: " + Double.toString(econ.getBalance(city.getName())));
 			Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 			if (tech == null){
 				block.setLine(2, "Research: None");
@@ -208,7 +211,7 @@ public class CivAPI {
     }
     
 	public static CityComponent createCity(String name, Player player, ResidentComponent mayor, Block charter,
-			CivilizationComponent civ) {
+			CivilizationComponent civ, boolean capital) {
 		Ent cityEntity = createEntity("City " + name);			
 		PermissionComponent cityPerm = new PermissionComponent();
 		cityPerm.setAll(false);
@@ -220,12 +223,19 @@ public class CivAPI {
 		//addComponent(cityEntity, cityPerm);
 		cityPerm.setEntityID(cityEntity);
     	plugin.getDatabase().save(cityPerm);
+    	
+    	EconomyComponent cityEcon = new EconomyComponent();
+    	cityEcon.setName(name);
+    	cityEcon.setEntityID(cityEntity);
+    	plugin.getDatabase().save(cityEcon);
+    	CivAPI.econ.createPlayerAccount(name);
 		
 		CityComponent city = new CityComponent();
 		//addComponent(cityEntity, city);
 		city.setEntityID(cityEntity);
 		city.setName(name);
 		city.setCivilization(civ);
+		city.setCapital(capital);
 		city.setTaxes(0);
 		city.setRegistered(System.currentTimeMillis());
 		city.setTownBoard("Change me");

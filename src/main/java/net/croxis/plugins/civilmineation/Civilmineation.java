@@ -2,6 +2,7 @@ package net.croxis.plugins.civilmineation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
@@ -9,6 +10,7 @@ import javax.persistence.PersistenceException;
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivilizationComponent;
 import net.croxis.plugins.civilmineation.components.Component;
+import net.croxis.plugins.civilmineation.components.EconomyComponent;
 import net.croxis.plugins.civilmineation.components.Ent;
 import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
@@ -25,13 +27,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import net.milkbowl.vault.economy.Economy;
 
 public class Civilmineation extends JavaPlugin implements Listener {
 	public static CivAPI api;
 	private static final Logger logger = Logger.getLogger("Minecraft");
 	
 	public static void log(String message){
+		logger.info("[Civ] " + message);
+	}
+	
+	public static void log(Level level, String message){
 		logger.info("[Civ] " + message);
 	}
 	
@@ -42,10 +51,28 @@ public class Civilmineation extends JavaPlugin implements Listener {
     public void onDisable() {
         // TODO: Place any custom disable code here.
     }
+    
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        CivAPI.econ = rsp.getProvider();
+        return CivAPI.econ != null;
+    }
 
     public void onEnable() {
     	setupDatabase();
+    	
     	api = new CivAPI(this);
+    	if (!setupEconomy() ) {
+            log(Level.SEVERE, "Disabled due to no Vault dependency found!");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ActionPermissionListener(), this);
         getServer().getPluginManager().registerEvents(new SignInteractListener(), this);
@@ -157,6 +184,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			civ.setRegistered(System.currentTimeMillis());
 			civ.setTaxes(0);
 	    	getDatabase().save(civ);
+	    	
+	    	EconomyComponent civEcon = new EconomyComponent();
+	    	civEcon.setName(event.getLine(1));
+	    	civEcon.setEntityID(civEntity);
+	    	getDatabase().save(civEcon);
+	    	CivAPI.econ.createPlayerAccount(event.getLine(1));
 			
 			PermissionComponent civPerm = new PermissionComponent();
 			civPerm.setAll(false);
@@ -172,7 +205,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 	    	
 	    	ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
 			
-	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization());
+	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization(), true);
 			
 			if (plot == null){
 				Ent plotEnt = createEntity();
@@ -288,7 +321,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 					return;
 				}
 			}
-			CityComponent city = CivAPI.createCity(event.getLine(1), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization());
+			CityComponent city = CivAPI.createCity(event.getLine(1), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization(), false);
 			if (plot == null){
 				Ent plotEnt = createEntity();
 				plot = new PlotComponent();
@@ -316,6 +349,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	ResidentComponent resident = CivAPI.getResident(event.getPlayer());
     	if (resident == null){
     		Ent entity = createEntity();
+    		
+    		EconomyComponent civEcon = new EconomyComponent();
+	    	civEcon.setName(event.getPlayer().getName());
+	    	civEcon.setEntityID(entity);
+	    	getDatabase().save(civEcon);
+    		
     		resident = new ResidentComponent();
     		resident.setRegistered(System.currentTimeMillis());
     		resident.setName(event.getPlayer().getName());
