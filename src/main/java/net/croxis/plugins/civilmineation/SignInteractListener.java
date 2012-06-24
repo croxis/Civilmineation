@@ -15,7 +15,6 @@ public class SignInteractListener implements Listener{
 		//Debug lines to see what the null error is from
 		//error is right clicking bottom block
 		if (event.getClickedBlock() == null){
-			Civilmineation.log("SighInteractNull");
 			return;
 		}
 		event.getClickedBlock();

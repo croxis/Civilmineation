@@ -32,17 +32,16 @@ public class CivAPI {
     }
     
     public static HashSet<ResidentComponent> getResidents(CivilizationComponent civ){
-    	List<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", civ).findList();
+    	Set<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", civ).findSet();
     	HashSet<ResidentComponent> residents = new HashSet<ResidentComponent>();
     	for (CityComponent city : cities){
     		residents.addAll(getResidents(city));
     	}
-    	
     	return residents;
     }
     
-    public static List<ResidentComponent> getResidents(CityComponent city){
-    	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", city).findList();
+    public static HashSet<ResidentComponent> getResidents(CityComponent city){
+    	return (HashSet<ResidentComponent>) plugin.getDatabase().find(ResidentComponent.class).where().eq("city", city).findSet();
     }
     
     public static PlotComponent getPlot(Chunk chunk){
@@ -129,7 +128,10 @@ public class CivAPI {
 		block.setLine(0, "=Demographics=");
 		block.setLine(1, "Population: " + Integer.toString(CivAPI.getResidents(city).size()));
 		block.setLine(2, "=Immigration=");
-		block.setLine(3, ChatColor.GREEN + "Open");
+		if (block.getLine(3).contains("Open"))
+			block.setLine(3, ChatColor.GREEN + "Open");
+		else
+			block.setLine(3, ChatColor.RED + "CLOSED");
 		block.update();
 		if (city.getCharterRotation() == 4 || city.getCharterRotation() == 5){
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, city.getCharterRotation(), true);
@@ -195,6 +197,7 @@ public class CivAPI {
 				TechManager.addTech(r.getName(), t);
 			}
 		}
+		updateCityCharter(city);
     	return true;
     }
     
@@ -231,7 +234,6 @@ public class CivAPI {
 		city.setCharter_z(charter.getZ());
 		byte rotation = charter.getData();
 		city.setCharterRotation(rotation);
-		city.setCapital(true);
 		plugin.getDatabase().save(city);
 
 		mayor.setCity(city);
@@ -241,7 +243,7 @@ public class CivAPI {
 	}
     
     public static void broadcastToCity(String message, CityComponent city){
-    	List<ResidentComponent> residents = CivAPI.getResidents(city);
+    	HashSet<ResidentComponent> residents = CivAPI.getResidents(city);
     	for (ResidentComponent resident : residents){
     		Player player = plugin.getServer().getPlayer(resident.getName());
     		if (player != null)

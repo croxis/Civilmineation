@@ -295,7 +295,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			getDatabase().save(plot);
 			
 			event.setLine(0, ChatColor.BLUE + "City Charter");
-			event.setLine(3, "Mayor " + event.getPlayer().getName());
+			event.setLine(1, city.getCivilization().getName());
+			event.setLine(2, city.getName());
+			event.setLine(3, "Mayor " + mayor.getName());
 			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
