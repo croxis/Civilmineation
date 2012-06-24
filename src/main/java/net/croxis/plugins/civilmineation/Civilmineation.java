@@ -377,6 +377,41 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			else
 				CivAPI.broadcastToCiv(assistant.getName() + " is no longer a civ assistant!", king.getCity().getCivilization());
 			return;
+    	} else if (event.getLine(0).equalsIgnoreCase("[city assist]")){
+    		ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
+    		event.getBlock().breakNaturally();
+    		if (event.getLine(1).isEmpty()){
+    			event.getPlayer().sendMessage("Assistant name on the second line.");
+    			event.setCancelled(true);
+    			return;
+    		} else if (!mayor.isMayor()){
+    			event.getPlayer().sendMessage("You must be a mayor.");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		ResidentComponent assistant = CivAPI.getResident(event.getLine(1));
+    		if (assistant == null){
+    			event.getPlayer().sendMessage("That player does not exist.");
+    			event.setCancelled(true);
+    			return;
+    		}						
+			if (assistant.getCity() == null){
+				event.getPlayer().sendMessage("That player must be in your city!.");
+				event.setCancelled(true);
+				return;
+			}
+			if (!mayor.getCity().getName().equalsIgnoreCase(assistant.getCity().getName())){
+				event.getPlayer().sendMessage("That player must be in your city!.");
+				event.setCancelled(true);
+				return;
+			}
+			assistant.setCityAssistant(!assistant.isCityAssistant());
+			getDatabase().save(assistant);
+			if(assistant.isCityAssistant())
+				CivAPI.broadcastToCity(assistant.getName() + " is now a city assistant!", mayor.getCity());
+			else
+				CivAPI.broadcastToCity(assistant.getName() + " is no longer a city assistant!", mayor.getCity());
+			return;
     	}
     }
 
