@@ -1,4 +1,4 @@
-package net.croxis.plugins.civilmineation;
+package net.croxis.plugins.civilmineation.components;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

@@ -3,6 +3,8 @@ package net.croxis.plugins.civilmineation;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import net.croxis.plugins.civilmineation.components.CivilizationComponent;
+import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
 

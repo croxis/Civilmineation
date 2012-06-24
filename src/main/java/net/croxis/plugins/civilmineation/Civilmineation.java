@@ -6,6 +6,13 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
+import net.croxis.plugins.civilmineation.components.CityComponent;
+import net.croxis.plugins.civilmineation.components.CivilizationComponent;
+import net.croxis.plugins.civilmineation.components.Component;
+import net.croxis.plugins.civilmineation.components.Ent;
+import net.croxis.plugins.civilmineation.components.PermissionComponent;
+import net.croxis.plugins.civilmineation.components.PlotComponent;
+import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
 

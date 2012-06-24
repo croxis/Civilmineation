@@ -1,4 +1,4 @@
-package net.croxis.plugins.civilmineation;
+package net.croxis.plugins.civilmineation.components;
 
 import java.util.ArrayList;
 import java.util.List;

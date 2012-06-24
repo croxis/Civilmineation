@@ -1,4 +1,4 @@
-package net.croxis.plugins.civilmineation;
+package net.croxis.plugins.civilmineation.components;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
 
 import com.avaje.ebean.validation.NotNull;
 

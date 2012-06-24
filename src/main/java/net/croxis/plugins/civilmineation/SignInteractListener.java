@@ -1,5 +1,9 @@
 package net.croxis.plugins.civilmineation;
 
+import net.croxis.plugins.civilmineation.components.CityComponent;
+import net.croxis.plugins.civilmineation.components.PlotComponent;
+import net.croxis.plugins.civilmineation.components.ResidentComponent;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;

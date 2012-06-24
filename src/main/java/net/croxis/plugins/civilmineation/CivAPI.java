@@ -4,6 +4,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.croxis.plugins.civilmineation.components.CityComponent;
+import net.croxis.plugins.civilmineation.components.CivilizationComponent;
+import net.croxis.plugins.civilmineation.components.Ent;
+import net.croxis.plugins.civilmineation.components.PermissionComponent;
+import net.croxis.plugins.civilmineation.components.PlotComponent;
+import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
 
@@ -40,8 +46,8 @@ public class CivAPI {
     	return residents;
     }
     
-    public static HashSet<ResidentComponent> getResidents(CityComponent city){
-    	return (HashSet<ResidentComponent>) plugin.getDatabase().find(ResidentComponent.class).where().eq("city", city).findSet();
+    public static Set<ResidentComponent> getResidents(CityComponent city){
+    	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", city).findSet();
     }
     
     public static PlotComponent getPlot(Chunk chunk){
@@ -243,7 +249,7 @@ public class CivAPI {
 	}
     
     public static void broadcastToCity(String message, CityComponent city){
-    	HashSet<ResidentComponent> residents = CivAPI.getResidents(city);
+    	Set<ResidentComponent> residents = CivAPI.getResidents(city);
     	for (ResidentComponent resident : residents){
     		Player player = plugin.getServer().getPlayer(resident.getName());
     		if (player != null)

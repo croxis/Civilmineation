@@ -1,5 +1,10 @@
 package net.croxis.plugins.civilmineation;
 
+import net.croxis.plugins.civilmineation.components.CityComponent;
+import net.croxis.plugins.civilmineation.components.PermissionComponent;
+import net.croxis.plugins.civilmineation.components.PlotComponent;
+import net.croxis.plugins.civilmineation.components.ResidentComponent;
+
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;

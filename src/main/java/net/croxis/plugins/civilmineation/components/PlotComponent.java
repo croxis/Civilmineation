@@ -1,4 +1,4 @@
-package net.croxis.plugins.civilmineation;
+package net.croxis.plugins.civilmineation.components;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import net.croxis.plugins.civilmineation.CityPlotType;
 
 @Entity()
 @Table(name = "civ_plots")
