@@ -341,6 +341,42 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
+    	} else if (event.getLine(0).equalsIgnoreCase("[civ assist]")){
+    		ResidentComponent king = CivAPI.getResident(event.getPlayer());
+    		event.getBlock().breakNaturally();
+    		if (event.getLine(1).isEmpty()){
+    			event.getPlayer().sendMessage("Assistant name on the second line.");
+    			event.setCancelled(true);
+    			return;
+    		} else if (!CivAPI.isKing(king)){
+    			event.getPlayer().sendMessage("You must be a king.");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		ResidentComponent assistant = CivAPI.getResident(event.getLine(1));
+    		
+    		if (assistant == null){
+    			event.getPlayer().sendMessage("That player does not exist.");
+    			event.setCancelled(true);
+    			return;
+    		}						
+			if (assistant.getCity() == null){
+				event.getPlayer().sendMessage("That player must be in your civ!.");
+				event.setCancelled(true);
+				return;
+			}
+			if (!king.getCity().getCivilization().getName().equalsIgnoreCase(assistant.getCity().getCivilization().getName())){
+				event.getPlayer().sendMessage("That player must be in your civ!.");
+				event.setCancelled(true);
+				return;
+			}
+			assistant.setCivAssistant(!assistant.isCivAssistant());
+			getDatabase().save(assistant);
+			if(assistant.isCivAssistant())
+				CivAPI.broadcastToCiv(assistant.getName() + " is now a civ assistant!", king.getCity().getCivilization());
+			else
+				CivAPI.broadcastToCiv(assistant.getName() + " is no longer a civ assistant!", king.getCity().getCivilization());
+			return;
     	}
     }
 
@@ -362,7 +398,14 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		resident.setEntityID(entity);
         	getDatabase().save(resident);
     	}
-        event.getPlayer().sendMessage("Welcome, " + event.getPlayer().getDisplayName() + "!");
+    	String title = "";
+    	if (resident.isMayor()){
+    		title = "Mayor ";
+	    	if (resident.getCity().isCapital())
+	    		title = "King ";
+    	} else if (resident.getCity() == null)
+    		title = "Wild ";
+        event.getPlayer().sendMessage("Welcome, " + title + event.getPlayer().getDisplayName() + "!");
     }
     
     @EventHandler
