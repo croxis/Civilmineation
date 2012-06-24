@@ -206,7 +206,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 	    	
 	    	ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
 			
-	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization(), true);
+	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), civ, true);
 			
 			if (plot == null){
 				Ent plotEnt = createEntity();
