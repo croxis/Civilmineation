@@ -388,6 +388,12 @@ public class CivAPI {
 		}
 		loseTechs(resident);
 		CityComponent city = resident.getCity();
+		Set<PlotComponent> plots = plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("resident", resident).findSet();
+		for (PlotComponent plot : plots){
+			plot.setResident(null);
+			plugin.getDatabase().save(plot);
+			updatePlotSign(plot);
+		}
 		resident.setCity(null);
 		plugin.getDatabase().save(resident);
 		broadcastToCity(resident.getName() + " has left our city!", city);

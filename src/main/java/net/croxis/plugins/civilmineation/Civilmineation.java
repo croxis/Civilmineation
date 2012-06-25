@@ -462,6 +462,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			sign = CivAPI.getPlotSign(plot);
     			sign.setLine(2, "=For Sale=");
     			sign.setLine(3, Double.toString(price));
+    			sign.update();
     			event.getBlock().breakNaturally();
     			return;
     		} else {
@@ -485,7 +486,42 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			return;
     			}
     		}
-    	} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
+    	} else if (event.getLine(0).equalsIgnoreCase("[kick]")) {
+    		event.getBlock().breakNaturally();
+    		if (!CivAPI.isCityAdmin(resident)){
+    			event.getPlayer().sendMessage("You are not a city admin or plot owner");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		event.getBlock().breakNaturally();
+    		if (event.getLine(1).isEmpty()){
+    			event.getPlayer().sendMessage("Kickee name on the second line.");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		ResidentComponent kickee = CivAPI.getResident(event.getLine(1));
+    		if (kickee == null){
+    			event.getPlayer().sendMessage("That player does not exist.");
+    			event.setCancelled(true);
+    			return;
+    		}						
+			if (kickee.getCity() == null){
+				event.getPlayer().sendMessage("That player must be in your city!.");
+				event.setCancelled(true);
+				return;
+			}
+			if (!resident.getCity().getName().equalsIgnoreCase(kickee.getCity().getName())){
+				event.getPlayer().sendMessage("That player must be in your city!.");
+				event.setCancelled(true);
+				return;
+			}
+			if (CivAPI.isCityAdmin(kickee)){
+				event.getPlayer().sendMessage("Mayors and assistants must be demoted before kick!.");
+				event.setCancelled(true);
+				return;
+			}
+			CivAPI.removeResident(kickee);
+		} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCityAdmin(resident)){
     			event.getPlayer().sendMessage("You are not a city admin or plot owner");
