@@ -445,7 +445,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		}
     		
     		if(plot.getResident() == null){
-    			if(CivAPI.isCityAdmin(resident)){
+    			if(!CivAPI.isCityAdmin(resident)){
     				event.getPlayer().sendMessage("You are not a city admin");
         			event.setCancelled(true);
         			event.getBlock().breakNaturally();
