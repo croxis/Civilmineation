@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.avaje.ebean.validation.NotNull;
+
 import net.croxis.plugins.civilmineation.CityPlotType;
 
 @Entity()
@@ -19,6 +21,7 @@ public class PlotComponent {
 	private String name = "Wilds";
 	//@ManyToOne
 	//@JoinColumn(name="WORLD_ID")
+	@NotNull
 	private String world;
 	@ManyToOne
 	@JoinColumn(name="CITY_ID")

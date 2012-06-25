@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -55,6 +56,17 @@ public class CivAPI {
     
     public static PlotComponent getPlot(Chunk chunk){
     	return plugin.getDatabase().find(PlotComponent.class).where().eq("x", chunk.getX()).eq("z", chunk.getZ()).findUnique();
+    }
+    
+    public static PlotComponent getPlot(Sign sign){
+    	return plugin.getDatabase().find(PlotComponent.class).where().eq("signX", sign.getX()).eq("signY", sign.getY()).eq("signZ", sign.getZ()).findUnique();
+    }
+    
+    public static Sign getPlotSign(PlotComponent plot){
+    	Block block = plugin.getServer().getWorld(plot.getWorld()).getBlockAt(plot.getSignX(), plot.getSignY(), plot.getSignZ());
+    	if(block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN || block.getType() == Material.SIGN_POST)
+			return (Sign) block.getState();
+    	return null;
     }
     
     public static PermissionComponent getPermissions(Ent ent){
@@ -101,6 +113,12 @@ public class CivAPI {
     	if (resident.isCivAssistant())
     		return true;
     	return isKing(resident);
+    }
+    
+    public static boolean isCityAdmin(ResidentComponent resident){
+    	if (resident.isCityAssistant())
+    		return true;
+    	return resident.isCityAssistant();
     }
     
     public static void addCulture(CityComponent city, int culture){
@@ -184,6 +202,26 @@ public class CivAPI {
 			block.update();
 		}
     }
+    
+    public static void setPlotSign(Sign plotSign){
+    	PlotComponent plot = getPlot(plotSign.getChunk());
+    	plot.setSignX(plotSign.getX());
+		plot.setSignY(plotSign.getY());
+		plot.setSignZ(plotSign.getZ());
+		plugin.getDatabase().save(plot);
+    }
+    
+    public static void updatePlotSign(PlotComponent plot) {
+		Sign sign = getPlotSign(plot);
+		if(plot.getResident()!=null){
+			if(plugin.getServer().getPlayer(plot.getResident().getName()).isOnline())
+				sign.setLine(0, ChatColor.GREEN + plot.getResident().getName());
+			else
+				sign.setLine(0, ChatColor.RED + plot.getResident().getName());
+		} else 
+			sign.setLine(0, plot.getCity().getName());
+		sign.update();
+	}
     
     public static boolean addResident(ResidentComponent resident, CityComponent city){
     	if (resident.getCity() != null)
@@ -366,5 +404,7 @@ public class CivAPI {
     	plugin.getDatabase().save(ent);
     	return ent;
     }
+
+	
 
 }

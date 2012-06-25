@@ -27,12 +27,47 @@ public class SignInteractListener implements Listener{
 				|| event.getClickedBlock().getType().equals(Material.SIGN)
 				|| event.getClickedBlock().getType().equals(Material.SIGN_POST)){
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)){
+				Sign sign = (Sign) event.getClickedBlock().getState();
 				PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
 				if (plot == null)
 					return;
 				if (plot.getCity() == null)
 					return;
-				// Immgration
+				PlotComponent plotCheck = CivAPI.getPlot(sign);
+				if(plotCheck != null){
+					if(sign.getLine(2).equalsIgnoreCase("=For Sale=")){
+						ResidentComponent resident = CivAPI.getResident(event.getPlayer());
+						double price = 0;
+						try{
+			    			price = Double.parseDouble(sign.getLine(3));
+			    		} catch (NumberFormatException e) {
+			    			event.getPlayer().sendMessage("Bad price value. Try a new [sell] sign.");
+			    			event.setCancelled(true);
+			    			return;
+		    			}
+						//TODO: Add exception for embasee plots
+						if (!plot.getCity().getName().equalsIgnoreCase(resident.getName())){
+							event.getPlayer().sendMessage("Not member of city.");
+			    			event.setCancelled(true);
+			    			return;
+						}
+						if (CivAPI.econ.getBalance(event.getPlayer().getName()) < price){
+							event.getPlayer().sendMessage("Not enough money.");
+			    			event.setCancelled(true);
+			    			return;
+						}
+						CivAPI.econ.withdrawPlayer(event.getPlayer().getName(), price);
+						if(plot.getResident() == null){
+							CivAPI.econ.depositPlayer(plot.getCity().getName(), price);
+						} else {
+							CivAPI.econ.depositPlayer(plot.getResident().getName(), price);
+						}
+						plot.setResident(resident);
+						CivAPI.plugin.getDatabase().save(plot);
+						CivAPI.updatePlotSign(plot);
+					}
+				}
+				// Immigration
 				CityComponent city = CivAPI.plugin.getDatabase().find(CityComponent.class).where()
 						.eq("charter_x", event.getClickedBlock().getX())
 						.eq("charter_y", event.getClickedBlock().getY()+1)
@@ -40,7 +75,7 @@ public class SignInteractListener implements Listener{
 				if (city == null)
 					return;
 				if (plot.getCity().getName().equalsIgnoreCase(city.getName())){
-					Sign sign = (Sign) event.getClickedBlock().getState();
+					
 					if (sign.getLine(3).contains("Open") && sign.getLine(0).contains("=Demographics=")){
 						ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 						if (CivAPI.addResident(resident, city))
