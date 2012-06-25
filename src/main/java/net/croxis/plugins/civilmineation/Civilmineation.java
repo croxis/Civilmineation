@@ -148,8 +148,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
     
     @EventHandler
     public void onSignChangeEvent(SignChangeEvent event){
+    	ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
+		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
     	if (event.getLine(0).equalsIgnoreCase("[New Civ]")){
-    		ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
     		if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
     			event.getPlayer().sendMessage("Civ name on second line, Capital name on third line");
     			event.setCancelled(true);
@@ -170,7 +171,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getBlock().breakNaturally();
 				return;
 			}
-			PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 			if (plot != null){
 				if (plot.getCity() != null){
 					event.getPlayer().sendMessage("That plot is part of a city.");
@@ -235,12 +235,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			event.setLine(3, "Mayor " + event.getPlayer().getName());
 			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
-			CivAPI.updateCityCharter(city);
-			
-			
-			
+			CivAPI.updateCityCharter(city);			
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
-    		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
     		if (resident.getCity() == null){
     			event.setCancelled(true);
     			event.getPlayer().sendMessage("You must be part of a city admin");
@@ -251,7 +247,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getPlayer().sendMessage("You must be a city admin");
     			return;
     		}
-    		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
     		if (plot != null){
     			if (plot.getCity() != null){
     				event.setCancelled(true);
@@ -284,11 +279,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
     			event.getPlayer().sendMessage("City name on second line, Mayor name on third line");
     			event.setCancelled(true);
-
     			event.getBlock().breakNaturally();
     			return;
     		}
-    		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
     		if (!CivAPI.isNationalAdmin(resident)){
     			event.getPlayer().sendMessage("You must be a national leader or assistant.");
     			event.setCancelled(true);
@@ -328,7 +321,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getBlock().breakNaturally();
 				return;
 			}
-			PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 			if (plot != null){
 				if (plot.getCity() != null){
 					event.getPlayer().sendMessage("That plot is part of a city.");
@@ -357,6 +349,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
+			CivAPI.broadcastToCiv("The city of " + city.getName() + " has been founded!", mayor.getCity().getCivilization());
     	} else if (event.getLine(0).equalsIgnoreCase("[civ assist]")){
     		ResidentComponent king = CivAPI.getResident(event.getPlayer());
     		event.getBlock().breakNaturally();
@@ -428,8 +421,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			else
 				CivAPI.broadcastToCity(assistant.getName() + " is no longer a city assistant!", mayor.getCity());
 			return;
-    	} else if (event.getLine(0).equalsIgnoreCase("[sell]")){
-    		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
+    	} else if (event.getLine(0).equalsIgnoreCase("[sell]")) {
     		double price = 0;
     		if(!event.getLine(1).isEmpty())
 	    		try{
@@ -451,9 +443,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getBlock().breakNaturally();
     			return;
     		}
-    		ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
+    		
     		if(plot.getResident() == null){
-    			if(!CivAPI.isCityAdmin(resident)){
+    			if(CivAPI.isCityAdmin(resident)){
     				event.getPlayer().sendMessage("You are not a city admin");
         			event.setCancelled(true);
         			event.getBlock().breakNaturally();
@@ -493,9 +485,47 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			return;
     			}
     		}
-    		//i(!CivAPI.isCityAdmin(resident)){
-    		//	event.getPlayer().sendMessage("You must be city mayor or assistant.");
-    		//}
+    	} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
+    		event.getBlock().breakNaturally();
+    		if (!CivAPI.isCityAdmin(resident)){
+    			event.getPlayer().sendMessage("You are not a city admin or plot owner");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		if (plot == null){
+    			event.getPlayer().sendMessage("This plot is unclaimed");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		if (plot.getCity() == null){
+    			event.getPlayer().sendMessage("This plot is unclaimed");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
+    			event.getPlayer().sendMessage("This is not your city");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		if (event.getLine(1).isEmpty()){
+    			event.getPlayer().sendMessage("Invalid building type");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		CityPlotType type = CityPlotType.valueOf(event.getLine(1));
+    		double cost = 0;
+    		if (type == null){
+    			event.getPlayer().sendMessage("Invalid building type");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		if (type.equals(CityPlotType.LIBRARY))
+    			cost = 100;
+    		//Check cost
+    		//Deduct cost
+    		//plot.setType(type);
+    		//plot.setName(plot.getCity().getName() + " " + type.toString());
+    		//getDatabase().save(plot);
     	}
     }
 

@@ -15,6 +15,8 @@ public enum CityPlotType {
     },
     WILDS(4, "wilds"){	//Follows wilderness protection settings, but town owned.
     },
+    LIBRARY(5, "library"){	//Follows wilderness protection settings, but town owned.
+    },
     // These are subject to change:
 /*
     PUBLIC(5, "") {  // Will have it's own permission set

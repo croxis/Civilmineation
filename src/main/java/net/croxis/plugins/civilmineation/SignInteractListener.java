@@ -63,8 +63,10 @@ public class SignInteractListener implements Listener{
 							CivAPI.econ.depositPlayer(plot.getResident().getName(), price);
 						}
 						plot.setResident(resident);
+						plot.setName(resident.getName());
 						CivAPI.plugin.getDatabase().save(plot);
 						CivAPI.updatePlotSign(plot);
+						return;
 					}
 				}
 				// Immigration

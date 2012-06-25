@@ -118,7 +118,9 @@ public class CivAPI {
     public static boolean isCityAdmin(ResidentComponent resident){
     	if (resident.isCityAssistant())
     		return true;
-    	return resident.isCityAssistant();
+    	else if (resident.getCity() == null)
+    		return false;
+    	return resident.isMayor();
     }
     
     public static void addCulture(CityComponent city, int culture){
