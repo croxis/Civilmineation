@@ -242,22 +242,26 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		if (resident.getCity() == null){
     			event.setCancelled(true);
     			event.getPlayer().sendMessage("You must be part of a city admin");
+    			event.getBlock().breakNaturally();
     			return;
     		} else if (!resident.isCityAssistant()
     				&& !resident.isMayor()){
     			event.setCancelled(true);
     			event.getPlayer().sendMessage("You must be a city admin");
+    			event.getBlock().breakNaturally();
     			return;
     		}
     		if (plot != null){
     			if (plot.getCity() != null){
     				event.setCancelled(true);
     				event.getPlayer().sendMessage("A city has already claimed this chunk");
+    				event.getBlock().breakNaturally();
     				return;
     			}
     		} else if (resident.getCity().getCulture() < Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)){
     			event.setCancelled(true);
-				event.getPlayer().sendMessage("You do not have enough culture");
+				event.getPlayer().sendMessage("You do not have enough culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(resident.getCity().getCulture()) + ChatColor.BLACK + "/" + ChatColor.LIGHT_PURPLE + Double.toString(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
+				event.getBlock().breakNaturally();
 				return;
     		}
     		//CivAPI.addCulture(resident.getCity(), (int) -(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
