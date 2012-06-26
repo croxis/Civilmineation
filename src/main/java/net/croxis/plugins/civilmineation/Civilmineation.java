@@ -82,6 +82,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
         	public void run(){
         		logDebug("Running Turn");
+        		getServer().broadcastMessage("Ending turn");
         		for (Player player : getServer().getOnlinePlayers()){
         			ResidentComponent resident = CivAPI.getResident(player);
         			if (resident.getCity() != null){
@@ -93,8 +94,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
         					player.sendMessage("You have learned a technology!");
         			}
         		}
+        		getServer().broadcastMessage("Beginning turn");
         	}
-        }, 36000, 36000);
+        }, 24000, 24000);
     }
     
     public Ent createEntity(){
