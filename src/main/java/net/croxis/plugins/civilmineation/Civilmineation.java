@@ -152,6 +152,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     public void onSignChangeEvent(SignChangeEvent event){
     	ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
+		// Void plots are ok, if fact required for this set
     	if (event.getLine(0).equalsIgnoreCase("[New Civ]")){
     		if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
     			event.getPlayer().sendMessage("Civ name on second line, Capital name on third line");
@@ -427,7 +428,57 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			else
 				CivAPI.broadcastToCity(assistant.getName() + " is no longer a city assistant!", mayor.getCity());
 			return;
-    	} else if (event.getLine(0).equalsIgnoreCase("[sell]")) {
+    	}  else if (event.getLine(0).equalsIgnoreCase("[kick]")) {
+    		event.getBlock().breakNaturally();
+    		if (!CivAPI.isCityAdmin(resident)){
+    			event.getPlayer().sendMessage("You are not a city admin");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		event.getBlock().breakNaturally();
+    		if (event.getLine(1).isEmpty()){
+    			event.getPlayer().sendMessage("Kickee name on the second line.");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		ResidentComponent kickee = CivAPI.getResident(event.getLine(1));
+    		if (kickee == null){
+    			event.getPlayer().sendMessage("That player does not exist.");
+    			event.setCancelled(true);
+    			return;
+    		}						
+			if (kickee.getCity() == null){
+				event.getPlayer().sendMessage("That player must be in your city!.");
+				event.setCancelled(true);
+				return;
+			}
+			if (!resident.getCity().getName().equalsIgnoreCase(kickee.getCity().getName())){
+				event.getPlayer().sendMessage("That player must be in your city!.");
+				event.setCancelled(true);
+				return;
+			}
+			if (CivAPI.isCityAdmin(kickee)){
+				event.getPlayer().sendMessage("Mayors and assistants must be demoted before kick!.");
+				event.setCancelled(true);
+				return;
+			}
+			CivAPI.removeResident(kickee);
+    	}
+    	// These require a city claim
+    	
+    	if (plot == null){
+			event.getPlayer().sendMessage("This plot is unclaimed");
+			event.setCancelled(true);
+			event.getBlock().breakNaturally();
+			return;
+		} else if (plot.getCity() == null){
+			event.getPlayer().sendMessage("This plot is unclaimed");
+			event.setCancelled(true);
+			event.getBlock().breakNaturally();
+			return;
+		}
+    	
+    	if (event.getLine(0).equalsIgnoreCase("[sell]")) {
     		double price = 0;
     		if(!event.getLine(1).isEmpty())
 	    		try{
@@ -438,18 +489,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
 	    			event.getBlock().breakNaturally();
 	    			return;
     			}
-    		if (plot == null){
-    			event.getPlayer().sendMessage("This plot is unclaimed");
-    			event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-    			return;
-    		} else if (plot.getCity() == null){
-    			event.getPlayer().sendMessage("This plot is unclaimed");
-    			event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-    			return;
-    		}
-    		
     		if(plot.getResident() == null){
     			if(!CivAPI.isCityAdmin(resident)){
     				event.getPlayer().sendMessage("You are not a city admin");
@@ -492,49 +531,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			return;
     			}
     		}
-    	} else if (event.getLine(0).equalsIgnoreCase("[kick]")) {
-    		event.getBlock().breakNaturally();
-    		if (!CivAPI.isCityAdmin(resident)){
-    			event.getPlayer().sendMessage("You are not a city admin");
-    			event.setCancelled(true);
-    			return;
-    		}
-    		event.getBlock().breakNaturally();
-    		if (event.getLine(1).isEmpty()){
-    			event.getPlayer().sendMessage("Kickee name on the second line.");
-    			event.setCancelled(true);
-    			return;
-    		}
-    		ResidentComponent kickee = CivAPI.getResident(event.getLine(1));
-    		if (kickee == null){
-    			event.getPlayer().sendMessage("That player does not exist.");
-    			event.setCancelled(true);
-    			return;
-    		}						
-			if (kickee.getCity() == null){
-				event.getPlayer().sendMessage("That player must be in your city!.");
-				event.setCancelled(true);
-				return;
-			}
-			if (!resident.getCity().getName().equalsIgnoreCase(kickee.getCity().getName())){
-				event.getPlayer().sendMessage("That player must be in your city!.");
-				event.setCancelled(true);
-				return;
-			}
-			if (CivAPI.isCityAdmin(kickee)){
-				event.getPlayer().sendMessage("Mayors and assistants must be demoted before kick!.");
-				event.setCancelled(true);
-				return;
-			}
-			CivAPI.removeResident(kickee);
-    	} else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
-    		if (plot == null){
-    			event.getPlayer().sendMessage("This plot is unclaimed");
-    			event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-    			return;
-    		}
-    		Sign sign = CivAPI.getPlotSign(plot);
+    	}  else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
+    		Sign sign = (Sign) event.getBlock().getState();
+    		CivAPI.getPlotSign(plot).getBlock().breakNaturally();
     		if(plot.getResident() == null){
     			if(!CivAPI.isCityAdmin(resident)){
     				event.getPlayer().sendMessage("You are not a city admin");
@@ -554,16 +553,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCityAdmin(resident)){
     			event.getPlayer().sendMessage("You are not a city admin or plot owner");
-    			event.setCancelled(true);
-    			return;
-    		}
-    		if (plot == null){
-    			event.getPlayer().sendMessage("This plot is unclaimed");
-    			event.setCancelled(true);
-    			return;
-    		}
-    		if (plot.getCity() == null){
-    			event.getPlayer().sendMessage("This plot is unclaimed");
     			event.setCancelled(true);
     			return;
     		}
