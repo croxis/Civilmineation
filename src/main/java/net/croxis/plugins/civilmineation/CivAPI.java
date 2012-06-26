@@ -213,6 +213,10 @@ public class CivAPI {
 		plugin.getDatabase().save(plot);
     }
     
+    public static void updatePlotSign(int x, int z) {
+    	updatePlotSign(plugin.getDatabase().find(PlotComponent.class).where().eq("x", x).eq("z", z).findUnique());
+    }
+    
     public static void updatePlotSign(PlotComponent plot) {
 		Sign sign = getPlotSign(plot);
 		if(plot.getResident()!=null){
@@ -230,7 +234,7 @@ public class CivAPI {
 		plot.setSignY(sign.getY());
 		plot.setSignZ(sign.getZ());
 		plugin.getDatabase().save(plot);
-		updatePlotSign(plot);
+		updatePlotSign(plot.getX(), plot.getZ());
 	}
     
     public static boolean addResident(ResidentComponent resident, CityComponent city){
