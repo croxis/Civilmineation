@@ -495,7 +495,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	} else if (event.getLine(0).equalsIgnoreCase("[kick]")) {
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCityAdmin(resident)){
-    			event.getPlayer().sendMessage("You are not a city admin or plot owner");
+    			event.getPlayer().sendMessage("You are not a city admin");
     			event.setCancelled(true);
     			return;
     		}
@@ -527,6 +527,27 @@ public class Civilmineation extends JavaPlugin implements Listener {
 				return;
 			}
 			CivAPI.removeResident(kickee);
+    	} else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
+    		if (plot == null){
+    			event.getPlayer().sendMessage("This plot is unclaimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}
+    		Sign sign = CivAPI.getPlotSign(plot);
+    		if(plot.getResident() == null){
+    			if(!CivAPI.isCityAdmin(resident)){
+    				event.getPlayer().sendMessage("You are not a city admin");
+        			event.setCancelled(true);
+        			event.getBlock().breakNaturally();
+        			return;
+    			}
+    			CivAPI.updatePlotSign(sign, plot);
+    		} else {
+    			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
+    				CivAPI.updatePlotSign(sign, plot);
+    			}
+    		}
 		} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCityAdmin(resident)){

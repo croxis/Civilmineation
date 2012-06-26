@@ -225,6 +225,14 @@ public class CivAPI {
 		sign.update();
 	}
     
+    public static void updatePlotSign(Sign sign, PlotComponent plot) {
+		plot.setSignX(sign.getX());
+		plot.setSignY(sign.getY());
+		plot.setSignZ(sign.getZ());
+		plugin.getDatabase().save(plot);
+		updatePlotSign(plot);
+	}
+    
     public static boolean addResident(ResidentComponent resident, CityComponent city){
     	if (resident.getCity() != null)
     		return false;
@@ -412,6 +420,8 @@ public class CivAPI {
     	plugin.getDatabase().save(ent);
     	return ent;
     }
+
+	
 
 	
 
