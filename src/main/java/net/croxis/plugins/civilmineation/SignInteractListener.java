@@ -46,7 +46,7 @@ public class SignInteractListener implements Listener{
 			    			return;
 		    			}
 						//TODO: Add exception for embasee plots
-						if (!plot.getCity().getName().equalsIgnoreCase(resident.getName())){
+						if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
 							event.getPlayer().sendMessage("Not member of city.");
 			    			event.setCancelled(true);
 			    			return;
