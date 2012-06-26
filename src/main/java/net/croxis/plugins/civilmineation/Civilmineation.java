@@ -543,9 +543,11 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			return;
     			}
     			CivAPI.updatePlotSign(sign, plot);
+    			event.getPlayer().sendMessage("Plot sign updated");
     		} else {
     			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
     				CivAPI.updatePlotSign(sign, plot);
+    				event.getPlayer().sendMessage("Plot sign updated");
     			}
     		}
 		} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
