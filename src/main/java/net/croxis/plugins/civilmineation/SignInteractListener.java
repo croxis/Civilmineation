@@ -65,6 +65,10 @@ public class SignInteractListener implements Listener{
 						plot.setResident(resident);
 						plot.setName(resident.getName());
 						CivAPI.plugin.getDatabase().save(plot);
+
+						sign.setLine(2, "");
+						sign.setLine(3, "");
+						sign.update();
 						CivAPI.updatePlotSign(plot);
 						return;
 					}

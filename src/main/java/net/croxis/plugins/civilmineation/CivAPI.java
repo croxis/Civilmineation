@@ -222,8 +222,6 @@ public class CivAPI {
 				sign.setLine(0, ChatColor.RED + plot.getResident().getName());
 		} else 
 			sign.setLine(0, plot.getCity().getName());
-		sign.setLine(2, "");
-		sign.setLine(3, "");
 		sign.update();
 	}
     
