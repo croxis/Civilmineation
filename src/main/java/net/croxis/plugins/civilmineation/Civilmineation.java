@@ -94,6 +94,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
         					player.sendMessage("You have learned " + learned.name);
         			}
         		}
+        		for (CityComponent city : CivAPI.getCities()){
+        			CivAPI.addResearch(city, getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LIBRARY).findSet().size());
+        		}
         		getServer().broadcastMessage("Beginning turn");
         	}
         }, 24000, 24000);
