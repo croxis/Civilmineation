@@ -1,6 +1,7 @@
 package net.croxis.plugins.civilmineation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -326,7 +328,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 				return;
 			}
 			if (mayor.isMayor()){
-				event.getPlayer().sendMessage("That player can not be am existing mayor.");
+				event.getPlayer().sendMessage("That player can not be an existing mayor.");
 				event.setCancelled(true);
     			event.getBlock().breakNaturally();
 				return;
@@ -335,9 +337,21 @@ public class Civilmineation extends JavaPlugin implements Listener {
 				if (plot.getCity() != null){
 					event.getPlayer().sendMessage("That plot is part of a city.");
 					event.setCancelled(true);
+					event.getBlock().breakNaturally();
 					return;
 				}
 			}
+			
+			if (resident.getCity().getCulture() < 50){
+				event.getPlayer().sendMessage("Not enough culture to found a city.");
+				event.setCancelled(true);
+				event.getBlock().breakNaturally();
+				return;
+			}
+			
+			resident.getCity().setCulture(resident.getCity().getCulture() - 50);
+			getDatabase().save(resident.getCity());
+			
 			CityComponent city = CivAPI.createCity(event.getLine(1), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization(), false);
 			if (plot == null){
 				Ent plotEnt = createEntity();
