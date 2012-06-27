@@ -91,7 +91,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			} else {
         				Tech learned = TechManager.addPoints(player, 1);
         				if(learned != null)
-        					player.sendMessage("You have learned a technology!");
+        					player.sendMessage("You have learned " + learned.name);
         			}
         		}
         		getServer().broadcastMessage("Beginning turn");
@@ -578,11 +578,21 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		}
     		if (type.equals(CityPlotType.LIBRARY))
     			cost = 100;
-    		//Check cost
-    		//Deduct cost
-    		//plot.setType(type);
-    		//plot.setName(plot.getCity().getName() + " " + type.toString());
-    		//getDatabase().save(plot);
+    		if (CivAPI.econ.getBalance(plot.getCity().getName()) < cost){
+	    		event.getPlayer().sendMessage("Insufficant funds");
+				event.setCancelled(true);
+				return;
+    		}
+    		CivAPI.econ.withdrawPlayer(plot.getCity().getName(), cost);
+    		plot.setType(type);
+    		if (plot.getResident() == null)
+    			plot.setName(plot.getCity().getName() + " " + type.toString());
+    		else
+    			if (getServer().getPlayer(plot.getResident().getName()).isOnline())
+    				plot.setName(ChatColor.GREEN + plot.getResident().getName() + " " + type.toString());
+    			else
+    				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
+    		getDatabase().save(plot);
     	}
     }
 

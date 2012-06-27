@@ -218,6 +218,7 @@ public class CivAPI {
     }
     
     public static void updatePlotSign(PlotComponent plot) {
+    	Civilmineation.logDebug("Updating plot sign");
 		Sign sign = getPlotSign(plot);
 		if(plot.getResident()!=null){
 			if(plugin.getServer().getPlayer(plot.getResident().getName()).isOnline())
