@@ -533,7 +533,10 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		}
     	}  else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
     		Sign sign = (Sign) event.getBlock().getState();
-    		CivAPI.getPlotSign(plot).getBlock().breakNaturally();
+    		try{
+    			CivAPI.getPlotSign(plot).getBlock().breakNaturally();
+    		} catch (Exception e){
+    		}
     		if(plot.getResident() == null){
     			if(!CivAPI.isCityAdmin(resident)){
     				event.getPlayer().sendMessage("You are not a city admin");

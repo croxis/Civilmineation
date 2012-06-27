@@ -140,8 +140,8 @@ public class CivAPI {
 				List<ResidentComponent> residents = plugin.getDatabase().find(ResidentComponent.class).where().eq("city", c).findList();
 				for (ResidentComponent r : residents){
 					TechManager.addTech(r.getName(), learned);
-					plugin.getServer().getPlayer(r.getName()).sendMessage("You have learned " + learned.name + "!");
 				}
+				broadcastToCity("You have learned " + learned.name + "!", c);
 			}
 		}
 		
