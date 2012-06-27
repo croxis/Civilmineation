@@ -97,7 +97,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			}
         		}
         		for (CityComponent city : CivAPI.getCities()){
-        			CivAPI.addResearch(city, getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LIBRARY).findSet().size());
+        			CivAPI.addResearch(city, getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LIBRARY).findList().size());
         		}
         		getServer().broadcastMessage("Beginning turn");
         	}
@@ -189,57 +189,17 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			}
 			//TODO: Distance check to another city
 			//TODO: Check for room for interface placements
-			Ent civEntity = createEntity("Civ " + event.getLine(1));
-			CivilizationComponent civ = new CivilizationComponent();
-			civ.setName(event.getLine(1));
-			//addComponent(civEntity, civ);
-			civ.setEntityID(civEntity);
-			civ.setRegistered(System.currentTimeMillis());
-			civ.setTaxes(0);
-	    	getDatabase().save(civ);
-	    	
-	    	EconomyComponent civEcon = new EconomyComponent();
-	    	civEcon.setName(event.getLine(1));
-	    	civEcon.setEntityID(civEntity);
-	    	getDatabase().save(civEcon);
-	    	CivAPI.econ.createPlayerAccount(event.getLine(1));
-			
-			PermissionComponent civPerm = new PermissionComponent();
-			civPerm.setAll(false);
-			civPerm.setResidentBuild(true);
-			civPerm.setResidentDestroy(true);
-			civPerm.setResidentItemUse(true);
-			civPerm.setResidentSwitch(true);
-			civPerm.setName(event.getLine(1) + " permissions");
-			
-			//addComponent(civEntity, civPerm);
-			civPerm.setEntityID(civEntity);
-	    	getDatabase().save(civPerm);
-	    	
+			CivilizationComponent civ = CivAPI.createCiv(event.getLine(1));
 	    	ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
-			
 	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), civ, true);
-			
-			if (plot == null){
-				Ent plotEnt = createEntity();
-				plot = new PlotComponent();
-				plot.setX(event.getBlock().getChunk().getX());
-				plot.setZ(event.getBlock().getChunk().getZ());
-				//addComponent(plotEnt, plot);
-				plot.setEntityID(plotEnt);
-			}
-			plot.setCity(city);
-			plot.setName(city.getName() + " Founding Square");
-			event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, city.getCharterRotation(), true);
+	    	
+	    	event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, city.getCharterRotation(), true);
 			Sign plotSign = (Sign) event.getBlock().getRelative(BlockFace.UP).getState();
+	    	CivAPI.claimPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), resident.getCity());
 			plotSign.setLine(0, city.getName());
 			plotSign.update();
-			plot.setSignX(plotSign.getX());
-			plot.setSignY(plotSign.getY());
-			plot.setSignZ(plotSign.getZ());
-			getDatabase().save(plot);
 			
-			event.setLine(0, ChatColor.BLUE + "City Charter");
+			event.setLine(0, ChatColor.DARK_AQUA + "City Charter");
 			event.setLine(3, "Mayor " + event.getPlayer().getName());
 			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
@@ -247,7 +207,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
     		if (resident.getCity() == null){
     			event.setCancelled(true);
-    			event.getPlayer().sendMessage("You must be part of a city admin");
+    			event.getPlayer().sendMessage("You must be a city admin");
     			event.getBlock().breakNaturally();
     			return;
     		} else if (!resident.isCityAssistant()
@@ -270,22 +230,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 				event.getBlock().breakNaturally();
 				return;
     		}
-    		//CivAPI.addCulture(resident.getCity(), (int) -(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
-    		if (plot == null){
-				Ent plotEnt = createEntity();
-				plot = new PlotComponent();
-				plot.setX(event.getBlock().getChunk().getX());
-				plot.setZ(event.getBlock().getChunk().getZ());
-				//addComponent(plotEnt, plot);
-				plot.setEntityID(plotEnt);
-			}
-			plot.setCity(resident.getCity());
-			plot.setName(resident.getCity().getName());
-			plot.setSignX(event.getBlock().getX());
-			plot.setSignY(event.getBlock().getY());
-			plot.setSignZ(event.getBlock().getZ());
-			plot.setWorld(event.getBlock().getWorld().getName());
-			getDatabase().save(plot);
+    		CivAPI.claimPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), event.getBlock(), resident.getCity());
 			event.setLine(0, resident.getCity().getName());
     	} else if (event.getLine(0).equalsIgnoreCase("[new city]")){
     		if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
@@ -353,18 +298,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			getDatabase().save(resident.getCity());
 			
 			CityComponent city = CivAPI.createCity(event.getLine(1), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization(), false);
-			if (plot == null){
-				Ent plotEnt = createEntity();
-				plot = new PlotComponent();
-				plot.setX(event.getBlock().getChunk().getX());
-				plot.setZ(event.getBlock().getChunk().getZ());
-				//addComponent(plotEnt, plot);
-				plot.setEntityID(plotEnt);
-			}
-			plot.setCity(city);
-			plot.setName(city.getName() + " Founding Square");
-			plot.setWorld(event.getBlock().getWorld().getName());
-			getDatabase().save(plot);
+			CivAPI.claimPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), resident.getCity());
 			
 			event.setLine(0, ChatColor.BLUE + "City Charter");
 			event.setLine(1, city.getCivilization().getName());

@@ -55,7 +55,11 @@ public class CivAPI {
     }
     
     public static PlotComponent getPlot(Chunk chunk){
-    	return plugin.getDatabase().find(PlotComponent.class).where().eq("x", chunk.getX()).eq("z", chunk.getZ()).findUnique();
+    	return getPlot(chunk.getX(), chunk.getZ());
+    }
+    
+    public static PlotComponent getPlot(int x, int z){
+    	return plugin.getDatabase().find(PlotComponent.class).where().eq("x", x).eq("z", z).findUnique();
     }
     
     public static PlotComponent getPlot(Sign sign){
@@ -313,6 +317,60 @@ public class CivAPI {
 		mayor.setMayor(true);
 		plugin.getDatabase().save(mayor);
 		return city;
+	}
+	
+	public static CivilizationComponent createCiv(String name){
+		Ent civEntity = createEntity("Civ " + name);
+		CivilizationComponent civ = new CivilizationComponent();
+		civ.setName(name);
+		//addComponent(civEntity, civ);
+		civ.setEntityID(civEntity);
+		civ.setRegistered(System.currentTimeMillis());
+		civ.setTaxes(0);
+    	plugin.getDatabase().save(civ);
+    	
+    	EconomyComponent civEcon = new EconomyComponent();
+    	civEcon.setName(name);
+    	civEcon.setEntityID(civEntity);
+    	plugin.getDatabase().save(civEcon);
+    	CivAPI.econ.createPlayerAccount(name);
+		
+		PermissionComponent civPerm = new PermissionComponent();
+		civPerm.setAll(false);
+		civPerm.setResidentBuild(true);
+		civPerm.setResidentDestroy(true);
+		civPerm.setResidentItemUse(true);
+		civPerm.setResidentSwitch(true);
+		civPerm.setName(name + " permissions");
+		
+		//addComponent(civEntity, civPerm);
+		civPerm.setEntityID(civEntity);
+		plugin.getDatabase().save(civPerm);
+    	return civ;
+	}
+	
+	public static void claimPlot(int x, int z, Block plotSign, CityComponent city){
+		claimPlot(x, z, city.getName(), plotSign, city);
+	}
+	
+	public static void claimPlot(int x, int z, String name, Block plotSign, CityComponent city){
+		PlotComponent plot = getPlot(x, z);
+		if (plot == null){
+			Ent plotEnt = createEntity();
+			plot = new PlotComponent();
+			plot.setX(x);
+			plot.setZ(z);
+			//addComponent(plotEnt, plot);
+			plot.setEntityID(plotEnt);
+		}
+		plot.setCity(city);
+		plot.setName(name);
+		plot.setSignX(plotSign.getX());
+		plot.setSignY(plotSign.getY());
+		plot.setSignZ(plotSign.getZ());
+		plot.setWorld(plotSign.getWorld().getName());
+		plot.setType(CityPlotType.RESIDENTIAL);
+		plugin.getDatabase().save(plot);
 	}
     
     public static void broadcastToCity(String message, CityComponent city){
