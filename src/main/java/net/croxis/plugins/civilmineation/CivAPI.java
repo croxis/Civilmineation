@@ -127,6 +127,15 @@ public class CivAPI {
     	return resident.isMayor();
     }
     
+    public static boolean isClaimed(PlotComponent plot){
+    	if (plot == null){
+			return false;
+		} else if (plot.getCity() == null){
+			return false;
+		}
+    	return true;
+    }
+    
     public static void addCulture(CityComponent city, int culture){
     	city.setCulture(city.getCulture() + culture);
     	plugin.getDatabase().save(city);

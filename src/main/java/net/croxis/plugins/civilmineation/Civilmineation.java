@@ -159,6 +159,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 		// Void plots are ok, if fact required for this set
     	if (event.getLine(0).equalsIgnoreCase("[New Civ]")){
+    		if (CivAPI.isClaimed(plot)){
+    			event.getPlayer().sendMessage("This plot is claimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}    		
     		if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
     			event.getPlayer().sendMessage("Civ name on second line, Capital name on third line");
     			event.setCancelled(true);
@@ -205,6 +211,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);			
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
+    		if (CivAPI.isClaimed(plot)){
+    			event.getPlayer().sendMessage("This plot is claimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}  
     		if (resident.getCity() == null){
     			event.setCancelled(true);
     			event.getPlayer().sendMessage("You must be a city admin");
@@ -232,7 +244,14 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		}
     		CivAPI.claimPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), event.getBlock(), resident.getCity());
 			event.setLine(0, resident.getCity().getName());
+			return;
     	} else if (event.getLine(0).equalsIgnoreCase("[new city]")){
+    		if (CivAPI.isClaimed(plot)){
+    			event.getPlayer().sendMessage("This plot is claimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}  
     		if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
     			event.getPlayer().sendMessage("City name on second line, Mayor name on third line");
     			event.setCancelled(true);
@@ -414,23 +433,14 @@ public class Civilmineation extends JavaPlugin implements Listener {
 				return;
 			}
 			CivAPI.removeResident(kickee);
-    	}
-    	// These require a city claim
-    	
-    	if (plot == null){
-			event.getPlayer().sendMessage("This plot is unclaimed");
-			event.setCancelled(true);
-			event.getBlock().breakNaturally();
-			return;
-		} else if (plot.getCity() == null){
-			event.getPlayer().sendMessage("This plot is unclaimed");
-			event.setCancelled(true);
-			event.getBlock().breakNaturally();
-			return;
-		}
-    	
-    	if (event.getLine(0).equalsIgnoreCase("[sell]")) {
+    	} else if (event.getLine(0).equalsIgnoreCase("[sell]")) {
     		double price = 0;
+    		if (!CivAPI.isClaimed(plot)){
+    			event.getPlayer().sendMessage("This plot is unclaimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}  
     		if(!event.getLine(1).isEmpty())
 	    		try{
 	    			price = Double.parseDouble(event.getLine(1));
@@ -484,6 +494,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		}
     	}  else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
     		Sign sign = (Sign) event.getBlock().getState();
+    		if (!CivAPI.isClaimed(plot)){
+    			event.getPlayer().sendMessage("This plot is unclaimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}  
     		try{
     			CivAPI.getPlotSign(plot).getBlock().breakNaturally();
     		} catch (Exception e){
@@ -504,6 +520,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			}
     		}
 		} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
+    		if (!CivAPI.isClaimed(plot)){
+    			event.getPlayer().sendMessage("This plot is unclaimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}  
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCityAdmin(resident)){
     			event.getPlayer().sendMessage("You are not a city admin or plot owner");
