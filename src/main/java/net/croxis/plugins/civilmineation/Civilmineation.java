@@ -84,7 +84,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
         	public void run(){
         		logDebug("Running Turn");
-        		getServer().broadcastMessage("Ending turn");
+        		getServer().broadcastMessage(ChatColor.GOLD + "Ending turn");
         		for (Player player : getServer().getOnlinePlayers()){
         			ResidentComponent resident = CivAPI.getResident(player);
         			if (resident.getCity() != null){
@@ -99,9 +99,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
         		for (CityComponent city : CivAPI.getCities()){
         			CivAPI.addResearch(city, getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LIBRARY).findList().size());
         		}
-        		getServer().broadcastMessage("Beginning turn");
+        		getServer().broadcastMessage(ChatColor.AQUA + "Beginning turn");
         	}
-        }, 24000, 24000);
+        }, 18000, 18000);
     }
     
     public Ent createEntity(){
