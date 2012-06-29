@@ -544,19 +544,45 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		}
     		CityPlotType type = CityPlotType.valueOf(event.getLine(1));
     		double cost = 0;
+    		double value = 0;
     		if (type == null){
     			event.getPlayer().sendMessage("Invalid building type");
     			event.setCancelled(true);
     			return;
     		}
-    		if (type.equals(CityPlotType.LIBRARY))
-    			cost = 100;
-    		if (CivAPI.econ.getBalance(plot.getCity().getName()) < cost){
-	    		event.getPlayer().sendMessage("Insufficant funds");
-				event.setCancelled(true);
-				return;
+    		if (type.equals(CityPlotType.LIBRARY)){
+    			long time = System.currentTimeMillis();
+    			for (int x=0; x<16; x++){
+    				for (int z=0; z<16; z++){
+    					for (int y=0; y<getServer().getWorld("world").getMaxHeight(); y++){
+    						if (event.getBlock().getChunk().getChunkSnapshot().getBlockTypeId(x, y, z) == 47)
+    							value++;
+    					}
+    				}
+    			}
+    			logDebug("Library scan time: " + Long.toString(System.currentTimeMillis() - time));
+    			cost = 25;
+    			if (!TechManager.getResearched(CivAPI.getMayor(resident).getName()).contains(TechManager.techs.get("Writing"))){
+        			event.getPlayer().sendMessage("You need Writing");
+    				event.setCancelled(true);
+    				return;
+    			}
     		}
-    		CivAPI.econ.withdrawPlayer(plot.getCity().getName(), cost);
+    		
+    		if (type.equals(CityPlotType.LIBRARY)){
+    			if (value < cost){
+    				event.getPlayer().sendMessage("Insufficant books: " + Double.toString(value) + "/" + Double.toString(cost));
+    				event.setCancelled(true);
+    				return;
+    			}    				
+    		} else if (5 == 6){//TODO: This is for finance based construction
+    			if (CivAPI.econ.getBalance(plot.getCity().getName()) < cost){
+    	    		event.getPlayer().sendMessage("Insufficant funds");
+    				event.setCancelled(true);
+    				return;
+        		}
+    			CivAPI.econ.withdrawPlayer(plot.getCity().getName(), cost);
+    		}
     		plot.setType(type);
     		if (plot.getResident() == null)
     			plot.setName(plot.getCity().getName() + " " + type.toString());

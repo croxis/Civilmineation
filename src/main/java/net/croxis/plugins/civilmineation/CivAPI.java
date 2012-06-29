@@ -99,11 +99,17 @@ public class CivAPI {
     	return plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).findSet();
     }
     
+    public static ResidentComponent getMayor(ResidentComponent resident){
+    	if (resident.getCity() == null)
+    		return null;
+		return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", resident.getCity()).eq("mayor", true).findUnique();
+    }
+    
     public static ResidentComponent getKing(ResidentComponent resident){
     	CityComponent capital = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", resident.getCity().getCivilization()).eq("capital", true).findUnique();
     	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", capital).eq("mayor", true).findUnique();
     }
-    
+        
     public static ResidentComponent getKing(CityComponent city){
     	CityComponent capital = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", city.getCivilization()).eq("capital", true).findUnique();
     	return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", capital).eq("mayor", true).findUnique();
