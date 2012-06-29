@@ -22,11 +22,11 @@ public class ActionPermissionListener implements Listener{
 		if (event.isCancelled())
 			return;
 		time = System.currentTimeMillis();
-		Player player = event.getPlayer();
+		if (event.getPlayer().hasPermission("civilmineation.admin"))
+			return;
 		//Block block = event.getBlock();
-		Chunk chunk = event.getBlock().getChunk();
 		
-		PlotComponent plot = CivAPI.getPlot(chunk);
+		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 		if (plot == null)
 			return;
 		if (plot.getCity() == null)
@@ -36,27 +36,55 @@ public class ActionPermissionListener implements Listener{
 		 CityComponent city = plot.getCity();
 		 //CivilizationComponent civ = city.getCivilization();
 		 
-		 PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());
+		 PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());		 
+		 ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 		 
-		 ResidentComponent resident = CivAPI.getResident(player);		 
-		 if (resident.getCity() == null){
-			 Civilmineation.log("City is null");
-			 if (!cityPerm.isOutsiderBuild()){
-				 event.setCancelled(true);
-				 Civilmineation.log("No outsider build");
-				 return;
-			 }
-		 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
-			 if (!cityPerm.isResidentBuild()){
-				 event.setCancelled(true);
-				 Civilmineation.log("No res build");
-				 return;
+		 // TODO: apply plot specific permissions
+		 if (plot.getResident() == null){
+			 if (resident.getCity() == null){
+				 Civilmineation.logDebug("City is null");
+				 if (!cityPerm.isOutsiderBuild()){
+					 event.setCancelled(true);
+					 Civilmineation.logDebug("No outsider build");
+					 return;
+				 }
+			 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
+				 if (!cityPerm.isResidentBuild()){
+					 event.setCancelled(true);
+					 Civilmineation.logDebug("No res build");
+					 return;
+				 }
+			 } else {
+				 if (!cityPerm.isOutsiderBuild()){
+					 event.setCancelled(true);
+					 Civilmineation.logDebug("No outsider build 2");
+					 return;
+				 }
 			 }
 		 } else {
-			 if (!cityPerm.isOutsiderBuild()){
-				 event.setCancelled(true);
-				 Civilmineation.log("No outsider build 2");
-				 return;
+			 if (resident.getName().equalsIgnoreCase(plot.getResident().getName()))
+					return;
+			 PermissionComponent perm = CivAPI.getPermissions(plot.getResident().getEntityID());
+			 if (resident.getCity() == null){
+				 Civilmineation.logDebug("City is null");
+				 if (!perm.isOutsiderBuild()){
+					 event.setCancelled(true);
+					 Civilmineation.logDebug("No outsider build");
+					 return;
+				 }
+			 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
+				//TODO: Friends list here
+				 if (!perm.isResidentBuild()){
+					 event.setCancelled(true);
+					 Civilmineation.logDebug("No res build");
+					 return;
+				 }
+			 } else {
+				 if (!perm.isOutsiderBuild()){
+					 event.setCancelled(true);
+					 Civilmineation.logDebug("No outsider build 2");
+					 return;
+				 }
 			 }
 		 }
 		 if (event.getPlayer().getName().equalsIgnoreCase("croxis"))
@@ -67,15 +95,12 @@ public class ActionPermissionListener implements Listener{
 	public void onBlockBreak(BlockBreakEvent event){
 		if (event.isCancelled())
 			return;
-		
+		if (event.getPlayer().hasPermission("civilmineation.admin"))
+			return;
 		time = System.currentTimeMillis();
-		
-		
-		Player player = event.getPlayer();
 		//Block block = event.getBlock();
-		Chunk chunk = event.getBlock().getChunk();
 		
-		PlotComponent plot = CivAPI.getPlot(chunk);
+		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 		if (plot == null)
 			return;
 		if (plot.getCity() == null)
@@ -86,7 +111,7 @@ public class ActionPermissionListener implements Listener{
 		 
 		PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());
 		 
-		ResidentComponent resident = CivAPI.getResident(player);
+		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 		 
 		// Prevent destruction of charter info blocks and blocks behind charter
 		if (event.getBlock().getX() == city.getCharter_x() && 
@@ -220,31 +245,50 @@ public class ActionPermissionListener implements Listener{
 			event.setCancelled(true);
 			return;
 		}
-		 
-		 if (resident.getCity() == null){
-			 if (!cityPerm.isOutsiderDestroy()){
-				 event.setCancelled(true);
-				 System.out.println("a");
-				 return;
+		if (plot.getResident() == null){
+			if (resident.getCity() == null){
+				 if (!cityPerm.isOutsiderDestroy()){
+					 event.setCancelled(true);
+					 return;
+				 }
+			 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
+				 if (!cityPerm.isResidentDestroy()){
+					 event.setCancelled(true);
+					 return;
+				 }
+				 if (event.getBlock().getType().equals(Material.WALL_SIGN)){
+					 Sign sign = (Sign) event.getBlock().getState();
+					 if (sign.getLine(0).contains("Charter") && resident.isMayor())
+						 CivAPI.disbandCity(resident.getCity());
+				 }
+			 } else {
+				 if (!cityPerm.isOutsiderDestroy()){
+					 event.setCancelled(true);
+					 return;
+				 }
 			 }
-		 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
-			 if (!cityPerm.isResidentDestroy()){
-				 event.setCancelled(true);
-				 System.out.println("b");
-				 return;
-			 }
-			 if (event.getBlock().getType().equals(Material.WALL_SIGN)){
-				 Sign sign = (Sign) event.getBlock().getState();
-				 if (sign.getLine(0).contains("Charter") && resident.isMayor())
-					 CivAPI.disbandCity(resident.getCity());
-			 }
-		 } else {
-			 if (!cityPerm.isOutsiderDestroy()){
-				 event.setCancelled(true);
-				 System.out.println("c");
-				 return;
-			 }
-		 }
+		} else {
+			PermissionComponent perm = CivAPI.getPermissions(plot.getResident().getEntityID());
+			if (resident.getName().equalsIgnoreCase(plot.getResident().getName()))
+				return;
+			if (resident.getCity() == null){
+				if (!perm.isOutsiderDestroy()){
+					event.setCancelled(true);
+					return;
+				}
+			} else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
+				//TODO: Friends list here
+				 if (!perm.isResidentDestroy()){
+					 event.setCancelled(true);
+					 return;
+				 }
+			} else {
+				 if (!perm.isOutsiderDestroy()){
+					 event.setCancelled(true);
+					 return;
+				 }
+			}
+		}
 		 if (event.getPlayer().getName().equalsIgnoreCase("croxis"))
 			 Civilmineation.logDebug("Block break event: " + Long.toString(System.currentTimeMillis() - time) + " ms");
 	}

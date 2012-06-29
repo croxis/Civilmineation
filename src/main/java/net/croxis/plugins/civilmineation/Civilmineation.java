@@ -587,6 +587,20 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		resident.setEntityID(entity);
         	getDatabase().save(resident);
     	}
+    	
+    	PermissionComponent perm = getDatabase().find(PermissionComponent.class).where().eq("entityID", resident.getEntityID()).findUnique();
+    	if (perm == null){
+    		perm = new PermissionComponent();
+    		perm.setEntityID(resident.getEntityID());
+    		perm.setName(resident.getName());
+    		perm.setAll(false);
+    		perm.setResidentBuild(true);
+    		perm.setResidentDestroy(true);
+    		perm.setResidentItemUse(true);
+    		perm.setResidentSwitch(true);
+    		getDatabase().save(perm);
+    	}
+    	
     	String title = "";
     	if (resident.isMayor()){
     		title = "Mayor ";
