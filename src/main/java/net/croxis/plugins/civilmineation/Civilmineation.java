@@ -521,15 +521,18 @@ public class Civilmineation extends JavaPlugin implements Listener {
     				if(plot.getResident()!=null){
     					if(getServer().getPlayer(plot.getResident().getName()).isOnline()){
     						sign.setLine(0, ChatColor.GREEN + plot.getResident().getName());
+    						sign.setLine(1, plot.getResident().getName());
+    						sign.setLine(2, "Boobies");
+    						event.setLine(3, "No");
     						sign.update();
     						Civilmineation.logDebug("a");
     					} else {
-    						sign.setLine(0, ChatColor.RED + plot.getResident().getName());
+    						sign.setLine(1, ChatColor.RED + plot.getResident().getName());
     						sign.update();
     						Civilmineation.logDebug("b");
     					}
     				} else { 
-    					sign.setLine(0, plot.getCity().getName());
+    					sign.setLine(1, plot.getCity().getName());
     					sign.update();
     					Civilmineation.logDebug("c");
     					sign.update();
