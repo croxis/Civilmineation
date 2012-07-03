@@ -501,7 +501,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			return;
     		}  
     		try{
-    			CivAPI.getPlotSign(plot).getBlock().breakNaturally();
+    			//CivAPI.getPlotSign(plot).getBlock().breakNaturally();
     		} catch (Exception e){
     		}
     		if(plot.getResident() == null){
