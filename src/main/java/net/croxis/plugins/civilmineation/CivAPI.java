@@ -6,11 +6,12 @@ import java.util.Set;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivilizationComponent;
-import net.croxis.plugins.civilmineation.components.EconomyComponent;
 import net.croxis.plugins.civilmineation.components.Ent;
 import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
+import net.croxis.plugins.civilmineation.events.NewCityEvent;
+import net.croxis.plugins.civilmineation.events.NewCivEvent;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
 import net.milkbowl.vault.economy.Economy;
@@ -310,12 +311,6 @@ public class CivAPI {
 		//addComponent(cityEntity, cityPerm);
 		cityPerm.setEntityID(cityEntity);
     	plugin.getDatabase().save(cityPerm);
-    	
-    	EconomyComponent cityEcon = new EconomyComponent();
-    	cityEcon.setName(name);
-    	cityEcon.setEntityID(cityEntity);
-    	plugin.getDatabase().save(cityEcon);
-    	CivAPI.econ.createPlayerAccount(name);
 		
 		CityComponent city = new CityComponent();
 		//addComponent(cityEntity, city);
@@ -342,6 +337,10 @@ public class CivAPI {
 		mayor.setCity(city);
 		mayor.setMayor(true);
 		plugin.getDatabase().save(mayor);
+		
+		NewCityEvent nce = new NewCityEvent(city.getName(), city.getEntityID().getId());
+		Bukkit.getServer().getPluginManager().callEvent(nce);
+		
 		return city;
 	}
 	
@@ -354,12 +353,6 @@ public class CivAPI {
 		civ.setRegistered(System.currentTimeMillis());
 		civ.setTaxes(0);
     	plugin.getDatabase().save(civ);
-    	
-    	EconomyComponent civEcon = new EconomyComponent();
-    	civEcon.setName(name);
-    	civEcon.setEntityID(civEntity);
-    	plugin.getDatabase().save(civEcon);
-    	CivAPI.econ.createPlayerAccount(name);
 		
 		PermissionComponent civPerm = new PermissionComponent();
 		civPerm.setAll(false);
@@ -372,6 +365,9 @@ public class CivAPI {
 		//addComponent(civEntity, civPerm);
 		civPerm.setEntityID(civEntity);
 		plugin.getDatabase().save(civPerm);
+		
+		NewCivEvent nce = new NewCivEvent(civ.getName(), civ.getEntityID().getId());
+		Bukkit.getServer().getPluginManager().callEvent(nce);
     	return civ;
 	}
 	

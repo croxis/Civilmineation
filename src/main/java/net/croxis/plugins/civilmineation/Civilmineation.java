@@ -1,7 +1,6 @@
 package net.croxis.plugins.civilmineation;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,17 +9,16 @@ import javax.persistence.PersistenceException;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivilizationComponent;
-import net.croxis.plugins.civilmineation.components.Component;
-import net.croxis.plugins.civilmineation.components.EconomyComponent;
 import net.croxis.plugins.civilmineation.components.Ent;
 import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
+import net.croxis.plugins.civilmineation.events.ResidentJoinEvent;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -117,12 +115,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	return ent;
     }
     
-    public void addComponent(Ent ent, Component component){
-    	component.setEntityID(ent);
-    	getDatabase().save(component);
-    	return;
-    }
-    
     @Override
 	public List<Class<?>> getDatabaseClasses() {
 		List<Class<?>> list = new ArrayList<Class<?>>();
@@ -132,7 +124,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
         list.add(CivilizationComponent.class);
         list.add(PlotComponent.class);
         list.add(PermissionComponent.class);
-        list.add(EconomyComponent.class);
 		return list;
 	}
     
@@ -493,6 +484,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			}
     		}
     	}  else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
+    		//NOTE: This has to be set inside event. Cannot cast as block as
+    		//event will override sign.setLine() 
     		if (!CivAPI.isClaimed(plot)){
     			event.getPlayer().sendMessage("This plot is unclaimed");
     			event.setCancelled(true);
@@ -608,16 +601,9 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	ResidentComponent resident = CivAPI.getResident(event.getPlayer());
     	if (resident == null){
     		Ent entity = createEntity();
-    		
-    		EconomyComponent civEcon = new EconomyComponent();
-	    	civEcon.setName(event.getPlayer().getName());
-	    	civEcon.setEntityID(entity);
-	    	getDatabase().save(civEcon);
-    		
     		resident = new ResidentComponent();
     		resident.setRegistered(System.currentTimeMillis());
     		resident.setName(event.getPlayer().getName());
-    		//addComponent(entity, resident);
     		resident.setEntityID(entity);
         	getDatabase().save(resident);
     	}
@@ -643,6 +629,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	} else if (resident.getCity() == null)
     		title = "Wild ";
         event.getPlayer().sendMessage("Welcome, " + title + event.getPlayer().getDisplayName() + "!");
+        ResidentJoinEvent resEvent = new ResidentJoinEvent(resident.getName(), resident.getEntityID().getId());
+        Bukkit.getServer().getPluginManager().callEvent(resEvent);
     }
     
     @EventHandler
