@@ -248,7 +248,6 @@ public class CivAPI {
 				sign.setLine(0, ChatColor.RED + plot.getResident().getName());
 				sign.update();
 				Civilmineation.logDebug("b");
-				
 			}
 		} else { 
 			sign.setLine(0, plot.getCity().getName());
