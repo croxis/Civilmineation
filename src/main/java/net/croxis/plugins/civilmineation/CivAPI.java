@@ -240,12 +240,22 @@ public class CivAPI {
     	Civilmineation.logDebug("Updating plot sign");
 		Sign sign = getPlotSign(plot);
 		if(plot.getResident()!=null){
-			if(plugin.getServer().getPlayer(plot.getResident().getName()).isOnline())
+			if(plugin.getServer().getPlayer(plot.getResident().getName()).isOnline()){
 				sign.setLine(0, ChatColor.GREEN + plot.getResident().getName());
-			else
+				sign.update();
+				Civilmineation.logDebug("a");
+			} else {
 				sign.setLine(0, ChatColor.RED + plot.getResident().getName());
-		} else 
+				sign.update();
+				Civilmineation.logDebug("b");
+				
+			}
+		} else { 
 			sign.setLine(0, plot.getCity().getName());
+			sign.update();
+			Civilmineation.logDebug("c");
+			sign.update();
+		}
 		Civilmineation.logDebug("New plot sign xyz: " + Integer.toString(sign.getX()) + ", " + Integer.toString(sign.getY()) + ", " + Integer.toString(sign.getZ()));
 		sign.update();
 	}
