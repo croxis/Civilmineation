@@ -493,7 +493,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			}
     		}
     	}  else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
-    		Sign sign = (Sign) event.getBlock().getState();
     		if (!CivAPI.isClaimed(plot)){
     			event.getPlayer().sendMessage("This plot is unclaimed");
     			event.setCancelled(true);
@@ -501,7 +500,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			return;
     		}  
     		try{
-    			//CivAPI.getPlotSign(plot).getBlock().breakNaturally();
+    			CivAPI.getPlotSign(plot).getBlock().breakNaturally();
     		} catch (Exception e){
     		}
     		if(plot.getResident() == null){
@@ -511,32 +510,21 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			event.getBlock().breakNaturally();
         			return;
     			}
-    			CivAPI.updatePlotSign(sign, plot);
+    			event.setLine(0, plot.getCity().getName());
     			event.getPlayer().sendMessage("Plot sign updated");
     		} else {
     			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
-    				Civilmineation.logDebug("New sign xyz: " + Integer.toString(sign.getX()) + ", " + Integer.toString(sign.getY()) + ", " + Integer.toString(sign.getZ()));
-    				CivAPI.updatePlotSign(sign, plot);
-    				event.getPlayer().sendMessage("Plot sign updated");
-    				if(plot.getResident()!=null){
-    					if(getServer().getPlayer(plot.getResident().getName()).isOnline()){
-    						sign.setLine(0, ChatColor.GREEN + plot.getResident().getName());
-    						sign.setLine(1, plot.getResident().getName());
-    						sign.setLine(2, "Boobies");
-    						event.setLine(3, "No");
-    						sign.update();
-    						Civilmineation.logDebug("a");
-    					} else {
-    						sign.setLine(1, ChatColor.RED + plot.getResident().getName());
-    						sign.update();
-    						Civilmineation.logDebug("b");
-    					}
-    				} else { 
-    					sign.setLine(1, plot.getCity().getName());
-    					sign.update();
-    					Civilmineation.logDebug("c");
-    					sign.update();
+    				plot.setSignX(event.getBlock().getX());
+    				plot.setSignY(event.getBlock().getY());
+    				plot.setSignZ(event.getBlock().getZ());
+    				getDatabase().save(plot);
+    				
+    				if(getServer().getPlayer(plot.getResident().getName()).isOnline()){
+    					event.setLine(0, ChatColor.GREEN + plot.getResident().getName());
+    				} else {
+    					event.setLine(0, ChatColor.RED + plot.getResident().getName());
     				}
+    				event.getPlayer().sendMessage("Plot sign updated");
     			}
     		}
 		} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
