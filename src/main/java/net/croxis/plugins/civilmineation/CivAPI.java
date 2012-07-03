@@ -246,6 +246,7 @@ public class CivAPI {
 				sign.setLine(0, ChatColor.RED + plot.getResident().getName());
 		} else 
 			sign.setLine(0, plot.getCity().getName());
+		Civilmineation.logDebug("New plot sign xyz: " + Integer.toString(sign.getX()) + ", " + Integer.toString(sign.getY()) + ", " + Integer.toString(sign.getZ()));
 		sign.update();
 	}
     
@@ -254,7 +255,8 @@ public class CivAPI {
 		plot.setSignY(sign.getY());
 		plot.setSignZ(sign.getZ());
 		plugin.getDatabase().save(plot);
-		updatePlotSign(plot.getX(), plot.getZ());
+		//updatePlotSign(plot.getX(), plot.getZ());
+		updatePlotSign(plot);
 	}
     
     public static boolean addResident(ResidentComponent resident, CityComponent city){

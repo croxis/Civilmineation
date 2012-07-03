@@ -515,6 +515,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getPlayer().sendMessage("Plot sign updated");
     		} else {
     			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
+    				Civilmineation.logDebug("New sign xyz: " + Integer.toString(sign.getX()) + ", " + Integer.toString(sign.getY()) + ", " + Integer.toString(sign.getZ()));
     				CivAPI.updatePlotSign(sign, plot);
     				event.getPlayer().sendMessage("Plot sign updated");
     			}
