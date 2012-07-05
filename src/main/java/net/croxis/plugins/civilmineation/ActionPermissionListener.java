@@ -244,7 +244,13 @@ public class ActionPermissionListener implements Listener{
 				event.getBlock().getZ() == city.getCharter_z() && !resident.isMayor()){
 			event.setCancelled(true);
 			return;
+		} else if (event.getBlock().getX() == city.getCharter_x() && 
+				event.getBlock().getY() == city.getCharter_y() &&
+				event.getBlock().getZ() == city.getCharter_z() && resident.isMayor()){
+			Civilmineation.logDebug("Disbanding city");
+			CivAPI.disbandCity(resident.getCity());
 		}
+		
 		if (plot.getResident() == null){
 			if (resident.getCity() == null){
 				 if (!cityPerm.isOutsiderDestroy()){
@@ -255,11 +261,6 @@ public class ActionPermissionListener implements Listener{
 				 if (!cityPerm.isResidentDestroy()){
 					 event.setCancelled(true);
 					 return;
-				 }
-				 if (event.getBlock().getType().equals(Material.WALL_SIGN)){
-					 Sign sign = (Sign) event.getBlock().getState();
-					 if (sign.getLine(0).contains("Charter") && resident.isMayor())
-						 CivAPI.disbandCity(resident.getCity());
 				 }
 			 } else {
 				 if (!cityPerm.isOutsiderDestroy()){
