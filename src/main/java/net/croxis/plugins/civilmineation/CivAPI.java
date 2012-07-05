@@ -103,7 +103,11 @@ public class CivAPI {
     public static ResidentComponent getMayor(ResidentComponent resident){
     	if (resident.getCity() == null)
     		return null;
-		return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", resident.getCity()).eq("mayor", true).findUnique();
+		return getMayor(resident.getCity());
+    }
+    
+    public static ResidentComponent getMayor(CityComponent city){
+		return plugin.getDatabase().find(ResidentComponent.class).where().eq("city", city).eq("mayor", true).findUnique();
     }
     
     public static ResidentComponent getKing(ResidentComponent resident){
@@ -173,6 +177,12 @@ public class CivAPI {
     		return;
     	}
     	Block charter = plugin.getServer().getWorld(city.getCharterWorld()).getBlockAt(city.getCharter_x(), city.getCharter_y(), city.getCharter_z());
+    	Sign charterBlock = (Sign) charter.getState();
+		charterBlock.setLine(0, ChatColor.DARK_AQUA + "City Charter");
+		charterBlock.setLine(1, city.getCivilization().getName());
+		charterBlock.setLine(2, city.getName());
+		charterBlock.setLine(3, "Mayor " + getMayor(city).getName());
+		charterBlock.update();
     	Sign block = (Sign) charter.getRelative(BlockFace.DOWN).getState();
 		block.setLine(0, "=Demographics=");
 		block.setLine(1, "Population: " + Integer.toString(CivAPI.getResidents(city).size()));

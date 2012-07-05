@@ -117,7 +117,6 @@ public class SignInteractListener implements Listener{
 							return;
 						}
 						if (resident.isMayor() || resident.isCityAssistant()){
-							Civilmineation.log("e");
 							if (sign.getLine(3).contains("Open")) {
 								sign.setLine(3, ChatColor.RED + "Closed");
 								sign.update();
@@ -127,7 +126,6 @@ public class SignInteractListener implements Listener{
 							}
 						}
 					} else if (sign.getLine(0).contains("City Charter") && (resident.isMayor() || resident.isCityAssistant())){
-						Civilmineation.log("City charter update click");
 						CivAPI.updateCityCharter(CivAPI.getCity(sign.getLocation()));
 					}
 				}
