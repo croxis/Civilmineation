@@ -6,6 +6,7 @@ main: net.croxis.plugins.civilmineation.Civilmineation
 name: Civilmineation
 startup: postworld
 version: '1.0'
+depend: [Vault]
 commands:
     tech:
         aliases: []

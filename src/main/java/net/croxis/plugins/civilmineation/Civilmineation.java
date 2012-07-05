@@ -52,11 +52,11 @@ public class Civilmineation extends JavaPlugin implements Listener {
         // TODO: Place any custom disable code here.
     }
     
-    private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+    static public boolean setupEconomy() {
+        if (Bukkit.getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
             return false;
         }
@@ -68,11 +68,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	setupDatabase();
     	
     	api = new CivAPI(this);
-    	if (!setupEconomy() ) {
-            log(Level.SEVERE, "Disabled due to no Vault dependency found!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+    	//if (!setupEconomy() ) {
+        //    log(Level.SEVERE, "Disabled due to no Vault dependency found!");
+        //    getServer().getPluginManager().disablePlugin(this);
+        //    return;
+        //}
+    	
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ActionPermissionListener(), this);
         getServer().getPluginManager().registerEvents(new SignInteractListener(), this);
@@ -606,11 +607,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		resident.setName(event.getPlayer().getName());
     		resident.setEntityID(entity);
         	getDatabase().save(resident);
-    	}
-    	
-    	PermissionComponent perm = getDatabase().find(PermissionComponent.class).where().eq("entityID", resident.getEntityID()).findUnique();
-    	if (perm == null){
-    		perm = new PermissionComponent();
+        	PermissionComponent perm = new PermissionComponent();
     		perm.setEntityID(resident.getEntityID());
     		perm.setName(resident.getName());
     		perm.setAll(false);
