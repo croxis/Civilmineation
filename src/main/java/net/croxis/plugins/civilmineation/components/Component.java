@@ -1,12 +1,15 @@
 package net.croxis.plugins.civilmineation.components;
 
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 
 @MappedSuperclass
 public abstract class Component {
 	@Id
 	private int id;
+	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name;
 	public int getId() {

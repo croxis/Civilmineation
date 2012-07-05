@@ -3,9 +3,11 @@ package net.croxis.plugins.civilmineation.components;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.avaje.ebean.validation.NotNull;
@@ -17,6 +19,7 @@ import net.croxis.plugins.civilmineation.CityPlotType;
 public class PlotComponent {
 	@Id
 	private int id;
+	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name = "Wilds";
 	//@ManyToOne
