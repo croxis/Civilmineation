@@ -3,6 +3,7 @@ package net.croxis.plugins.civilmineation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivilizationComponent;
@@ -10,6 +11,8 @@ import net.croxis.plugins.civilmineation.components.Ent;
 import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
+import net.croxis.plugins.civilmineation.events.DeleteCityEvent;
+import net.croxis.plugins.civilmineation.events.DeleteCivEvent;
 import net.croxis.plugins.civilmineation.events.NewCityEvent;
 import net.croxis.plugins.civilmineation.events.NewCivEvent;
 import net.croxis.plugins.research.Tech;
@@ -475,11 +478,36 @@ public class CivAPI {
 		CivilizationComponent civ = city.getCivilization();
 		
 		Ent cityEnt = city.getEntityID();
+		Bukkit.getServer().getPluginManager().callEvent(new DeleteCityEvent(city.getName(), city.getEntityID().getId()));
 		plugin.getDatabase().delete(city);
-		plugin.getDatabase().delete(cityEnt);
+		plugin.getDatabase().delete(plugin.getDatabase().find(PermissionComponent.class).where().eq("entityID", cityEnt).findUnique());
+		try{
+			plugin.getDatabase().delete(cityEnt);
+		} catch (Exception e){
+			Civilmineation.log(Level.WARNING, "A plugin did not properly let go of city entity " + Integer.toString(cityEnt.getId()));
+			Civilmineation.log(Level.WARNING, "Database maintenence will probably be needed");
+			e.printStackTrace();
+		}
 		
-		plugin.getDatabase().delete(civ);
-		plugin.getDatabase().delete(civEnt);
+		List<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civ", civ).findList();
+		if (cities.isEmpty()){
+			Bukkit.getServer().getPluginManager().callEvent(new DeleteCivEvent(civ.getName(), civ.getEntityID().getId()));
+			plugin.getDatabase().delete(civ);
+			plugin.getDatabase().delete(plugin.getDatabase().find(PermissionComponent.class).where().eq("entityID", civEnt).findUnique());
+			try{
+				plugin.getDatabase().delete(civEnt);
+			} catch (Exception e){
+				Civilmineation.log(Level.WARNING, "A plugin did not properly let go of civ entity " + Integer.toString(civEnt.getId()));
+				Civilmineation.log(Level.WARNING, "Database maintenence will probably be needed");
+				e.printStackTrace();
+			}
+		} else {
+			cities.get(0).setCapital(true);
+			plugin.getDatabase().save(cities.get(0));
+			broadcastToCiv(cities.get(0).getName() + " is now the Capital City!", civ);
+		}
+		
+		
 
 		plugin.getServer().broadcastMessage(name + " has fallen to dust!"); 
 	}

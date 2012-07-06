@@ -95,10 +95,10 @@ public class ActionPermissionListener implements Listener{
 	public void onBlockBreak(BlockBreakEvent event){
 		if (event.isCancelled())
 			return;
-		if (event.getPlayer().hasPermission("civilmineation.admin"))
+		if (event.getPlayer().hasPermission("civilmineation.admin")){
 			return;
+		}
 		time = System.currentTimeMillis();
-		//Block block = event.getBlock();
 		
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 		if (plot == null)
