@@ -168,7 +168,7 @@ public class CivAPI {
 				for (ResidentComponent r : residents){
 					TechManager.addTech(r.getName(), learned);
 				}
-				broadcastToCity("You have learned " + learned.name + "!", c);
+				broadcastToCity("You have learned " + ChatColor.BLUE + learned.name + "!", c);
 			}
 		}
 		
@@ -489,8 +489,8 @@ public class CivAPI {
 			e.printStackTrace();
 		}
 		
-		List<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civ", civ).findList();
-		if (cities.isEmpty()){
+		city = plugin.getDatabase().find(CityComponent.class).where().eq("civ", civ).findUnique();
+		if (city == null){
 			Bukkit.getServer().getPluginManager().callEvent(new DeleteCivEvent(civ.getName(), civ.getEntityID().getId()));
 			plugin.getDatabase().delete(civ);
 			plugin.getDatabase().delete(plugin.getDatabase().find(PermissionComponent.class).where().eq("entityID", civEnt).findUnique());
@@ -502,9 +502,9 @@ public class CivAPI {
 				e.printStackTrace();
 			}
 		} else {
-			cities.get(0).setCapital(true);
-			plugin.getDatabase().save(cities.get(0));
-			broadcastToCiv(cities.get(0).getName() + " is now the Capital City!", civ);
+			city.setCapital(true);
+			plugin.getDatabase().save(city);
+			broadcastToCiv(city.getName() + " is now the Capital City!", civ);
 		}
 		
 		
