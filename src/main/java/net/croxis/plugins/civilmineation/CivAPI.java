@@ -70,12 +70,7 @@ public class CivAPI {
     }
     
     public static PlotComponent getPlot(Sign sign){
-    	//This is a rare enough case where I don't think we need the cache to cover this.
-    	return plugin.getDatabase().find(PlotComponent.class).where()
-    			.ieq("world", sign.getWorld().getName())
-    			.eq("signX", sign.getX())
-    			.eq("signY", sign.getY())
-    			.eq("signZ", sign.getZ()).findUnique();
+    	return getPlot(sign.getWorld().getName(), sign.getChunk().getX(), sign.getChunk().getZ());
     }
     
     public static Sign getPlotSign(PlotComponent plot){
