@@ -41,13 +41,6 @@ public class CityComponent{
 	private double spawn_z;
 	//@OneToOne
 	private String spawn_world;
-	
-	private byte charterRotation;
-	private String charterWorld;
-	private int charter_x;
-	private int charter_y;
-	private int charter_z;
-	
 	private long registered;
 	
 	private int culture = 0;
@@ -221,24 +214,6 @@ public class CityComponent{
 	public void setMusicNode(String musicNode) {
 		this.musicNode = musicNode;
 	}
-	public int getCharter_x() {
-		return charter_x;
-	}
-	public void setCharter_x(int charter_x) {
-		this.charter_x = charter_x;
-	}
-	public int getCharter_y() {
-		return charter_y;
-	}
-	public void setCharter_y(int charter_y) {
-		this.charter_y = charter_y;
-	}
-	public int getCharter_z() {
-		return charter_z;
-	}
-	public void setCharter_z(int charter_z) {
-		this.charter_z = charter_z;
-	}
 	
 	public int getId() {
 		return id;
@@ -263,18 +238,6 @@ public class CityComponent{
 	}
 	public void setCulture(int culture) {
 		this.culture = culture;
-	}
-	public byte getCharterRotation() {
-		return charterRotation;
-	}
-	public void setCharterRotation(byte charterRotation) {
-		this.charterRotation = charterRotation;
-	}
-	public String getCharterWorld() {
-		return charterWorld;
-	}
-	public void setCharterWorld(String charterWorld) {
-		this.charterWorld = charterWorld;
 	}
 	public boolean isCapital() {
 		return capital;

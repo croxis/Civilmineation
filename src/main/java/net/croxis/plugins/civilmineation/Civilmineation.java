@@ -13,6 +13,7 @@ import net.croxis.plugins.civilmineation.components.Ent;
 import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
+import net.croxis.plugins.civilmineation.components.SignComponent;
 import net.croxis.plugins.civilmineation.events.ResidentJoinEvent;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
@@ -191,8 +192,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			CivilizationComponent civ = CivAPI.createCiv(event.getLine(1));
 	    	ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
 	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), civ, true);
-	    	
-	    	event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, city.getCharterRotation(), true);
+	    	SignComponent signComp = CivAPI.createSign(event.getBlock(), city.getName() + " charter", SignType.CITY_CHARTER, city.getEntityID());
+	    	event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
 			Sign plotSign = (Sign) event.getBlock().getRelative(BlockFace.UP).getState();
 	    	CivAPI.claimPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), city);
 			plotSign.setLine(0, city.getName());
@@ -200,7 +201,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			
 			event.setLine(0, ChatColor.DARK_AQUA + "City Charter");
 			event.setLine(3, "Mayor " + event.getPlayer().getName());
-			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
+			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);			
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
@@ -228,6 +229,23 @@ public class Civilmineation extends JavaPlugin implements Listener {
     				event.getPlayer().sendMessage("A city has already claimed this chunk");
     				event.getBlock().breakNaturally();
     				return;
+    			}
+    		} 
+    		
+    		PlotComponent p = CivAPI.getPlot(event.getBlock().getChunk().getX() + 1, event.getBlock().getChunk().getZ());
+    		if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
+    			p = CivAPI.getPlot(event.getBlock().getChunk().getX() - 1, event.getBlock().getChunk().getZ());
+    			if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
+    				p = CivAPI.getPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
+    				if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
+    					p = CivAPI.getPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
+    					if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
+    						event.setCancelled(true);
+    						event.getPlayer().sendMessage("This claim must be adjacent to an existing claim.");
+    						event.getBlock().breakNaturally();
+    						return;
+    					}
+    				}
     			}
     		} else if (resident.getCity().getCulture() < Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)){
     			event.setCancelled(true);
@@ -316,7 +334,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			event.setLine(1, city.getCivilization().getName());
 			event.setLine(2, city.getName());
 			event.setLine(3, "Mayor " + mayor.getName());
-			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, city.getCharterRotation(), true);
+			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, CivAPI.getSign(SignType.CITY_CHARTER, city.getEntityID()).getRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
 			CivAPI.broadcastToCiv("The city of " + city.getName() + " has been founded!", mayor.getCity().getCivilization());
@@ -509,9 +527,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getPlayer().sendMessage("Plot sign updated");
     		} else {
     			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
-    				plot.setSignX(event.getBlock().getX());
-    				plot.setSignY(event.getBlock().getY());
-    				plot.setSignZ(event.getBlock().getZ());
+    				CivAPI.setPlotSign((Sign) event.getBlock().getState());
     				getDatabase().save(plot);
     				
     				if(getServer().getPlayer(plot.getResident().getName()).isOnline()){
@@ -578,14 +594,14 @@ public class Civilmineation extends JavaPlugin implements Listener {
     				event.setCancelled(true);
     				return;
     			}    				
-    		} else if (5 == 6){//TODO: This is for finance based construction
+    		} /*else if (5 == 6){//TODO: This is for finance based construction
     			if (CivAPI.econ.getBalance(plot.getCity().getName()) < cost){
     	    		event.getPlayer().sendMessage("Insufficant funds");
     				event.setCancelled(true);
     				return;
         		}
     			CivAPI.econ.withdrawPlayer(plot.getCity().getName(), cost);
-    		}
+    		}*/
     		plot.setType(type);
     		if (plot.getResident() == null)
     			plot.setName(plot.getCity().getName() + " " + type.toString());
@@ -595,6 +611,31 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			else
     				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
     		getDatabase().save(plot);
+    	} else if (event.getLine(0).equalsIgnoreCase("[name plot]")) {
+    		event.getBlock().breakNaturally();
+    		if (event.getLine(1).isEmpty()){
+    			event.getPlayer().sendMessage("Put a name on the second line!");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		plot.setName(event.getLine(1));
+    		getDatabase().save(plot);
+    		CivAPI.updatePlotSign(plot);
+    	} else if (event.getLine(0).equalsIgnoreCase("[friend]")) {
+    		event.getBlock().breakNaturally();
+    		if (event.getLine(1).isEmpty()){
+    			event.getPlayer().sendMessage("Put a name on the second line!");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		ResidentComponent friend = CivAPI.getResident(event.getLine(1));
+    		if (friend == null){
+    			event.getPlayer().sendMessage("That player does not exist!");
+    			event.setCancelled(true);
+    			return;
+    		}
+    		resident.getFriends().add(friend);
+    		getDatabase().save(resident);
     	}
     }
 
