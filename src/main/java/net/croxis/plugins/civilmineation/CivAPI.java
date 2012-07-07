@@ -206,7 +206,7 @@ public class CivAPI {
 		
 		signComp = getSign(SignType.DEMOGRAPHICS, city.getEntityID());
 		if (signComp == null)
-			createSign(block.getBlock(), city.getName() + " demographics", SignType.DEMOGRAPHICS, city.getEntityID());
+			signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.DEMOGRAPHICS, city.getEntityID());
 		
 		if (signComp.getRotation() == 4 || signComp.getRotation() == 5){
     		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, signComp.getRotation(), true);
