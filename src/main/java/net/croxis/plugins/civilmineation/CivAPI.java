@@ -224,7 +224,7 @@ public class CivAPI {
 			
 			signComp = getSign(SignType.CITY_CHARTER_MONEY, city.getEntityID());
 			if (signComp == null)
-				createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_MONEY, city.getEntityID());
+				signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_MONEY, city.getEntityID());
 			
 			charter.getRelative(BlockFace.WEST).setTypeIdAndData(68, signComp.getRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.WEST).getState();
@@ -234,7 +234,7 @@ public class CivAPI {
 			
 			signComp = getSign(SignType.CITY_CHARTER_CULTURE, city.getEntityID());
 			if (signComp == null)
-				createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
+				signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
 			
 		} else if (signComp.getRotation() == 2 || signComp.getRotation() == 3) {
 			charter.getRelative(BlockFace.NORTH).setTypeIdAndData(68, signComp.getRotation(), true);
@@ -253,7 +253,7 @@ public class CivAPI {
 			block.update();
 			signComp = getSign(SignType.CITY_CHARTER_MONEY, city.getEntityID());
 			if (signComp == null)
-				createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_MONEY, city.getEntityID());
+				signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_MONEY, city.getEntityID());
 			
 			charter.getRelative(BlockFace.SOUTH).setTypeIdAndData(68, signComp.getRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.SOUTH).getState();
