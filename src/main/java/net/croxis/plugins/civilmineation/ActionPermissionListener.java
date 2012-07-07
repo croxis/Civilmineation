@@ -90,8 +90,11 @@ public class ActionPermissionListener implements Listener{
 	public void onBlockBreak(BlockBreakEvent event){
 		if (event.isCancelled())
 			return;
+		
 		time = System.currentTimeMillis();
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
+		if (plot.getCity() == null)
+			return;
 		// Determine player's relationship to chunk
 		CityComponent city = plot.getCity();
 		//CivilizationComponent civ = city.getCivilization();
@@ -99,11 +102,8 @@ public class ActionPermissionListener implements Listener{
 		PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());
 		 
 		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
-		SignComponent signComp = CivAPI.getSign(SignType.CITY_CHARTER, city.getEntityID());
+		SignComponent signComp = CivAPI.getSign(SignType.CITY_CHARTER, city.getEntityID());	
 		
-		
-		if (plot.getCity() == null)
-			return;
 		if (!event.getPlayer().hasPermission("civilmineation.admin")){
 			// Prevent destruction of charter info blocks and blocks behind charter
 			if (event.getBlock().getX() == signComp.getX() && 
