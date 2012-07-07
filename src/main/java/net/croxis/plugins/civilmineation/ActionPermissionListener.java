@@ -28,8 +28,6 @@ public class ActionPermissionListener implements Listener{
 		//Block block = event.getBlock();
 		
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
-		if (plot == null)
-			return;
 		if (plot.getCity() == null)
 			return;
 		
@@ -96,16 +94,8 @@ public class ActionPermissionListener implements Listener{
 	public void onBlockBreak(BlockBreakEvent event){
 		if (event.isCancelled())
 			return;
-		if (event.getPlayer().hasPermission("civilmineation.admin")){
-			return;
-		}
 		time = System.currentTimeMillis();
-		
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
-		if (plot == null)
-			return;
-		if (plot.getCity() == null)
-			return;
 		// Determine player's relationship to chunk
 		CityComponent city = plot.getCity();
 		//CivilizationComponent civ = city.getCivilization();
@@ -114,131 +104,177 @@ public class ActionPermissionListener implements Listener{
 		 
 		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 		SignComponent signComp = CivAPI.getSign(SignType.CITY_CHARTER, city.getEntityID());
-		// Prevent destruction of charter info blocks and blocks behind charter
-		if (event.getBlock().getX() == signComp.getX() && 
-				event.getBlock().getY() + 1 == signComp.getY() &&
-				event.getBlock().getZ() == signComp.getZ()){
-			event.setCancelled(true);
+		
+		
+		if (plot.getCity() == null)
 			return;
-		}
-		if (signComp.getRotation() == 2){
-			// Block behind charter
-			if (event.getBlock().getX() == signComp.getX() && 
-					event.getBlock().getY() == signComp.getY() &&
-					event.getBlock().getZ() - 1 == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-			// Signs left and right
-			if ((event.getBlock().getX() + 1== signComp.getX() || event.getBlock().getX() - 1== signComp.getX()) && 
-					event.getBlock().getY() == signComp.getY() &&
-					event.getBlock().getZ() == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-			// Blocks bedhind left and right
-			if ((event.getBlock().getX() + 1== signComp.getX() || event.getBlock().getX() - 1== signComp.getX()) && 
-					event.getBlock().getY() == signComp.getY() &&
-					event.getBlock().getZ() - 1 == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-			//Block behind demographics
+		if (!event.getPlayer().hasPermission("civilmineation.admin")){
+			// Prevent destruction of charter info blocks and blocks behind charter
 			if (event.getBlock().getX() == signComp.getX() && 
 					event.getBlock().getY() + 1 == signComp.getY() &&
-					event.getBlock().getZ() - 1 == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-		} else if (signComp.getRotation() == 3) {
-			// Block behind charter
-			if (event.getBlock().getX() == signComp.getX() && 
-					event.getBlock().getY() == signComp.getY() &&
-					event.getBlock().getZ() + 1 == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-			// Signs left and right
-			if ((event.getBlock().getX() + 1== signComp.getX() || event.getBlock().getX() - 1== signComp.getX()) && 
-					event.getBlock().getY() == signComp.getY() &&
 					event.getBlock().getZ() == signComp.getZ()){
 				event.setCancelled(true);
 				return;
 			}
-			// Blocks bedhind left and right
-			if ((event.getBlock().getX() + 1== signComp.getX() || event.getBlock().getX() - 1== signComp.getX()) && 
-					event.getBlock().getY() == signComp.getY() &&
-					event.getBlock().getZ() + 1 == signComp.getZ()){
-				event.setCancelled(true);
-				return;
+			if (signComp.getRotation() == 2){
+				// Block behind charter
+				if (event.getBlock().getX() == signComp.getX() && 
+						event.getBlock().getY() == signComp.getY() &&
+						event.getBlock().getZ() - 1 == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+				// Signs left and right
+				if ((event.getBlock().getX() + 1== signComp.getX() || event.getBlock().getX() - 1== signComp.getX()) && 
+						event.getBlock().getY() == signComp.getY() &&
+						event.getBlock().getZ() == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+				// Blocks bedhind left and right
+				if ((event.getBlock().getX() + 1== signComp.getX() || event.getBlock().getX() - 1== signComp.getX()) && 
+						event.getBlock().getY() == signComp.getY() &&
+						event.getBlock().getZ() - 1 == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+				//Block behind demographics
+				if (event.getBlock().getX() == signComp.getX() && 
+						event.getBlock().getY() + 1 == signComp.getY() &&
+						event.getBlock().getZ() - 1 == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+			} else if (signComp.getRotation() == 3) {
+				// Block behind charter
+				if (event.getBlock().getX() == signComp.getX() && 
+						event.getBlock().getY() == signComp.getY() &&
+						event.getBlock().getZ() + 1 == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+				// Signs left and right
+				if ((event.getBlock().getX() + 1== signComp.getX() || event.getBlock().getX() - 1== signComp.getX()) && 
+						event.getBlock().getY() == signComp.getY() &&
+						event.getBlock().getZ() == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+				// Blocks bedhind left and right
+				if ((event.getBlock().getX() + 1== signComp.getX() || event.getBlock().getX() - 1== signComp.getX()) && 
+						event.getBlock().getY() == signComp.getY() &&
+						event.getBlock().getZ() + 1 == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+				//Block behind demographics
+				if (event.getBlock().getX() == signComp.getX() && 
+						event.getBlock().getY() + 1 == signComp.getY() &&
+						event.getBlock().getZ() + 1 == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+			} else if (signComp.getRotation() == 4) {
+				// Block behind charter
+				if (event.getBlock().getX() + 1== signComp.getX() && 
+						event.getBlock().getY() == signComp.getY() &&
+						event.getBlock().getZ() == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+				// Signs left and right
+				if (event.getBlock().getX() == signComp.getX() && 
+						event.getBlock().getY() == signComp.getY() &&
+						(event.getBlock().getZ() - 1 == signComp.getZ() || event.getBlock().getZ() + 1 == signComp.getZ())){
+					event.setCancelled(true);
+					return;
+				}
+				// Blocks bedhind left and right
+				if (event.getBlock().getX() + 1 == signComp.getX() && 
+						event.getBlock().getY() == signComp.getY() &&
+						(event.getBlock().getZ() - 1 == signComp.getZ() || event.getBlock().getZ() + 1 == signComp.getZ())){
+					event.setCancelled(true);
+					return;
+				}
+				//Block behind demographics
+				if (event.getBlock().getX() + 1 == signComp.getX() && 
+						event.getBlock().getY() + 1 == signComp.getY() &&
+						event.getBlock().getZ() == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+			} else if (signComp.getRotation() == 5) {
+				// Block behind charter
+				if (event.getBlock().getX() - 1== signComp.getX() && 
+						event.getBlock().getY() == signComp.getY() &&
+						event.getBlock().getZ() == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
+				// Signs left and right
+				if (event.getBlock().getX() == signComp.getX() && 
+						event.getBlock().getY() == signComp.getY() &&
+						(event.getBlock().getZ() - 1 == signComp.getZ() || event.getBlock().getZ() + 1 == signComp.getZ())){
+					event.setCancelled(true);
+					return;
+				}
+				// Blocks bedhind left and right
+				if (event.getBlock().getX() - 1 == signComp.getX() && 
+						event.getBlock().getY() == signComp.getY() &&
+						(event.getBlock().getZ() - 1 == signComp.getZ() || event.getBlock().getZ() + 1 == signComp.getZ())){
+					event.setCancelled(true);
+					return;
+				}
+				//Block behind demographics
+				if (event.getBlock().getX() - 1 == signComp.getX() && 
+						event.getBlock().getY() + 1 == signComp.getY() &&
+						event.getBlock().getZ() == signComp.getZ()){
+					event.setCancelled(true);
+					return;
+				}
 			}
-			//Block behind demographics
-			if (event.getBlock().getX() == signComp.getX() && 
-					event.getBlock().getY() + 1 == signComp.getY() &&
-					event.getBlock().getZ() + 1 == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-		} else if (signComp.getRotation() == 4) {
-			// Block behind charter
-			if (event.getBlock().getX() + 1== signComp.getX() && 
-					event.getBlock().getY() == signComp.getY() &&
-					event.getBlock().getZ() == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-			// Signs left and right
-			if (event.getBlock().getX() == signComp.getX() && 
-					event.getBlock().getY() == signComp.getY() &&
-					(event.getBlock().getZ() - 1 == signComp.getZ() || event.getBlock().getZ() + 1 == signComp.getZ())){
-				event.setCancelled(true);
-				return;
-			}
-			// Blocks bedhind left and right
-			if (event.getBlock().getX() + 1 == signComp.getX() && 
-					event.getBlock().getY() == signComp.getY() &&
-					(event.getBlock().getZ() - 1 == signComp.getZ() || event.getBlock().getZ() + 1 == signComp.getZ())){
-				event.setCancelled(true);
-				return;
-			}
-			//Block behind demographics
-			if (event.getBlock().getX() + 1 == signComp.getX() && 
-					event.getBlock().getY() + 1 == signComp.getY() &&
-					event.getBlock().getZ() == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-		} else if (signComp.getRotation() == 5) {
-			// Block behind charter
-			if (event.getBlock().getX() - 1== signComp.getX() && 
-					event.getBlock().getY() == signComp.getY() &&
-					event.getBlock().getZ() == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-			// Signs left and right
-			if (event.getBlock().getX() == signComp.getX() && 
-					event.getBlock().getY() == signComp.getY() &&
-					(event.getBlock().getZ() - 1 == signComp.getZ() || event.getBlock().getZ() + 1 == signComp.getZ())){
-				event.setCancelled(true);
-				return;
-			}
-			// Blocks bedhind left and right
-			if (event.getBlock().getX() - 1 == signComp.getX() && 
-					event.getBlock().getY() == signComp.getY() &&
-					(event.getBlock().getZ() - 1 == signComp.getZ() || event.getBlock().getZ() + 1 == signComp.getZ())){
-				event.setCancelled(true);
-				return;
-			}
-			//Block behind demographics
-			if (event.getBlock().getX() - 1 == signComp.getX() && 
-					event.getBlock().getY() + 1 == signComp.getY() &&
-					event.getBlock().getZ() == signComp.getZ()){
-				event.setCancelled(true);
-				return;
-			}
-		}
 			
+			if (plot.getResident() == null){
+				if (resident.getCity() == null){
+					 if (!cityPerm.isOutsiderDestroy()){
+						 event.setCancelled(true);
+						 return;
+					 }
+				 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
+					 if (!cityPerm.isResidentDestroy()){
+						 event.setCancelled(true);
+						 return;
+					 }
+				 } else {
+					 if (!cityPerm.isOutsiderDestroy()){
+						 event.setCancelled(true);
+						 return;
+					 }
+				 }
+			} else {
+				PermissionComponent perm = CivAPI.getPermissions(plot.getResident().getEntityID());
+				if (resident.getName().equalsIgnoreCase(plot.getResident().getName()))
+					return;
+				if (resident.getCity() == null){
+					if (!perm.isOutsiderDestroy()){
+						event.setCancelled(true);
+						return;
+					}
+				} else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
+					//TODO: Friends list here
+					 if (!perm.isResidentDestroy()){
+						 event.setCancelled(true);
+						 return;
+					 }
+				} else {
+					 if (!perm.isOutsiderDestroy()){
+						 event.setCancelled(true);
+						 return;
+					 }
+				}
+			}
+		}
+	
 		// Prevent destruction of charter except for mayor
 		if (event.getBlock().getX() == signComp.getX() && 
 				event.getBlock().getY() == signComp.getY() &&
@@ -251,48 +287,8 @@ public class ActionPermissionListener implements Listener{
 			Civilmineation.logDebug("Disbanding city");
 			CivAPI.disbandCity(resident.getCity());
 		}
-		
-		if (plot.getResident() == null){
-			if (resident.getCity() == null){
-				 if (!cityPerm.isOutsiderDestroy()){
-					 event.setCancelled(true);
-					 return;
-				 }
-			 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
-				 if (!cityPerm.isResidentDestroy()){
-					 event.setCancelled(true);
-					 return;
-				 }
-			 } else {
-				 if (!cityPerm.isOutsiderDestroy()){
-					 event.setCancelled(true);
-					 return;
-				 }
-			 }
-		} else {
-			PermissionComponent perm = CivAPI.getPermissions(plot.getResident().getEntityID());
-			if (resident.getName().equalsIgnoreCase(plot.getResident().getName()))
-				return;
-			if (resident.getCity() == null){
-				if (!perm.isOutsiderDestroy()){
-					event.setCancelled(true);
-					return;
-				}
-			} else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
-				//TODO: Friends list here
-				 if (!perm.isResidentDestroy()){
-					 event.setCancelled(true);
-					 return;
-				 }
-			} else {
-				 if (!perm.isOutsiderDestroy()){
-					 event.setCancelled(true);
-					 return;
-				 }
-			}
-		}
-		 if (event.getPlayer().getName().equalsIgnoreCase("croxis"))
-			 Civilmineation.logDebug("Block break event: " + Long.toString(System.currentTimeMillis() - time) + " ms");
+		if (event.getPlayer().getName().equalsIgnoreCase("croxis"))
+			Civilmineation.logDebug("Block break event: " + Long.toString(System.currentTimeMillis() - time) + " ms");
 	}
 
 }

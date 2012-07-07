@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.avaje.ebean.validation.NotNull;
 
@@ -36,6 +37,8 @@ public class PlotComponent {
     private CityPlotType type;
 	private int x, z;
 	private double plotPrice = -1;
+	@Transient
+	private long lastAccess = 0;
 	
 	public String getWorld() {
 		return world;
@@ -97,5 +100,11 @@ public class PlotComponent {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public long getLastAccess() {
+		return lastAccess;
+	}
+	public void setLastAccess(long lastAccess) {
+		this.lastAccess = lastAccess;
 	}
 }

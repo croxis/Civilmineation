@@ -36,6 +36,7 @@ public class CivAPI {
 	public static Economy econ = null;
 	public CivAPI(Civilmineation p){
 		plugin = p;
+		new PlotCache(p);
 	}
 	
 	public static ResidentComponent getResident(String name){
@@ -60,15 +61,21 @@ public class CivAPI {
     }
     
     public static PlotComponent getPlot(Chunk chunk){
-    	return getPlot(chunk.getX(), chunk.getZ());
+    	return getPlot(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
     }
     
-    public static PlotComponent getPlot(int x, int z){
-    	return plugin.getDatabase().find(PlotComponent.class).where().eq("x", x).eq("z", z).findUnique();
+    public static PlotComponent getPlot(String world, int x, int z){
+    	//return plugin.getDatabase().find(PlotComponent.class).where().eq("x", x).eq("z", z).findUnique();
+    	return PlotCache.getPlot(world, x, z);
     }
     
     public static PlotComponent getPlot(Sign sign){
-    	return plugin.getDatabase().find(PlotComponent.class).where().eq("signX", sign.getX()).eq("signY", sign.getY()).eq("signZ", sign.getZ()).findUnique();
+    	//This is a rare enough case where I don't think we need the cache to cover this.
+    	return plugin.getDatabase().find(PlotComponent.class).where()
+    			.ieq("world", sign.getWorld().getName())
+    			.eq("signX", sign.getX())
+    			.eq("signY", sign.getY())
+    			.eq("signZ", sign.getZ()).findUnique();
     }
     
     public static Sign getPlotSign(PlotComponent plot){
@@ -277,9 +284,9 @@ public class CivAPI {
 		plugin.getDatabase().save(signComp);
     }
     
-    public static void updatePlotSign(int x, int z) {
+    /*public static void updatePlotSign(String world, int x, int z) {
     	updatePlotSign(plugin.getDatabase().find(PlotComponent.class).where().eq("x", x).eq("z", z).findUnique());
-    }
+    }*/
     
     public static void updatePlotSign(PlotComponent plot) {
     	Civilmineation.logDebug("Updating plot sign");
@@ -409,25 +416,22 @@ public class CivAPI {
     	return civ;
 	}
 	
-	public static void claimPlot(int x, int z, Block plotSign, CityComponent city){
-		claimPlot(x, z, city.getName(), plotSign, city);
+	public static void claimPlot(String world, int x, int z, Block plotSign, CityComponent city){
+		claimPlot(world, x, z, city.getName(), plotSign, city);
 	}
 	
-	public static void claimPlot(int x, int z, String name, Block plotSign, CityComponent city){
-		PlotComponent plot = getPlot(x, z);
-		if (plot == null){
+	public static void claimPlot(String world, int x, int z, String name, Block plotSign, CityComponent city){
+		PlotCache.dirtyPlot(world, x, z);
+		PlotComponent plot = getPlot(world, x, z);
+		if (plot.getCity() == null){
 			Ent plotEnt = createEntity();
-			plot = new PlotComponent();
-			plot.setX(x);
-			plot.setZ(z);
-			//addComponent(plotEnt, plot);
 			plot.setEntityID(plotEnt);
 		}
 		plot.setCity(city);
 		plot.setName(name);
 		plot.setWorld(plotSign.getWorld().getName());
 		plot.setType(CityPlotType.RESIDENTIAL);
-		plugin.getDatabase().save(plot);
+		save(plot);
 		
 		createSign(plotSign, city.getName() + " plot", SignType.PLOT_INFO, plot.getEntityID());
 	}
@@ -496,7 +500,7 @@ public class CivAPI {
 		for (PlotComponent plot : getPlots(city)){
 			plot.setCity(null);
 			plot.setResident(null);
-			plugin.getDatabase().save(plot);
+			save(plot);
 		}
 		Ent civEnt = city.getCivilization().getEntityID();
 		CivilizationComponent civ = city.getCivilization();
@@ -546,7 +550,7 @@ public class CivAPI {
 		Set<PlotComponent> plots = plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("resident", resident).findSet();
 		for (PlotComponent plot : plots){
 			plot.setResident(null);
-			plugin.getDatabase().save(plot);
+			save(plot);
 			updatePlotSign(plot);
 		}
 		resident.setCity(null);
@@ -603,8 +607,8 @@ public class CivAPI {
     	return ent;
     }
 
-	
-
-	
-
+	public static void save(PlotComponent plot){
+		PlotCache.dirtyPlot(plot);
+		plugin.getDatabase().save(plot);
+	}
 }

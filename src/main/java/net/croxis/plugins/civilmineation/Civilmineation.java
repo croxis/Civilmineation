@@ -179,13 +179,11 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getBlock().breakNaturally();
 				return;
 			}
-			if (plot != null){
-				if (plot.getCity() != null){
-					event.getPlayer().sendMessage("That plot is part of a city.");
-					event.setCancelled(true);
-	    			event.getBlock().breakNaturally();
-					return;
-				}
+			if (plot.getCity() != null){
+				event.getPlayer().sendMessage("That plot is part of a city.");
+				event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+				return;
 			}
 			//TODO: Distance check to another city
 			//TODO: Check for room for interface placements
@@ -195,7 +193,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 	    	SignComponent signComp = CivAPI.createSign(event.getBlock(), city.getName() + " charter", SignType.CITY_CHARTER, city.getEntityID());
 	    	event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
 			Sign plotSign = (Sign) event.getBlock().getRelative(BlockFace.UP).getState();
-	    	CivAPI.claimPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), city);
+	    	CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), city);
 			plotSign.setLine(0, city.getName());
 			plotSign.update();
 			
@@ -223,22 +221,20 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getBlock().breakNaturally();
     			return;
     		}
-    		if (plot != null){
-    			if (plot.getCity() != null){
-    				event.setCancelled(true);
-    				event.getPlayer().sendMessage("A city has already claimed this chunk");
-    				event.getBlock().breakNaturally();
-    				return;
-    			}
-    		} 
+			if (plot.getCity() != null){
+				event.setCancelled(true);
+				event.getPlayer().sendMessage("A city has already claimed this chunk");
+				event.getBlock().breakNaturally();
+				return;
+			}
     		
-    		PlotComponent p = CivAPI.getPlot(event.getBlock().getChunk().getX() + 1, event.getBlock().getChunk().getZ());
+    		PlotComponent p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() + 1, event.getBlock().getChunk().getZ());
     		if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-    			p = CivAPI.getPlot(event.getBlock().getChunk().getX() - 1, event.getBlock().getChunk().getZ());
+    			p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() - 1, event.getBlock().getChunk().getZ());
     			if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-    				p = CivAPI.getPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
+    				p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
     				if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-    					p = CivAPI.getPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
+    					p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
     					if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
     						event.setCancelled(true);
     						event.getPlayer().sendMessage("This claim must be adjacent to an existing claim.");
@@ -253,7 +249,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 				event.getBlock().breakNaturally();
 				return;
     		}
-    		CivAPI.claimPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), event.getBlock(), resident.getCity());
+    		CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), event.getBlock(), resident.getCity());
 			event.setLine(0, resident.getCity().getName());
 			return;
     	} else if (event.getLine(0).equalsIgnoreCase("[new city]")){
@@ -308,13 +304,11 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getBlock().breakNaturally();
 				return;
 			}
-			if (plot != null){
-				if (plot.getCity() != null){
-					event.getPlayer().sendMessage("That plot is part of a city.");
-					event.setCancelled(true);
-					event.getBlock().breakNaturally();
-					return;
-				}
+			if (plot.getCity() != null){
+				event.getPlayer().sendMessage("That plot is part of a city.");
+				event.setCancelled(true);
+				event.getBlock().breakNaturally();
+				return;
 			}
 			
 			if (resident.getCity().getCulture() < 50){
@@ -328,7 +322,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			getDatabase().save(resident.getCity());
 			
 			CityComponent city = CivAPI.createCity(event.getLine(1), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization(), false);
-			CivAPI.claimPlot(event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), resident.getCity());
+			CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), resident.getCity());
 			
 			event.setLine(0, ChatColor.BLUE + "City Charter");
 			event.setLine(1, city.getCivilization().getName());
@@ -527,9 +521,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getPlayer().sendMessage("Plot sign updated");
     		} else {
     			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
-    				CivAPI.setPlotSign((Sign) event.getBlock().getState());
-    				getDatabase().save(plot);
-    				
+    				CivAPI.setPlotSign((Sign) event.getBlock().getState());    				
     				if(getServer().getPlayer(plot.getResident().getName()).isOnline()){
     					event.setLine(0, ChatColor.GREEN + plot.getResident().getName());
     				} else {
@@ -610,7 +602,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     				plot.setName(ChatColor.GREEN + plot.getResident().getName() + " " + type.toString());
     			else
     				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
-    		getDatabase().save(plot);
+    		CivAPI.save(plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[name plot]")) {
     		event.getBlock().breakNaturally();
     		if (event.getLine(1).isEmpty()){
@@ -619,7 +611,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			return;
     		}
     		plot.setName(event.getLine(1));
-    		getDatabase().save(plot);
+    		CivAPI.save(plot);
     		CivAPI.updatePlotSign(plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[friend]")) {
     		event.getBlock().breakNaturally();
