@@ -89,11 +89,9 @@ public class CivAPI {
     	return plugin.getDatabase().find(CivilizationComponent.class).where().ieq("name", name).findUnique();
     }
     
-    public static CityComponent getCity(Location charterLocation){
-    	return plugin.getDatabase().find(CityComponent.class).where().eq("charter_x", charterLocation.getX())
-    			.eq("charter_y", charterLocation.getY())
-    			.eq("charter_z", charterLocation.getZ()).findUnique();
-    }
+	public static CityComponent getCity(Ent entityID) {
+		return plugin.getDatabase().find(CityComponent.class).where().eq("entityID", entityID).findUnique();
+	}
     
     public static Set<CityComponent> getCities(){
     	return plugin.getDatabase().find(CityComponent.class).findSet();
@@ -585,6 +583,14 @@ public class CivAPI {
 				.eq("y", block.getX())
 				.eq("z", block.getX())
 				.eq("type", type).findUnique();
+	}
+
+	public static SignComponent getSign(Block block) {
+		return plugin.getDatabase().find(SignComponent.class).where()
+				.eq("world", block.getWorld().getName())
+				.eq("x", block.getX())
+				.eq("y", block.getX())
+				.eq("z", block.getX()).findUnique();
 	}
 
 	public static Ent createEntity(){

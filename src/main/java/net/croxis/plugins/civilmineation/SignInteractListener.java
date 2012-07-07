@@ -3,6 +3,7 @@ package net.croxis.plugins.civilmineation;
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
+import net.croxis.plugins.civilmineation.components.SignComponent;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -72,15 +73,14 @@ public class SignInteractListener implements Listener{
 					}
 				}
 				// Immigration
-				CityComponent city = CivAPI.plugin.getDatabase().find(CityComponent.class).where()
-						.eq("charter_x", event.getClickedBlock().getX())
-						.eq("charter_y", event.getClickedBlock().getY()+1)
-						.eq("charter_z", event.getClickedBlock().getZ()).findUnique();
+				SignComponent signComp = CivAPI.getSign(event.getClickedBlock());
+				if (signComp == null)
+					return;
+				CityComponent city = CivAPI.getCity(signComp.getEntityID());
 				if (city == null)
 					return;
-				if (plot.getCity().getName().equalsIgnoreCase(city.getName())){
-					
-					if (sign.getLine(3).contains("Open") && sign.getLine(0).contains("=Demographics=")){
+				if (signComp.getType() == SignType.DEMOGRAPHICS){					
+					if (sign.getLine(3).contains("Open")){
 						ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 						if (CivAPI.addResident(resident, city))
 							CivAPI.broadcastToCity("Welcome " + resident.getName() + " to our city!", city);
@@ -92,19 +92,22 @@ public class SignInteractListener implements Listener{
 				if (event.getClickedBlock().getType().equals(Material.WALL_SIGN)){
 					Sign sign = (Sign) event.getClickedBlock().getState();
 					ResidentComponent resident = CivAPI.getResident(event.getPlayer());
-					if (sign.getLine(0).contains("=Demographics=")){
-						Civilmineation.log("Demographics update click");
+					SignComponent signComp = CivAPI.getSign(event.getClickedBlock());
+					if (signComp == null)
+						return;
+					if (signComp.getType() == SignType.DEMOGRAPHICS){
+						Civilmineation.logDebug("Demographics update click");
 						PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
 						if (plot.getCity() == null){
-							Civilmineation.log("b");
+							Civilmineation.logDebug("b");
 							return;
 						}
 						if (resident.getCity() == null){
-							Civilmineation.log("c");
+							Civilmineation.logDebug("c");
 							return;
 						}
 						if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-							Civilmineation.log("d");
+							Civilmineation.logDebug("d");
 							Civilmineation.log(plot.getCity().getName());
 							Civilmineation.log(resident.getCity().getName());
 							return;
@@ -118,8 +121,8 @@ public class SignInteractListener implements Listener{
 								sign.update();
 							}
 						}
-					} else if (sign.getLine(0).contains("City Charter") && (resident.isMayor() || resident.isCityAssistant())){
-						CivAPI.updateCityCharter(CivAPI.getCity(sign.getLocation()));
+					} else if (signComp.getType() == SignType.CITY_CHARTER && (resident.isMayor() || resident.isCityAssistant())){
+						CivAPI.updateCityCharter(CivAPI.getCity(signComp.getEntityID()));
 					}
 				}
 			}
