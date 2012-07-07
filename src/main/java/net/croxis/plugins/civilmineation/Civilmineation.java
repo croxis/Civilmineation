@@ -128,6 +128,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         list.add(CivilizationComponent.class);
         list.add(PlotComponent.class);
         list.add(PermissionComponent.class);
+        list.add(SignComponent.class);
 		return list;
 	}
     
