@@ -673,11 +673,11 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		//event.getPlayer().sendMessage("Message will go here");
     		PlotComponent plot = CivAPI.getPlot(event.getTo().getChunk());
     		PlotComponent plotFrom = CivAPI.getPlot(event.getFrom().getChunk());
-    		if (plot == null && plotFrom != null){
+    		if (plot.getCity() == null && plotFrom.getCity() != null){
     			event.getPlayer().sendMessage("Wilds");
-    		} else if (plot == null && plotFrom == null){
+    		} else if (plot.getCity() == null && plotFrom.getCity() == null){
     			// Needed to prevent future NPES
-    		} else if (plot != null && plotFrom == null){
+    		} else if (plot.getCity() != null && plotFrom.getCity() == null){
     			// TODO: City enter event
     			event.getPlayer().sendMessage(plot.getName());
     		} else if (!plot.getName().equalsIgnoreCase(plotFrom.getName())){

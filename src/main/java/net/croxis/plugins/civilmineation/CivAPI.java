@@ -151,9 +151,7 @@ public class CivAPI {
     }
     
     public static boolean isClaimed(PlotComponent plot){
-    	if (plot == null){
-			return false;
-		} else if (plot.getCity() == null){
+    	if (plot.getCity() == null){
 			return false;
 		}
     	return true;

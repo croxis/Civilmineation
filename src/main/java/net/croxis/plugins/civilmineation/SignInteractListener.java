@@ -29,8 +29,6 @@ public class SignInteractListener implements Listener{
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)){
 				Sign sign = (Sign) event.getClickedBlock().getState();
 				PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
-				if (plot == null)
-					return;
 				if (plot.getCity() == null)
 					return;
 				PlotComponent plotCheck = CivAPI.getPlot(sign);
@@ -97,11 +95,6 @@ public class SignInteractListener implements Listener{
 					if (sign.getLine(0).contains("=Demographics=")){
 						Civilmineation.log("Demographics update click");
 						PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
-						
-						if (plot == null){
-							Civilmineation.log("a");
-							return;
-						}
 						if (plot.getCity() == null){
 							Civilmineation.log("b");
 							return;
