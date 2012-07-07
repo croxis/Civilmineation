@@ -27,10 +27,10 @@ public class PlotComponent {
 	//@JoinColumn(name="WORLD_ID")
 	@NotNull
 	private String world;
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CITY_ID")
 	private CityComponent city;
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="RESIDENT_ID")
 	private ResidentComponent resident;
 	@Enumerated(EnumType.STRING)
