@@ -110,7 +110,7 @@ public class TechCommand implements CommandExecutor {
     			//p.sendMessage("Current estimated time to completion: " + Float.toString(time) + " minutes.");
     		} else {
     			float time = (float) (tech.cost - TechManager.getPoints(player));
-        		player.sendMessage("Time to completion: " + Float.toString(time) + " minutes.");
+        		player.sendMessage("Time to completion: " + Float.toString(time * 5) + " minutes.");
     		}
     		
     		return true;    		
@@ -130,11 +130,11 @@ public class TechCommand implements CommandExecutor {
     			int res = CivAPI.getResidents(resident.getCity().getCivilization()).size();
     			float time = (float) ((tech.cost - TechManager.getPoints(player)) / res);
 				player.sendMessage("Current Progress for " + tech.name + ": " + Integer.toString(TechManager.getPoints(researcher)) + "/" + Integer.toString(tech.cost));
-	    		player.sendMessage("Estimated time to completion: " + Float.toString(time) + " minutes.");
+	    		player.sendMessage("Estimated time to completion: " + Float.toString(time * 5) + " minutes.");
     		} else {
     			float time = (float) (tech.cost - TechManager.getPoints(player));
         		player.sendMessage("Current Progress for " + tech.name + ": " + Integer.toString(TechManager.getPoints(player)) + "/" + Integer.toString(tech.cost));
-        		player.sendMessage("Time to completion: " + Float.toString(time) + " minutes.");
+        		player.sendMessage("Time to completion: " + Float.toString(time * 5) + " minutes.");
     		}
     		return true;    		
     	}
