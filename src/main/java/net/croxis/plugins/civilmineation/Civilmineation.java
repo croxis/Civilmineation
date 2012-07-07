@@ -100,6 +100,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			CivAPI.addResearch(city, getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LIBRARY).findList().size());
         			CivAPI.updateCityCharter(city);
         		}
+        		PlotCache.upkeep(900000);
         		getServer().broadcastMessage(ChatColor.AQUA + "Beginning turn");
         	}
         }, 18000, 18000);
