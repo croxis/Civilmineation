@@ -52,6 +52,7 @@ public class SignChangeListener implements Listener{
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);	
 			CivAPI.plugin.getServer().broadcastMessage("A new civilization has been founded!");
+			
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
     		if (!CivAPI.isCityAdmin(resident)){
     			cancelBreak(event, "You must be a city admin");
@@ -65,7 +66,7 @@ public class SignChangeListener implements Listener{
     			if (!CivAPI.isClaimedByCity(p, resident.getCity())){
     				p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
     				if (!CivAPI.isClaimedByCity(p, resident.getCity())){
-    					p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
+    					p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() - 1);
     					if (!CivAPI.isClaimedByCity(p, resident.getCity())){
     						cancelBreak(event, "This claim must be adjacent to an existing claim.");
     					}
