@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -22,8 +23,8 @@ public class CivilizationComponent{
 	private String name;
 	//@OneToMany(mappedBy="civAssistant")
     //private List<ResidentComponent> assistants = new ArrayList<ResidentComponent>();
-	//@OneToMany(mappedBy="civilization")
-    //private List<CityComponent> cities = new ArrayList<CityComponent>();
+	@OneToMany(mappedBy="civilization", fetch = FetchType.LAZY)
+    private List<CityComponent> cities = new ArrayList<CityComponent>();
 	/*@OneToMany(cascade=CascadeType.ALL)
 	@JoinTable(
 			name="CIV_ALLIES",
@@ -68,12 +69,12 @@ public class CivilizationComponent{
 	//public void setAssistants(List<ResidentComponent> assistants) {
 	//	this.assistants = assistants;
 	//}
-	//public List<CityComponent> getCities() {
-	//	return cities;
-	//}
-	//public void setCities(List<CityComponent> cities) {
-	//	this.cities = cities;
-	//}
+	public List<CityComponent> getCities() {
+		return cities;
+	}
+	public void setCities(List<CityComponent> cities) {
+		this.cities = cities;
+	}
 	public List<CivilizationComponent> getAllies() {
 		return allies;
 	}
@@ -86,12 +87,6 @@ public class CivilizationComponent{
 	public void setEnemies(List<CivilizationComponent> enemies) {
 		this.enemies = enemies;
 	}
-	//public CityComponent getCapital() {
-	//	return capital;
-	//}
-	//public void setCapital(CityComponent capital) {
-	//	this.capital = capital;
-	//}
 	public double getTaxes() {
 		return taxes;
 	}

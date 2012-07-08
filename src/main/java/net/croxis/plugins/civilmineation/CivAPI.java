@@ -510,8 +510,8 @@ public class CivAPI {
 			e.printStackTrace();
 		}
 		
-		city = plugin.getDatabase().find(CityComponent.class).where().eq("civ", civ).findUnique();
-		if (city == null){
+		List<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civ", civ).findList();
+		if (cities.isEmpty()){
 			Bukkit.getServer().getPluginManager().callEvent(new DeleteCivEvent(civ.getName(), civ.getEntityID().getId()));
 			plugin.getDatabase().delete(civ);
 			plugin.getDatabase().delete(plugin.getDatabase().find(PermissionComponent.class).where().eq("entityID", civEnt).findUnique());
