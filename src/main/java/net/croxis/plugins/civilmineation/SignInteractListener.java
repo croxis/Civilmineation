@@ -35,6 +35,9 @@ public class SignInteractListener implements Listener{
 				PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
 				SignComponent signComp = CivAPI.getSign(event.getClickedBlock());
 				Civilmineation.logDebug("a");
+				if (plot.getCity() == null)
+					Civilmineation.logDebug("no city");
+				Civilmineation.logDebug(event.getClickedBlock().getLocation().toString());
 				if (plot.getCity() == null || signComp == null)
 					return;
 				Civilmineation.logDebug("b");
