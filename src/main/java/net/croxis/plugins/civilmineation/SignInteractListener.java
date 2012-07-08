@@ -1,9 +1,9 @@
 package net.croxis.plugins.civilmineation;
 
-import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.civilmineation.components.SignComponent;
+import net.croxis.plugins.research.TechManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -30,10 +30,10 @@ public class SignInteractListener implements Listener{
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)){
 				Sign sign = (Sign) event.getClickedBlock().getState();
 				PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
-				if (plot.getCity() == null)
-					return;
-				PlotComponent plotCheck = CivAPI.getPlot(sign);
-				if(plotCheck != null){
+				SignComponent signComp = CivAPI.getSign(event.getClickedBlock());
+				if (plot.getCity() == null || signComp == null)
+					return;				
+				if(signComp.getType() == SignType.PLOT_INFO){
 					if(sign.getLine(2).equalsIgnoreCase("=For Sale=")){
 						ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 						double price = 0;
@@ -44,6 +44,11 @@ public class SignInteractListener implements Listener{
 			    			event.setCancelled(true);
 			    			return;
 		    			}
+						if (!TechManager.hasTech(event.getPlayer().getName(), "Currency")){
+							event.getPlayer().sendMessage("You need to learn currency before being able to buy.");
+			    			event.setCancelled(true);
+			    			return;
+						}
 						//TODO: Add exception for embasee plots
 						if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
 							event.getPlayer().sendMessage("Not member of city.");
@@ -71,22 +76,13 @@ public class SignInteractListener implements Listener{
 						CivAPI.updatePlotSign(plot);
 						return;
 					}
-				}
-				// Immigration
-				SignComponent signComp = CivAPI.getSign(event.getClickedBlock());
-				if (signComp == null)
-					return;
-				CityComponent city = CivAPI.getCity(signComp.getEntityID());
-				if (city == null)
-					return;
-				if (signComp.getType() == SignType.DEMOGRAPHICS){					
+				} else if (signComp.getType() == SignType.DEMOGRAPHICS){					
 					if (sign.getLine(3).contains("Open")){
 						ResidentComponent resident = CivAPI.getResident(event.getPlayer());
-						if (CivAPI.addResident(resident, city))
-							CivAPI.broadcastToCity("Welcome " + resident.getName() + " to our city!", city);
+						if (CivAPI.addResident(resident, plot.getCity()))
+							CivAPI.broadcastToCity("Welcome " + resident.getName() + " to our city!", plot.getCity());
 					}
 				}
-				
 				
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
 				if (event.getClickedBlock().getType().equals(Material.WALL_SIGN)){
