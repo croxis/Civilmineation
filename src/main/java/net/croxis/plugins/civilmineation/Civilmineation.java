@@ -1,6 +1,9 @@
 package net.croxis.plugins.civilmineation;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,6 +31,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -616,6 +620,29 @@ public class Civilmineation extends JavaPlugin implements Listener {
         event.getPlayer().sendMessage("Welcome, " + title + event.getPlayer().getDisplayName() + "!");
         ResidentJoinEvent resEvent = new ResidentJoinEvent(resident.getName(), resident.getEntityID().getId());
         Bukkit.getServer().getPluginManager().callEvent(resEvent);
+        
+        for (PlotComponent plot:CivAPI.getPlots(resident)){
+        	Sign sign = CivAPI.getPlotSign(plot);
+        	if (sign.getLine(0).contains(event.getPlayer().getName())){
+	        	sign.setLine(0, ChatColor.GREEN + sign.getLine(0).substring(2));
+	        	sign.setLine(1, "");
+	        	sign.update();
+        	}
+        }
+    }
+    
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event){
+    	for (PlotComponent plot:CivAPI.getPlots(CivAPI.getResident(event.getPlayer()))){
+        	Sign sign = CivAPI.getPlotSign(plot);
+        	if (sign.getLine(0).contains(event.getPlayer().getName())){
+        		DateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yy");
+        		Date date = new Date();
+	        	sign.setLine(0, ChatColor.RED + sign.getLine(0).substring(2));
+	        	sign.setLine(1, dateFormat.format(date));
+	        	sign.update();
+        	}
+        }
     }
     
     @EventHandler
@@ -628,7 +655,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		PlotComponent plot = CivAPI.getPlot(event.getTo().getChunk());
     		PlotComponent plotFrom = CivAPI.getPlot(event.getFrom().getChunk());
     		if (plot.getCity() == null && plotFrom.getCity() != null){
-    			event.getPlayer().sendMessage("Wilds");
+    			event.getPlayer().sendMessage("Wilderness");
     		} else if (plot.getCity() == null && plotFrom.getCity() == null){
     			// Needed to prevent future NPES
     		} else if (plot.getCity() != null && plotFrom.getCity() == null){
