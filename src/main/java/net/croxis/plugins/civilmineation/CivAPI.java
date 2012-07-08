@@ -609,8 +609,8 @@ public class CivAPI {
 		return plugin.getDatabase().find(SignComponent.class).where()
 				.eq("world", block.getWorld().getName())
 				.eq("x", block.getX())
-				.eq("y", block.getX())
-				.eq("z", block.getX()).findUnique();
+				.eq("y", block.getY())
+				.eq("z", block.getZ()).findUnique();
 	}
 	
 	public static Set<SignComponent> getSigns(PlotComponent plot) {
