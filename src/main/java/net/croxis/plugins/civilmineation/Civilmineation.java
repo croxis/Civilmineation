@@ -203,7 +203,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			event.setLine(3, "Mayor " + event.getPlayer().getName());
 			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
-			CivAPI.updateCityCharter(city);			
+			CivAPI.updateCityCharter(city);	
+			getServer().broadcastMessage("A new civilization has been founded!");
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
     		if (CivAPI.isClaimed(plot)){
     			event.getPlayer().sendMessage("This plot is claimed");
