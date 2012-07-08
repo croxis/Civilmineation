@@ -73,7 +73,7 @@ public class PlotCache {
 				Iterator<Entry<Integer, PlotComponent>> plotIterator = zMap.entrySet().iterator();
 				Civilmineation.logDebug("Pre size: " + Integer.toString(zMap.size()));
 				while (plotIterator.hasNext()){
-					if (zMap.get(plotIterator.next().getValue()).getLastAccess() < System.currentTimeMillis() - time){
+					if (plotIterator.next().getValue().getLastAccess() < System.currentTimeMillis() - time){
 						plotIterator.remove();
 						Civilmineation.logDebug("Removed a plot. I hope this works!");
 					}
