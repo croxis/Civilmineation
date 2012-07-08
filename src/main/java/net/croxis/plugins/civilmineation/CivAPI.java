@@ -493,6 +493,8 @@ public class CivAPI {
 			plot.setResident(null);
 			save(plot);
 		}
+		plugin.getDatabase().delete(getAllSigns(city));
+		
 		Ent civEnt = city.getCivilization().getEntityID();
 		CivilizationComponent civ = city.getCivilization();
 		
@@ -591,6 +593,18 @@ public class CivAPI {
 				.eq("x", block.getX())
 				.eq("y", block.getX())
 				.eq("z", block.getX()).findUnique();
+	}
+	
+	public static Set<SignComponent> getSigns(PlotComponent plot) {
+		return plugin.getDatabase().find(SignComponent.class).where().eq("entityID", plot.getEntityID()).findSet();
+	}
+	
+	public static Set<SignComponent> getAllSigns(CityComponent city){
+		Set<SignComponent> signs = plugin.getDatabase().find(SignComponent.class).where().eq("entityID", city.getEntityID()).findSet();
+		for (PlotComponent plot : getPlots(city)){
+			signs.addAll(getSigns(plot));
+		}
+		return signs;
 	}
 
 	public static Ent createEntity(){
