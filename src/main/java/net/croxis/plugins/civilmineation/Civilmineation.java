@@ -39,7 +39,8 @@ import net.milkbowl.vault.economy.Economy;
 
 public class Civilmineation extends JavaPlugin implements Listener {
 	public static CivAPI api;
-	private static final Logger logger = Logger.getLogger("Minecraft");
+	//private static final Logger logger = Logger.getLogger("Minecraft");
+	public static Logger logger = Bukkit.getLogger();
 	
 	public static void log(String message){
 		logger.info("[Civ] " + message);
