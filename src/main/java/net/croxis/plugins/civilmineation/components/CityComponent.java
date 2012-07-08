@@ -3,6 +3,7 @@ package net.croxis.plugins.civilmineation.components;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -30,6 +31,7 @@ public class CityComponent{
 	private double taxes, plotTax, commercialPlotTax, embassyPlotTax,
 		plotPrice, commercialPlotPrice, embassyPlotPrice;
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="CIVILIZATION_ID")
 	private CivilizationComponent civilization;
 	private boolean hasUpkeep, isPublic, isTaxPercentage;
 	private String townBoard = "/city set board [msg]", tag;
