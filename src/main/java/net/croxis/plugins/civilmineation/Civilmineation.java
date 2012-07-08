@@ -159,58 +159,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 		// Void plots are ok, if fact required for this set
-    	if (event.getLine(0).equalsIgnoreCase("[New Civ]")){
-    		if (CivAPI.isClaimed(plot)){
-    			event.getPlayer().sendMessage("This plot is claimed");
-    			event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-    			return;
-    		}    		
-    		if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
-    			event.getPlayer().sendMessage("Civ name on second line, Capital name on third line");
-    			event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-    			return;
-    		}
-			CivilizationComponent civComponent = getDatabase().find(CivilizationComponent.class).where().ieq("name", event.getLine(1)).findUnique();
-			CityComponent cityComponent = getDatabase().find(CityComponent.class).where().ieq("name", event.getLine(2)).findUnique();
-			if (civComponent != null || cityComponent != null){
-				event.getPlayer().sendMessage("That civ or city name already exists");
-				event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-				return;
-			}			
-			if (resident.getCity() != null){
-				event.getPlayer().sendMessage("You must leave your city first.");
-				event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-				return;
-			}
-			if (plot.getCity() != null){
-				event.getPlayer().sendMessage("That plot is part of a city.");
-				event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-				return;
-			}
-			//TODO: Distance check to another city
-			//TODO: Check for room for interface placements
-			CivilizationComponent civ = CivAPI.createCiv(event.getLine(1));
-	    	ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
-	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), civ, true);
-	    	SignComponent signComp = CivAPI.createSign(event.getBlock(), city.getName() + " charter", SignType.CITY_CHARTER, city.getEntityID());
-	    	event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
-			Sign plotSign = (Sign) event.getBlock().getRelative(BlockFace.UP).getState();
-	    	CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), city);
-			plotSign.setLine(0, city.getName());
-			plotSign.update();
-			
-			event.setLine(0, ChatColor.DARK_AQUA + "City Charter");
-			event.setLine(3, "Mayor " + event.getPlayer().getName());
-			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
-			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
-			CivAPI.updateCityCharter(city);	
-			getServer().broadcastMessage("A new civilization has been founded!");
-    	} else if (event.getLine(0).equalsIgnoreCase("[new city]")){
+    	if (event.getLine(0).equalsIgnoreCase("[new city]")){
     		if (CivAPI.isClaimed(plot)){
     			event.getPlayer().sendMessage("This plot is claimed");
     			event.setCancelled(true);
