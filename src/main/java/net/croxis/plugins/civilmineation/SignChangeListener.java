@@ -22,13 +22,13 @@ public class SignChangeListener implements Listener{
 			} 
     		
     		PlotComponent p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() + 1, event.getBlock().getChunk().getZ());
-    		if (CivAPI.isClaimedByCity(p, resident.getCity())){
+    		if (!CivAPI.isClaimedByCity(p, resident.getCity())){
     			p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() - 1, event.getBlock().getChunk().getZ());
-    			if (CivAPI.isClaimedByCity(p, resident.getCity())){
+    			if (!CivAPI.isClaimedByCity(p, resident.getCity())){
     				p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
-    				if (CivAPI.isClaimedByCity(p, resident.getCity())){
+    				if (!CivAPI.isClaimedByCity(p, resident.getCity())){
     					p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
-    					if (CivAPI.isClaimedByCity(p, resident.getCity())){
+    					if (!CivAPI.isClaimedByCity(p, resident.getCity())){
     						cancelBreak(event, "This claim must be adjacent to an existing claim.");
     					}
     				}
