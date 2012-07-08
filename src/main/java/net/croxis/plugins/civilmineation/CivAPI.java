@@ -434,6 +434,14 @@ public class CivAPI {
 		
 		createSign(plotSign, city.getName() + " plot", SignType.PLOT_INFO, plot.getEntityID());
 	}
+	
+	public static void unclaimPlot(PlotComponent plot){
+		plugin.getDatabase().delete(getPlotSign(plot));
+		plot.setCity(null);
+		plot.setResident(null);
+		plot.setType(CityPlotType.WILDS);
+		save(plot);
+	}
     
     public static void broadcastToCity(String message, CityComponent city){
     	Set<ResidentComponent> residents = CivAPI.getResidents(city);
@@ -497,9 +505,7 @@ public class CivAPI {
 			plugin.getDatabase().save(resident);
 		}
 		for (PlotComponent plot : getPlots(city)){
-			plot.setCity(null);
-			plot.setResident(null);
-			save(plot);
+			unclaimPlot(plot);
 		}
 		plugin.getDatabase().delete(getAllSigns(city));
 		
