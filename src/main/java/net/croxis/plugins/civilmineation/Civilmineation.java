@@ -78,6 +78,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ActionPermissionListener(), this);
         getServer().getPluginManager().registerEvents(new SignInteractListener(), this);
+        getServer().getPluginManager().registerEvents(new SignChangeListener(), this);
         
         getCommand("tech").setExecutor(new TechCommand(this));
         
@@ -205,56 +206,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);	
 			getServer().broadcastMessage("A new civilization has been founded!");
-    	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
-    		if (CivAPI.isClaimed(plot)){
-    			event.getPlayer().sendMessage("This plot is claimed");
-    			event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-    			return;
-    		}  
-    		if (resident.getCity() == null){
-    			event.setCancelled(true);
-    			event.getPlayer().sendMessage("You must be a city admin");
-    			event.getBlock().breakNaturally();
-    			return;
-    		} else if (!resident.isCityAssistant()
-    				&& !resident.isMayor()){
-    			event.setCancelled(true);
-    			event.getPlayer().sendMessage("You must be a city admin");
-    			event.getBlock().breakNaturally();
-    			return;
-    		}
-			if (plot.getCity() != null){
-				event.setCancelled(true);
-				event.getPlayer().sendMessage("A city has already claimed this chunk");
-				event.getBlock().breakNaturally();
-				return;
-			}
-    		
-    		PlotComponent p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() + 1, event.getBlock().getChunk().getZ());
-    		if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-    			p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() - 1, event.getBlock().getChunk().getZ());
-    			if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-    				p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
-    				if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-    					p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
-    					if (p == null || !p.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-    						event.setCancelled(true);
-    						event.getPlayer().sendMessage("This claim must be adjacent to an existing claim.");
-    						event.getBlock().breakNaturally();
-    						return;
-    					}
-    				}
-    			}
-    		} else if (resident.getCity().getCulture() < Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)){
-    			event.setCancelled(true);
-				event.getPlayer().sendMessage("You do not have enough culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(resident.getCity().getCulture()) + ChatColor.BLACK + "/" + ChatColor.LIGHT_PURPLE + Double.toString(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
-				event.getBlock().breakNaturally();
-				return;
-    		}
-    		CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), event.getBlock(), resident.getCity());
-			event.setLine(0, resident.getCity().getName());
-			return;
     	} else if (event.getLine(0).equalsIgnoreCase("[new city]")){
     		if (CivAPI.isClaimed(plot)){
     			event.getPlayer().sendMessage("This plot is claimed");

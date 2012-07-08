@@ -150,6 +150,14 @@ public class CivAPI {
     	return true;
     }
     
+    public static boolean isClaimedByCity(PlotComponent plot, CityComponent city){
+    	if (plot.getCity() == null)
+    		return false;
+    	if (plot.getCity().getName().equalsIgnoreCase(city.getName()))
+			return true;
+    	return false;
+    }
+    
     public static void addCulture(CityComponent city, int culture){
     	city.setCulture(city.getCulture() + culture);
     	plugin.getDatabase().save(city);
