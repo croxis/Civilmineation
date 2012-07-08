@@ -440,7 +440,7 @@ public class CivAPI {
 	}
 	
 	public static void unclaimPlot(PlotComponent plot){
-		plugin.getDatabase().delete(getPlotSign(plot));
+		plugin.getDatabase().delete(getSign(SignType.PLOT_INFO, plot.getEntityID()));
 		plot.setCity(null);
 		plot.setResident(null);
 		plot.setType(CityPlotType.WILDS);

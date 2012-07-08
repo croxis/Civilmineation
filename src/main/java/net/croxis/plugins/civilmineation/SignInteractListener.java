@@ -31,10 +31,14 @@ public class SignInteractListener implements Listener{
 				Sign sign = (Sign) event.getClickedBlock().getState();
 				PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
 				SignComponent signComp = CivAPI.getSign(event.getClickedBlock());
+				Civilmineation.logDebug("a");
 				if (plot.getCity() == null || signComp == null)
-					return;				
+					return;
+				Civilmineation.logDebug("b");
 				if(signComp.getType() == SignType.PLOT_INFO){
+					Civilmineation.logDebug("c");
 					if(sign.getLine(2).equalsIgnoreCase("=For Sale=")){
+						Civilmineation.logDebug("d");
 						ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 						double price = 0;
 						try{
