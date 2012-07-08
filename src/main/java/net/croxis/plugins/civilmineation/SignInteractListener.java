@@ -20,13 +20,16 @@ public class SignInteractListener implements Listener{
 		//Debug lines to see what the null error is from
 		//error is right clicking bottom block
 		if (event.getClickedBlock() == null){
+			Civilmineation.logDebug("z");
 			return;
 		}
 		event.getClickedBlock();
 		event.getClickedBlock().getType();
+		Civilmineation.logDebug("y");
 		if (event.getClickedBlock().getType().equals(Material.WALL_SIGN)
 				|| event.getClickedBlock().getType().equals(Material.SIGN)
 				|| event.getClickedBlock().getType().equals(Material.SIGN_POST)){
+			Civilmineation.logDebug("x");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)){
 				Sign sign = (Sign) event.getClickedBlock().getState();
 				PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
