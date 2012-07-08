@@ -37,6 +37,8 @@ public class SignInteractListener implements Listener{
 				Civilmineation.logDebug("a");
 				if (plot.getCity() == null)
 					Civilmineation.logDebug("no city");
+				if (signComp == null)
+					Civilmineation.logDebug("no sign");
 				Civilmineation.logDebug(event.getClickedBlock().getLocation().toString());
 				if (plot.getCity() == null || signComp == null)
 					return;
