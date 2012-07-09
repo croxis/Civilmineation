@@ -461,7 +461,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.setCancelled(true);
     			return;
     		}
-    		CityPlotType type = CityPlotType.valueOf(event.getLine(1));
+    		CityPlotType type = CityPlotType.valueOf(event.getLine(1).toUpperCase());
     		double cost = 0;
     		double value = 0;
     		if (type == null){
@@ -510,6 +510,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     				plot.setName(ChatColor.GREEN + plot.getResident().getName() + " " + type.toString());
     			else
     				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
+    		event.getPlayer().sendMessage("Library creation successful");
     		CivAPI.save(plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[name plot]")) {
     		event.getBlock().breakNaturally();
