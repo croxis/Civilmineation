@@ -473,7 +473,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			long time = System.currentTimeMillis();
     			for (int x=0; x<16; x++){
     				for (int z=0; z<16; z++){
-    					for (int y=0; y<getServer().getWorld("world").getMaxHeight(); y++){
+    					for (int y=32; y<getServer().getWorld("world").getMaxHeight()/2; y++){
     						if (event.getBlock().getChunk().getChunkSnapshot().getBlockTypeId(x, y, z) == 47)
     							value++;
     					}
