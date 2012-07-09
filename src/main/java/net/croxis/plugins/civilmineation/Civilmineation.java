@@ -635,8 +635,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
         String prefix = "";
         
         ResidentComponent resident = CivAPI.getResident(event.getPlayer());
-        if (resident.getCity() != null)
-        	prefix = "[" + ChatColor.RED + "Barbarian" + ChatColor.BLACK + "]";
+        if (resident.getCity() == null)
+        	prefix = "[" + ChatColor.RED + "Barbarian" + ChatColor.WHITE + "]";
         else
         	prefix = "[" + ChatColor.YELLOW + resident.getCity().getCivilization().getName() + ChatColor.WHITE + "]" 
         		+ "[" + ChatColor.AQUA + resident.getCity().getName() + ChatColor.WHITE + "]";
