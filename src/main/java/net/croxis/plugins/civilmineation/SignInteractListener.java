@@ -85,9 +85,18 @@ public class SignInteractListener implements Listener{
 						CivAPI.updatePlotSign(plot);
 						return;
 					}
-				} else if (signComp.getType() == SignType.DEMOGRAPHICS){					
+				} else if (signComp.getType() == SignType.DEMOGRAPHICS){
+					ResidentComponent resident = CivAPI.getResident(event.getPlayer());
+					if (resident.getCity() != null){
+						if (CivAPI.isCityAdmin(resident)){
+							event.getPlayer().sendMessage("You must resign as a city administrator.");
+							event.setCancelled(true);
+							return;
+						}
+						if (resident.getCity().getName().equalsIgnoreCase(plot.getCity().getName()))
+							CivAPI.removeResident(resident);
+					}
 					if (sign.getLine(3).contains("Open")){
-						ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 						if (CivAPI.addResident(resident, plot.getCity()))
 							CivAPI.broadcastToCity("Welcome " + resident.getName() + " to our city!", plot.getCity());
 					}
