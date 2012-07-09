@@ -10,3 +10,5 @@ depend: [Vault]
 commands:
     tech:
         aliases: []
+    civ:
+        aliases: []

@@ -18,6 +18,7 @@ import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.civilmineation.components.SignComponent;
 import net.croxis.plugins.civilmineation.events.ResidentJoinEvent;
+import net.croxis.plugins.research.RPlayer;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
 
@@ -25,6 +26,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,6 +43,7 @@ import net.milkbowl.vault.economy.Economy;
 public class Civilmineation extends JavaPlugin implements Listener {
 	public static CivAPI api;
 	//private static final Logger logger = Logger.getLogger("Minecraft");
+	public static boolean debug = false;
 	public static Logger logger = Bukkit.getLogger();
 	
 	public static void log(String message){
@@ -51,7 +55,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
 	}
 	
 	public static void logDebug(String message){
-		logger.info("[Civ][Debug] " + message);
+		if (debug)
+			logger.info("[Civ][Debug] " + message);
 	}
 	
     public void onDisable() {
@@ -86,6 +91,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new SignChangeListener(), this);
         
         getCommand("tech").setExecutor(new TechCommand(this));
+        getCommand("civ").setExecutor(new CommandDebug(this));
         
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
         	public void run(){
