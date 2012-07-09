@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -622,7 +623,25 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getPlayer().sendMessage(plot.getName());
     		}
     	}
-    	
+    }
+    
+    @EventHandler
+    public void onPlayerChat(PlayerChatEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        // Check whether the Server is set to prefix the chat with the World name.
+        // If not we do nothing, if so we need to check if the World has an Alias.
+        String prefix = "";
+        
+        ResidentComponent resident = CivAPI.getResident(event.getPlayer());
+        if (resident.getCity() != null)
+        	prefix = "[" + ChatColor.RED + "Barbarian" + ChatColor.BLACK + "]";
+        else
+        	prefix = "[" + ChatColor.YELLOW + resident.getCity().getCivilization().getName() + ChatColor.WHITE + "]" 
+        		+ "[" + ChatColor.AQUA + resident.getCity().getName() + ChatColor.WHITE + "]";
+        event.setFormat(prefix + event.getFormat());
+
     }
 }
 
