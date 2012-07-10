@@ -93,8 +93,11 @@ public class SignInteractListener implements Listener{
 							event.setCancelled(true);
 							return;
 						}
-						if (resident.getCity().getName().equalsIgnoreCase(plot.getCity().getName()))
+						if (resident.getCity().getName().equalsIgnoreCase(plot.getCity().getName())){
 							CivAPI.removeResident(resident);
+							return;
+						}
+							
 					}
 					if (sign.getLine(3).contains("Open")){
 						if (CivAPI.addResident(resident, plot.getCity()))

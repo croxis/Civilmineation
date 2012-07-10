@@ -237,13 +237,14 @@ public class Civilmineation extends JavaPlugin implements Listener {
 			getDatabase().save(resident.getCity());
 			
 			CityComponent city = CivAPI.createCity(event.getLine(1), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization(), false);
+			SignComponent signComp = CivAPI.createSign(event.getBlock(), city.getName() + " charter", SignType.CITY_CHARTER, city.getEntityID());
 			CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), resident.getCity());
 			
 			event.setLine(0, ChatColor.BLUE + "City Charter");
 			event.setLine(1, city.getCivilization().getName());
 			event.setLine(2, city.getName());
 			event.setLine(3, "Mayor " + mayor.getName());
-			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, CivAPI.getSign(SignType.CITY_CHARTER, city.getEntityID()).getRotation(), true);
+			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
 			CivAPI.broadcastToCiv("The city of " + city.getName() + " has been founded!", mayor.getCity().getCivilization());
@@ -480,7 +481,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			long time = System.currentTimeMillis();
     			for (int x=0; x<16; x++){
     				for (int z=0; z<16; z++){
-    					for (int y=32; y<getServer().getWorld("world").getMaxHeight()/2; y++){
+    					for (int y=16; y<getServer().getWorld("world").getMaxHeight()/2; y++){
     						if (event.getBlock().getChunk().getChunkSnapshot().getBlockTypeId(x, y, z) == 47)
     							value++;
     					}
