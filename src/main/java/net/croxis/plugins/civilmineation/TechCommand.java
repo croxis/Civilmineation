@@ -128,7 +128,7 @@ public class TechCommand implements CommandExecutor {
     		}
     		if(resident.getCity() != null){
     			int res = CivAPI.getResidents(resident.getCity().getCivilization()).size();
-    			float time = (float) ((tech.cost - TechManager.getPoints(player)) / res);
+    			float time = (float) ((tech.cost - TechManager.getPoints(player)) / (res + CivAPI.getResearchPoints(resident.getCity())));
 				player.sendMessage("Current Progress for " + tech.name + ": " + Integer.toString(TechManager.getPoints(researcher)) + "/" + Integer.toString(tech.cost));
 	    		player.sendMessage("Estimated time to completion: " + Float.toString(time * 5) + " minutes.");
     		} else {

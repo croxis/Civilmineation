@@ -183,7 +183,13 @@ public class CivAPI {
 				broadcastToCity("You have learned " + ChatColor.BLUE + learned.name + "!", c);
 			}
 		}
-		
+	}
+	
+	public static int getResearchPoints(CityComponent city){
+		int points = 0;
+		points += plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LIBRARY).findList().size();
+		points += plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.UNIVERSITY).findList().size();
+		return points;
 	}
     
     public static void updateCityCharter(CityComponent city){

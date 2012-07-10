@@ -110,7 +110,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			}
         		}
         		for (CityComponent city : CivAPI.getCities()){
-        			CivAPI.addResearch(city, getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LIBRARY).findList().size());
+        			CivAPI.addResearch(city, CivAPI.getResearchPoints(city));
         			CivAPI.updateCityCharter(city);
         		}
         		PlotCache.upkeep(900000);
