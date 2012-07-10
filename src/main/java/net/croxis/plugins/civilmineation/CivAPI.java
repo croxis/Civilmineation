@@ -133,7 +133,7 @@ public class CivAPI {
     	return resident.isMayor() && resident.getCity().isCapital();
     }
     
-    public static boolean isNationalAdmin(ResidentComponent resident){
+    public static boolean isCivAdmin(ResidentComponent resident){
     	if (resident.isCivAssistant())
     		return true;
     	return isKing(resident);
@@ -641,5 +641,13 @@ public class CivAPI {
 	public static void save(PlotComponent plot){
 		PlotCache.dirtyPlot(plot);
 		plugin.getDatabase().save(plot);
+	}
+	
+	public static void save(CivilizationComponent component){
+		plugin.getDatabase().save(component);
+	}
+	
+	public static void save(CityComponent component){
+		plugin.getDatabase().save(component);
 	}
 }

@@ -170,6 +170,41 @@ public class SignChangeListener implements Listener{
     				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
     		event.getPlayer().sendMessage("Library creation successful");
     		CivAPI.save(plot);
+    	} else if (event.getLine(0).equalsIgnoreCase("[civ]")){
+    		event.getBlock().breakNaturally();
+    		if (!CivAPI.isCivAdmin(resident)){
+    			cancelBreak(event, "You must be a civ administrator!");
+    		}
+    		if (event.isCancelled())
+    			return;
+    		if (event.getLine(1).equalsIgnoreCase("[color]")){
+    			ChatColor color = ChatColor.valueOf(event.getLine(2).toUpperCase());
+    			if (color == null){
+    				cancelBreak(event, "Invalid color");
+    				return;
+    			}
+    			CivilizationComponent civ = resident.getCity().getCivilization();
+    			civ.setChatcolor(color);
+    			CivAPI.save(civ);
+    		}
+    	} else if (event.getLine(0).equalsIgnoreCase("[city]")){
+    		event.getBlock().breakNaturally();
+    		if (!CivAPI.isCityAdmin(resident)){
+    			cancelBreak(event, "You must be a city administrator!");
+    		}
+    		if (event.isCancelled())
+    			return;
+    		if (event.getLine(1).equalsIgnoreCase("[color]")){
+    			ChatColor color = ChatColor.valueOf(event.getLine(2).toUpperCase());
+    			if (color == null){
+    				cancelBreak(event, "Invalid color");
+    				return;
+    			}
+    			CityComponent city = resident.getCity();
+    			city.setChatcolor(color);
+    			CivAPI.save(city);
+    		}
+    		
     	}
 	}
 	

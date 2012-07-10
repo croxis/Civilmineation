@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -12,6 +14,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.bukkit.ChatColor;
 
 @Entity()
 @Table(name = "civ_civilization")
@@ -63,6 +67,9 @@ public class CivilizationComponent{
     private String texturePackNode;
 	private String capeNode;    	
 	private String musicNode;
+	
+	@Enumerated(EnumType.STRING)
+    private ChatColor chatcolor = ChatColor.YELLOW;
 	//public List<ResidentComponent> getAssistants() {
 	//	return assistants;
 	//}
@@ -147,6 +154,12 @@ public class CivilizationComponent{
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public ChatColor getChatcolor() {
+		return chatcolor;
+	}
+	public void setChatcolor(ChatColor chatcolor) {
+		this.chatcolor = chatcolor;
 	}
 
 }

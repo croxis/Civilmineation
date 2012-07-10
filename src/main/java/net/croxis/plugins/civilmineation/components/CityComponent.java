@@ -1,6 +1,8 @@
 package net.croxis.plugins.civilmineation.components;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -9,6 +11,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import net.croxis.plugins.civilmineation.CityPlotType;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 @Entity()
@@ -52,6 +57,9 @@ public class CityComponent{
 	private String musicNode;
 	
 	private boolean capital;
+	
+	@Enumerated(EnumType.STRING)
+    private ChatColor chatcolor = ChatColor.AQUA;
 	
 	
 	//public List<ResidentComponent> getResidents() {
@@ -246,6 +254,12 @@ public class CityComponent{
 	}
 	public void setCapital(boolean capital) {
 		this.capital = capital;
+	}
+	public ChatColor getChatcolor() {
+		return chatcolor;
+	}
+	public void setChatcolor(ChatColor chatcolor) {
+		this.chatcolor = chatcolor;
 	}
 
 }

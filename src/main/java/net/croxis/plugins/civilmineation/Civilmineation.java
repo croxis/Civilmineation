@@ -180,7 +180,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     			event.getBlock().breakNaturally();
     			return;
     		}
-    		if (!CivAPI.isNationalAdmin(resident)){
+    		if (!CivAPI.isCivAdmin(resident)){
     			event.getPlayer().sendMessage("You must be a national leader or assistant.");
     			event.setCancelled(true);
 
@@ -565,8 +565,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
         if (resident.getCity() == null)
         	prefix = "[" + ChatColor.RED + "Barbarian" + ChatColor.WHITE + "]";
         else
-        	prefix = "[" + ChatColor.YELLOW + resident.getCity().getCivilization().getName() + ChatColor.WHITE + "]" 
-        		+ "[" + ChatColor.AQUA + resident.getCity().getName() + ChatColor.WHITE + "]";
+        	prefix = "[" + resident.getCity().getCivilization().getChatcolor() + resident.getCity().getCivilization().getName() + ChatColor.WHITE + "]" 
+        		+ "[" + resident.getCity().getChatcolor() + resident.getCity().getName() + ChatColor.WHITE + "]";
         event.setFormat(prefix + event.getFormat());
 
     }
