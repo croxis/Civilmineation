@@ -94,6 +94,10 @@ public class CivAPI {
 	public static CityComponent getCity(Ent entityID) {
 		return plugin.getDatabase().find(CityComponent.class).where().eq("entityID", entityID).findUnique();
 	}
+	
+	public static CityComponent getCity(String name) {
+		return plugin.getDatabase().find(CityComponent.class).where().ieq("name", name).findUnique();
+	}
     
     public static Set<CityComponent> getCities(){
     	return plugin.getDatabase().find(CityComponent.class).findSet();

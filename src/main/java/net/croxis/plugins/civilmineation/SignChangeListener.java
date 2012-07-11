@@ -23,9 +23,9 @@ public class SignChangeListener implements Listener{
     public void onSignChangeEvent(SignChangeEvent event){
 		ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
-		CivilizationComponent civComponent = CivAPI.plugin.getDatabase().find(CivilizationComponent.class).where().ieq("name", event.getLine(1)).findUnique();
-		CityComponent cityComponent = CivAPI.plugin.getDatabase().find(CityComponent.class).where().ieq("name", event.getLine(2)).findUnique();
 		if (event.getLine(0).equalsIgnoreCase("[New Civ]")){
+			CivilizationComponent civComponent = CivAPI.getCiv(event.getLine(1));
+			CityComponent cityComponent = CivAPI.getCity(event.getLine(2));
     		if (CivAPI.isClaimed(plot)){
     			cancelBreak(event, "This plot is claimed");
     		} else if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
@@ -58,6 +58,49 @@ public class SignChangeListener implements Listener{
 			CivAPI.updateCityCharter(city);	
 			CivAPI.plugin.getServer().broadcastMessage("A new civilization has been founded!");
 			
+    	} else if (event.getLine(0).equalsIgnoreCase("[new city]")){
+    		if (CivAPI.isClaimed(plot)){
+    			cancelBreak(event, "This plot is claimed");
+    		}  else if (event.getLine(1).isEmpty() || event.getLine(2).isEmpty()){
+    			cancelBreak(event, "City name on second line, Mayor name on third line");
+    		} else if (!CivAPI.isCivAdmin(resident)){
+    			cancelBreak(event, "You must be a national leader or assistant.");
+    		}
+    		ResidentComponent mayor = CivAPI.getResident(event.getLine(2));
+    		CityComponent cityComponent = CivAPI.getCity(event.getLine(1));
+    		if (mayor == null){
+    			cancelBreak(event, "That player does not exist.");
+    		} else if (cityComponent != null){
+				cancelBreak(event, "That city name already exists");
+			}	else if (mayor.getCity() == null){
+				cancelBreak(event, "That player must be in your civ!.");
+			} else if (!mayor.getCity().getCivilization().getName().equalsIgnoreCase(resident.getCity().getCivilization().getName())){
+				cancelBreak(event, "That player must be in your civ!.");
+			} else if (mayor.isMayor()){
+				cancelBreak(event, "That player can not be an existing mayor.");
+			} else if (plot.getCity() != null){
+				cancelBreak(event, "That plot is part of a city.");
+			} else if (resident.getCity().getCulture() < 50){
+				cancelBreak(event, "Not enough culture to found a city.");
+			}
+			if (event.isCancelled())
+    			return;
+			resident.getCity().setCulture(resident.getCity().getCulture() - 50);
+			CivAPI.save(resident.getCity());
+			
+			CityComponent city = CivAPI.createCity(event.getLine(1), event.getPlayer(), mayor, event.getBlock(), mayor.getCity().getCivilization(), false);
+			SignComponent signComp = CivAPI.createSign(event.getBlock(), city.getName() + " charter", SignType.CITY_CHARTER, city.getEntityID());
+			CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), mayor.getCity());
+			event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
+			Sign plotSign = (Sign) event.getBlock().getRelative(BlockFace.UP).getState();
+			event.setLine(0, ChatColor.BLUE + "City Charter");
+			event.setLine(1, city.getCivilization().getName());
+			event.setLine(2, city.getName());
+			event.setLine(3, "Mayor " + mayor.getName());
+			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
+			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
+			CivAPI.updateCityCharter(city);
+			CivAPI.broadcastToCiv("The city of " + city.getName() + " has been founded!", mayor.getCity().getCivilization());
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
     		if (!CivAPI.isCityAdmin(resident)){
     			cancelBreak(event, "You must be a city admin");
