@@ -69,7 +69,7 @@ public class CivilizationComponent{
 	private String musicNode;
 	
 	@Enumerated(EnumType.STRING)
-    private ChatColor chatcolor = ChatColor.YELLOW;
+    private ChatColor chatcolor = ChatColor.valueOf("YELLOW");
 	//public List<ResidentComponent> getAssistants() {
 	//	return assistants;
 	//}

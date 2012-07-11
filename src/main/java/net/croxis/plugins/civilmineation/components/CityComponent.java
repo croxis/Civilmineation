@@ -62,7 +62,7 @@ public class CityComponent{
 	private boolean capital;
 	
 	@Enumerated(EnumType.STRING)
-    private ChatColor chatcolor = ChatColor.AQUA;
+    private ChatColor chatcolor = ChatColor.valueOf("AQUA");
 	
 	//public List<ResidentComponent> getResidents() {
 	//	return residents;
