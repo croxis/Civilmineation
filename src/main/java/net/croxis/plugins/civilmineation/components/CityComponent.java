@@ -22,8 +22,8 @@ import org.bukkit.Location;
 public class CityComponent{
 	@Id
 	private int id;
-	//@Version
-	//private int version;
+	@Version
+	private int version;
 	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name;
@@ -283,11 +283,11 @@ public class CityComponent{
 	public void setChatcolor(ChatColor chatcolor) {
 		this.chatcolor = chatcolor;
 	}
-	//public int getVersion() {
-	//	return version;
-	//}
-	//public void setVersion(int version) {
-	//	this.version = version;
-	//}
+	public int getVersion() {
+		return version;
+	}
+	public void setVersion(int version) {
+		this.version = version;
+	}
 
 }
