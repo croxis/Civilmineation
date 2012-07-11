@@ -388,7 +388,7 @@ public class CivAPI {
 		city.setSpawn_x(player.getLocation().getX());
 		city.setSpawn_y(player.getLocation().getY());
 		city.setSpawn_z(player.getLocation().getZ());
-		city.setChatcolor(ChatColor.valueOf("AQUA"));
+		//city.setChatcolor(ChatColor.valueOf("AQUA"));
 		plugin.getDatabase().save(city);
 
 		mayor.setCity(city);
@@ -409,7 +409,7 @@ public class CivAPI {
 		civ.setEntityID(civEntity);
 		civ.setRegistered(System.currentTimeMillis());
 		civ.setTaxes(0);
-		civ.setChatcolor(ChatColor.valueOf("YELLOW"));
+		//civ.setChatcolor(ChatColor.valueOf("YELLOW"));
     	plugin.getDatabase().save(civ);
 		
 		PermissionComponent civPerm = new PermissionComponent();

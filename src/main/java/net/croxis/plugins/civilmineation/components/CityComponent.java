@@ -61,8 +61,8 @@ public class CityComponent{
 	
 	private boolean capital;
 	
-	@Enumerated(EnumType.STRING)
-    private ChatColor chatcolor = ChatColor.valueOf("AQUA");
+	//@Enumerated(EnumType.STRING)
+    private char chatcolor = ChatColor.AQUA.getChar();
 	
 	//public List<ResidentComponent> getResidents() {
 	//	return residents;
@@ -277,10 +277,10 @@ public class CityComponent{
 	public void setCapital(boolean capital) {
 		this.capital = capital;
 	}
-	public ChatColor getChatcolor() {
+	public char getChatcolor() {
 		return chatcolor;
 	}
-	public void setChatcolor(ChatColor chatcolor) {
+	public void setChatcolor(char chatcolor) {
 		this.chatcolor = chatcolor;
 	}
 	public int getVersion() {

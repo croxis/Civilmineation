@@ -68,8 +68,8 @@ public class CivilizationComponent{
 	private String capeNode;    	
 	private String musicNode;
 	
-	@Enumerated(EnumType.STRING)
-    private ChatColor chatcolor = ChatColor.valueOf("YELLOW");
+	//@Enumerated(EnumType.STRING)
+    private char chatcolor = ChatColor.YELLOW.getChar();
 	//public List<ResidentComponent> getAssistants() {
 	//	return assistants;
 	//}
@@ -155,10 +155,10 @@ public class CivilizationComponent{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public ChatColor getChatcolor() {
+	public char getChatcolor() {
 		return chatcolor;
 	}
-	public void setChatcolor(ChatColor chatcolor) {
+	public void setChatcolor(char chatcolor) {
 		this.chatcolor = chatcolor;
 	}
 

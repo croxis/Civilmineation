@@ -186,7 +186,7 @@ public class SignChangeListener implements Listener{
     				return;
     			}
     			CivilizationComponent civ = resident.getCity().getCivilization();
-    			civ.setChatcolor(color);
+    			civ.setChatcolor(color.getChar());
     			CivAPI.save(civ);
     		}
     	} else if (event.getLine(0).equalsIgnoreCase("[city]")){
@@ -205,7 +205,7 @@ public class SignChangeListener implements Listener{
     				return;
     			}
     			CityComponent city = resident.getCity();
-    			city.setChatcolor(color);
+    			city.setChatcolor(color.getChar());
     			CivAPI.save(city);
     		}
     		
