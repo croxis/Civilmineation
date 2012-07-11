@@ -566,8 +566,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
         if (resident.getCity() == null)
         	prefix = "[" + ChatColor.RED + "Barbarian" + ChatColor.WHITE + "]";
         else
-        	prefix = "[" + resident.getCity().getCivilization().getChatcolor() + resident.getCity().getCivilization().getName() + ChatColor.WHITE + "]" 
-        		+ "[" + resident.getCity().getChatcolor() + resident.getCity().getName() + ChatColor.WHITE + "]";
+        	prefix = "[" + ChatColor.getByChar(resident.getCity().getCivilization().getChatcolor()) + resident.getCity().getCivilization().getName() + ChatColor.WHITE + "]" 
+        		+ "[" + ChatColor.getByChar(resident.getCity().getChatcolor()) + resident.getCity().getName() + ChatColor.WHITE + "]";
         event.setFormat(prefix + event.getFormat());
 
     }
