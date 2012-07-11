@@ -177,9 +177,11 @@ public class SignChangeListener implements Listener{
     		}
     		if (event.isCancelled())
     			return;
-    		if (event.getLine(1).equalsIgnoreCase("[color]")){
-    			ChatColor color = ChatColor.valueOf(event.getLine(2).toUpperCase());
-    			if (color == null){
+    		if (event.getLine(1).equalsIgnoreCase("[color]") || event.getLine(1).equalsIgnoreCase("[colour]") ){
+    			ChatColor color = ChatColor.YELLOW;
+    			try{
+    			color = ChatColor.valueOf(event.getLine(2).toUpperCase());
+    			} catch (IllegalArgumentException e){
     				cancelBreak(event, "Invalid color");
     				return;
     			}
@@ -194,9 +196,11 @@ public class SignChangeListener implements Listener{
     		}
     		if (event.isCancelled())
     			return;
-    		if (event.getLine(1).equalsIgnoreCase("[color]")){
-    			ChatColor color = ChatColor.valueOf(event.getLine(2).toUpperCase());
-    			if (color == null){
+    		if (event.getLine(1).equalsIgnoreCase("[color]") || event.getLine(1).equalsIgnoreCase("[colour]") ){
+    			ChatColor color = ChatColor.YELLOW;
+    			try{
+    			color = ChatColor.valueOf(event.getLine(2).toUpperCase());
+    			} catch (IllegalArgumentException e){
     				cancelBreak(event, "Invalid color");
     				return;
     			}
