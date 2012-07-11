@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.persistence.OptimisticLockException;
+
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivilizationComponent;
 import net.croxis.plugins.civilmineation.components.Ent;
@@ -654,6 +656,15 @@ public class CivAPI {
 	}
 	
 	public static void save(CityComponent component){
-		plugin.getDatabase().save(component);
+		try{
+			plugin.getDatabase().save(component);
+		} catch (OptimisticLockException e) {
+			Civilmineation.log("WARNING: " + component.getName() + " has a lock exception. Retrying.");
+			plugin.getDatabase().beginTransaction();
+			CityComponent tmp = plugin.getDatabase().find(CityComponent.class, component.getId());
+			tmp = CityComponent.copy(component);
+			plugin.getDatabase().update(tmp);
+			plugin.getDatabase().endTransaction();
+		}
 	}
 }

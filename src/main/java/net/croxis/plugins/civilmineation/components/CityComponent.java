@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import net.croxis.plugins.civilmineation.CityPlotType;
 
@@ -21,6 +22,8 @@ import org.bukkit.Location;
 public class CityComponent{
 	@Id
 	private int id;
+	//@Version
+	//private int version;
 	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name;
@@ -61,7 +64,6 @@ public class CityComponent{
 	@Enumerated(EnumType.STRING)
     private ChatColor chatcolor = ChatColor.AQUA;
 	
-	
 	//public List<ResidentComponent> getResidents() {
 	//	return residents;
 	//}
@@ -80,6 +82,26 @@ public class CityComponent{
 	//public void setMayor(ResidentComponent mayor) {
 	//	this.mayor = mayor;
 	//}
+	public static CityComponent copy(CityComponent old){
+		CityComponent c = new CityComponent();
+		c.setCapital(old.isCapital());
+		c.setChatcolor(old.getChatcolor());
+		c.setCivilization(old.getCivilization());
+		c.setCulture(old.getCulture());
+		c.setEntityID(old.getEntityID());
+		c.setName(old.getName());
+		c.setRegistered(old.getRegistered());
+		c.setSpawn_world(old.getSpawn_world());
+		c.setSpawn_x(old.getSpawn_x());
+		c.setSpawn_y(old.getSpawn_y());
+		c.setSpawn_z(old.getSpawn_z());
+		c.setTownBoard(old.getTownBoard());
+		return c;
+	}
+	@Override
+	public String toString(){
+		return this.getName();
+	}
 	public int getBonusBlocks() {
 		return bonusBlocks;
 	}
@@ -261,5 +283,11 @@ public class CityComponent{
 	public void setChatcolor(ChatColor chatcolor) {
 		this.chatcolor = chatcolor;
 	}
+	//public int getVersion() {
+	//	return version;
+	//}
+	//public void setVersion(int version) {
+	//	this.version = version;
+	//}
 
 }
