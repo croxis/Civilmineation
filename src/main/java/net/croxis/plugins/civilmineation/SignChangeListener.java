@@ -140,7 +140,9 @@ public class SignChangeListener implements Listener{
     			cancelBreak(event, "This is not your city");
     		} else if (event.getLine(1).isEmpty()){
     			cancelBreak(event, "Invalid building type");
-    		}			
+    		} else if (!plot.getType().equals(CityPlotType.RESIDENTIAL)){
+    			cancelBreak(event, "Can not change existing building");
+    		}
 			if (event.isCancelled())
 				return;
     		CityPlotType type = CityPlotType.valueOf(event.getLine(1).toUpperCase());
@@ -161,6 +163,12 @@ public class SignChangeListener implements Listener{
 				cost = 55;
 				tech = "Education";
 				ids.add(47);
+				if (CivAPI.plugin.getDatabase().find(PlotComponent.class).where().eq("city", resident.getCity()).eq("type", CityPlotType.LIBRARY).findList().isEmpty()){
+					event.getPlayer().sendMessage("A library is needed first.");
+	    			event.setCancelled(true);
+	    			return;
+				}
+					
 			}
 
 			if (!TechManager.hasTech(CivAPI.getMayor(resident).getName(), tech)){
