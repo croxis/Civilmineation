@@ -6,7 +6,8 @@ public enum CityPlotType {
     EMBASSY,  // For other towns to own a plot in your town.
     WILDS,//Follows wilderness protection settings, but town owned.
     LIBRARY,
-    UNIVERSITY;	//Follows wilderness protection settings, but town owned.
+    UNIVERSITY,
+    ;	
     // These are subject to change:
 /*
     PUBLIC(5, "") {  // Will have it's own permission set

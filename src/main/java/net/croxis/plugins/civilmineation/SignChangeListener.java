@@ -194,7 +194,6 @@ public class SignChangeListener implements Listener{
 	    			event.setCancelled(true);
 	    			return;
 				}
-					
 			}
 
 			if (!TechManager.hasTech(CivAPI.getMayor(resident).getName(), tech)){
@@ -276,7 +275,7 @@ public class SignChangeListener implements Listener{
     		if (event.getLine(1).equalsIgnoreCase("[color]") || event.getLine(1).equalsIgnoreCase("[colour]") ){
     			ChatColor color = ChatColor.YELLOW;
     			try{
-    			color = ChatColor.valueOf(event.getLine(2).toUpperCase());
+    			color = ChatColor.valueOf(event.getLine(2).toUpperCase().trim().replace(" ", "_"));
     			} catch (IllegalArgumentException e){
     				cancelBreak(event, "Invalid color");
     				return;
