@@ -197,6 +197,10 @@ public class CivAPI {
 		points += plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.UNIVERSITY).findList().size();
 		return points;
 	}
+	
+	public static void generateCitySigns(Block charterBlock){
+		
+	}
     
     public static void updateCityCharter(CityComponent city){
     	if (city == null){
@@ -243,20 +247,57 @@ public class CivAPI {
 				block.setLine(3, ChatColor.BLUE + Integer.toString(TechManager.getPoints(getKing(city).getName())) + "/" + Integer.toString(TechManager.getCurrentResearch(getKing(city).getName()).cost));
 			}
 			block.update();
-			
 			signComp = getSign(SignType.CITY_CHARTER_MONEY, city.getEntityID());
 			if (signComp == null)
-				signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_MONEY, city.getEntityID());
+				signComp = createSign(block.getBlock(), city.getName() + " money", SignType.CITY_CHARTER_MONEY, city.getEntityID());
 			
 			charter.getRelative(BlockFace.WEST).setTypeIdAndData(68, signComp.getRotation(), true);
 			block = (Sign) charter.getRelative(BlockFace.WEST).getState();
 			block.setLine(1, "Plots: " + Integer.toString(getPlots(city).size()));
 			block.setLine(2, "Culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(city.getCulture()));
 			block.update();
-			
 			signComp = getSign(SignType.CITY_CHARTER_CULTURE, city.getEntityID());
 			if (signComp == null)
-				signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
+				signComp = createSign(block.getBlock(), city.getName() + " culture", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
+			
+			charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).setTypeIdAndData(68, signComp.getRotation(), true);
+			block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getState();
+			block.setLine(0, "Civilization");
+			block.setLine(1, "Build/Destroy");
+			if (getPermissions(city.getEntityID()).allyBuild)
+				block.setLine(3, ChatColor.GREEN + "Open");
+			else
+				block.setLine(3, ChatColor.RED + "Closed");
+			block.update();
+			signComp = getSign(SignType.CITY_PERM_CIV_BUILD, city.getEntityID());
+			if (signComp == null)
+				signComp = createSign(block.getBlock(), city.getName() + " perm civ build", SignType.CITY_PERM_CIV_BUILD, city.getEntityID());
+			
+			charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
+			block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getState();
+			block.setLine(0, "Resident");
+			block.setLine(1, "Build/Destroy");
+			if (getPermissions(city.getEntityID()).residentBuild)
+				block.setLine(3, ChatColor.GREEN + "Open");
+			else
+				block.setLine(3, ChatColor.RED + "Closed");
+			block.update();
+			signComp = getSign(SignType.CITY_PERM_RES_BUILD, city.getEntityID());
+			if (signComp == null)
+				signComp = createSign(block.getBlock(), city.getName() + " perm res build", SignType.CITY_PERM_RES_BUILD, city.getEntityID());
+			
+			charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
+			block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.DOWN).getState();
+			block.setLine(0, "Outsider");
+			block.setLine(1, "Build/Destroy");
+			if (getPermissions(city.getEntityID()).outsiderBuild)
+				block.setLine(3, ChatColor.GREEN + "Open");
+			else
+				block.setLine(3, ChatColor.RED + "Closed");
+			block.update();
+			signComp = getSign(SignType.CITY_PERM_OUT_BUILD, city.getEntityID());
+			if (signComp == null)
+				signComp = createSign(block.getBlock(), city.getName() + " perm out build", SignType.CITY_PERM_OUT_BUILD, city.getEntityID());
 			
 		} else if (signComp.getRotation() == 2 || signComp.getRotation() == 3) {
 			charter.getRelative(BlockFace.NORTH).setTypeIdAndData(68, signComp.getRotation(), true);
@@ -285,6 +326,45 @@ public class CivAPI {
 			signComp = getSign(SignType.CITY_CHARTER_CULTURE, city.getEntityID());
 			if (signComp == null)
 				createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
+			
+			charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).setTypeIdAndData(68, signComp.getRotation(), true);
+			block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getState();
+			block.setLine(0, "Civilization");
+			block.setLine(1, "Build/Destroy");
+			if (getPermissions(city.getEntityID()).allyBuild)
+				block.setLine(3, ChatColor.GREEN + "Open");
+			else
+				block.setLine(3, ChatColor.RED + "Closed");
+			block.update();
+			signComp = getSign(SignType.CITY_PERM_CIV_BUILD, city.getEntityID());
+			if (signComp == null)
+				signComp = createSign(block.getBlock(), city.getName() + " perm civ build", SignType.CITY_PERM_CIV_BUILD, city.getEntityID());
+			
+			charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
+			block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getState();
+			block.setLine(0, "Resident");
+			block.setLine(1, "Build/Destroy");
+			if (getPermissions(city.getEntityID()).residentBuild)
+				block.setLine(3, ChatColor.GREEN + "Open");
+			else
+				block.setLine(3, ChatColor.RED + "Closed");
+			block.update();
+			signComp = getSign(SignType.CITY_PERM_RES_BUILD, city.getEntityID());
+			if (signComp == null)
+				signComp = createSign(block.getBlock(), city.getName() + " perm res build", SignType.CITY_PERM_RES_BUILD, city.getEntityID());
+			
+			charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
+			block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.DOWN).getState();
+			block.setLine(0, "Outsider");
+			block.setLine(1, "Build/Destroy");
+			if (getPermissions(city.getEntityID()).outsiderBuild)
+				block.setLine(3, ChatColor.GREEN + "Open");
+			else
+				block.setLine(3, ChatColor.RED + "Closed");
+			block.update();
+			signComp = getSign(SignType.CITY_PERM_OUT_BUILD, city.getEntityID());
+			if (signComp == null)
+				signComp = createSign(block.getBlock(), city.getName() + " perm out build", SignType.CITY_PERM_OUT_BUILD, city.getEntityID());
 			
 		}
     }
@@ -672,5 +752,11 @@ public class CivAPI {
 			plugin.getDatabase().update(tmp);
 			plugin.getDatabase().endTransaction();
 		}
+	}
+	
+	public static void save(PermissionComponent component){
+		//Flag perm cache for full rebuild
+		PlotCache.flushDatabase();
+		plugin.getDatabase().save(component);
 	}
 }

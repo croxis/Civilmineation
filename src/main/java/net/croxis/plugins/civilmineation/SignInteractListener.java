@@ -1,5 +1,6 @@
 package net.croxis.plugins.civilmineation;
 
+import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.civilmineation.components.SignComponent;
@@ -130,7 +131,7 @@ public class SignInteractListener implements Listener{
 							Civilmineation.log(resident.getCity().getName());
 							return;
 						}
-						if (resident.isMayor() || resident.isCityAssistant()){
+						if (CivAPI.isCityAdmin(resident)){
 							if (sign.getLine(3).contains("Open")) {
 								sign.setLine(3, ChatColor.RED + "Closed");
 								sign.update();
@@ -139,9 +140,39 @@ public class SignInteractListener implements Listener{
 								sign.update();
 							}
 						}
-					} else if (signComp.getType() == SignType.CITY_CHARTER && (resident.isMayor() || resident.isCityAssistant())){
+					} else if (signComp.getType() == SignType.CITY_CHARTER && CivAPI.isCityAdmin(resident)){
 						CivAPI.updateCityCharter(CivAPI.getCity(signComp.getEntityID()));
-					}
+					} else if (signComp.getType() == SignType.CITY_PERM_RES_BUILD && CivAPI.isCityAdmin(resident)){
+						PermissionComponent perm = CivAPI.getPermissions(resident.getCity().getEntityID());
+						perm.setResidentBuild(!perm.isResidentBuild());
+						perm.setResidentDestroy(!perm.isResidentBuild());
+						CivAPI.save(perm);
+						if (perm.isResidentBuild())
+							sign.setLine(3, ChatColor.GREEN + "Open");
+						else
+							sign.setLine(3, ChatColor.RED + "Closed");
+						sign.update();
+					} else if (signComp.getType() == SignType.CITY_PERM_CIV_BUILD && CivAPI.isCityAdmin(resident)){
+						PermissionComponent perm = CivAPI.getPermissions(resident.getCity().getEntityID());
+						perm.setAllyBuild(!perm.isAllyBuild());
+						perm.setAllyDestroy(!perm.isAllyBuild());
+						CivAPI.save(perm);
+						if (perm.isAllyBuild())
+							sign.setLine(3, ChatColor.GREEN + "Open");
+						else
+							sign.setLine(3, ChatColor.RED + "Closed");
+						sign.update();
+					}  else if (signComp.getType() == SignType.CITY_PERM_OUT_BUILD && CivAPI.isCityAdmin(resident)){
+						PermissionComponent perm = CivAPI.getPermissions(resident.getCity().getEntityID());
+						perm.setOutsiderBuild(!perm.isOutsiderBuild());
+						perm.setOutsiderDestroy(!perm.isOutsiderBuild());
+						CivAPI.save(perm);
+						if (perm.isOutsiderBuild())
+							sign.setLine(3, ChatColor.GREEN + "Open");
+						else
+							sign.setLine(3, ChatColor.RED + "Closed");
+						sign.update();
+					} 
 				}
 			}
 		}
