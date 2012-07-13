@@ -101,6 +101,32 @@ public class SignChangeListener implements Listener{
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
 			CivAPI.broadcastToCiv("The city of " + city.getName() + " has been founded!", mayor.getCity().getCivilization());
+    	} else if (event.getLine(0).equalsIgnoreCase("[city charter]")){
+    		 if (!CivAPI.isCityAdmin(resident)){
+     			cancelBreak(event, "You must be a city administrator.");
+     		} else if (CivAPI.isClaimedByCity(plot, resident.getCity())){
+    			cancelBreak(event, "This plot is not part of your city");
+    		}  
+    		CityComponent city = resident.getCity();
+    		if (event.isCancelled())
+    			return;
+    		CivAPI.plugin.getDatabase().delete(CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.CITY_CHARTER).eq("entityID", resident.getCity().getEntityID()).findUnique());
+    		CivAPI.plugin.getDatabase().delete(CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.CITY_CHARTER_CULTURE).eq("entityID", resident.getCity().getEntityID()).findUnique());
+    		CivAPI.plugin.getDatabase().delete(CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.CITY_CHARTER_MONEY).eq("entityID", resident.getCity().getEntityID()).findUnique());
+    		CivAPI.plugin.getDatabase().delete(CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.CITY_PERM_CIV_BUILD).eq("entityID", resident.getCity().getEntityID()).findUnique());
+    		CivAPI.plugin.getDatabase().delete(CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.CITY_PERM_OUT_BUILD).eq("entityID", resident.getCity().getEntityID()).findUnique());
+    		CivAPI.plugin.getDatabase().delete(CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.CITY_PERM_RES_BUILD).eq("entityID", resident.getCity().getEntityID()).findUnique());
+    		CivAPI.plugin.getDatabase().delete(CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.DEMOGRAPHICS).eq("entityID", resident.getCity().getEntityID()).findUnique());
+    		SignComponent signComp = CivAPI.createSign(event.getBlock(), city.getName() + " charter", SignType.CITY_CHARTER, city.getEntityID());
+			event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
+			event.setLine(0, ChatColor.BLUE + "City Charter");
+			event.setLine(1, city.getCivilization().getName());
+			event.setLine(2, city.getName());
+			event.setLine(3, "Mayor " + CivAPI.getMayor(city).getName());
+			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
+			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
+			CivAPI.updateCityCharter(city);
+			event.getPlayer().sendMessage("Charter moved successfully. Please manually break old charter signs.");
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
     		if (!CivAPI.isCityAdmin(resident)){
     			cancelBreak(event, "You must be a city admin");
