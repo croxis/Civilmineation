@@ -244,7 +244,7 @@ public class SignChangeListener implements Listener{
     				plot.setName(ChatColor.GREEN + plot.getResident().getName() + " " + type.toString());
     			else
     				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
-    		event.getPlayer().sendMessage("Library creation successful");
+    		event.getPlayer().sendMessage(type.toString().toLowerCase() + " creation successful");
     		CivAPI.save(plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[civ]")){
     		event.getBlock().breakNaturally();
