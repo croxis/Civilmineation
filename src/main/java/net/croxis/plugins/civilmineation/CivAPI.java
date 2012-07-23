@@ -185,8 +185,17 @@ public class CivAPI {
 				List<ResidentComponent> residents = plugin.getDatabase().find(ResidentComponent.class).where().eq("city", c).findList();
 				for (ResidentComponent r : residents){
 					TechManager.addTech(r.getName(), learned);
+					if (learned.name.equalsIgnoreCase("Currency")){
+						CivAPI.econ.depositPlayer(r.getName(), 10);
+					}
 				}
 				broadcastToCity("You have learned " + ChatColor.BLUE + learned.name + "!", c);
+				if (learned.name.equalsIgnoreCase("Currency")){
+					CivAPI.econ.depositPlayer(c.getName(), 10);
+				}
+			}
+			if (learned.name.equalsIgnoreCase("Currency")){
+				CivAPI.econ.depositPlayer(city.getCivilization().getName(), 10);
 			}
 		}
 	}

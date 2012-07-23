@@ -18,16 +18,12 @@ import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.civilmineation.components.SignComponent;
 import net.croxis.plugins.civilmineation.events.ResidentJoinEvent;
-import net.croxis.plugins.research.RPlayer;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -106,8 +102,12 @@ public class Civilmineation extends JavaPlugin implements Listener {
         				CivAPI.addResearch(resident.getCity(), 1);
         			} else {
         				Tech learned = TechManager.addPoints(player, 1);
-        				if(learned != null)
+        				if(learned != null){
         					player.sendMessage("You have learned " + learned.name);
+        					if (learned.name.equalsIgnoreCase("Currency")){
+        						CivAPI.econ.depositPlayer(player.getName(), 10);
+        					}
+        				}
         			}
         		}
         		for (CityComponent city : CivAPI.getCities()){
