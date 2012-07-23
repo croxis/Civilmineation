@@ -15,27 +15,27 @@ public class PermissionComponent{
 	@OneToOne(fetch = FetchType.LAZY)
 	private Ent entityID;
 	private String name;
-	public boolean residentBuild, residentDestroy, residentSwitch, residentItemUse,
-	outsiderBuild, outsiderDestroy, outsiderSwitch, outsiderItemUse,
-	allyBuild, allyDestroy, allySwitch, allyItemUse;
-public boolean pvp, fire, explosion, mobs;
-private boolean enforceChildren;
+	public boolean residentEdit, residentSwitch, residentItemUse,
+	outsiderEdit, outsiderSwitch, outsiderItemUse,
+	allyEdit, allySwitch, allyItemUse;
+	public boolean pvp, fire, explosion, mobs;
+	private boolean enforceChildren;
 
 public void reset() {
 	setAll(false);
 }
 
 public void setAll(boolean b) {
-	residentBuild = b;
-	residentDestroy = b;
+	residentEdit = b;
+	
 	residentSwitch = b;
 	residentItemUse = b;
-	outsiderBuild = b;
-	outsiderDestroy = b;
+	outsiderEdit = b;
+	
 	outsiderSwitch = b;
 	outsiderItemUse = b;
-	allyBuild = b;
-	allyDestroy = b;
+	allyEdit = b;
+	
 	allySwitch = b;
 	allyItemUse = b;
 	
@@ -49,26 +49,20 @@ public void set(String s, boolean b) {
 	
 	if (s.equalsIgnoreCase("denyAll"))
 		reset();
-	else if (s.equalsIgnoreCase("residentBuild"))
-		residentBuild = b;
-	else if (s.equalsIgnoreCase("residentDestroy"))
-		residentDestroy = b;
+	else if (s.equalsIgnoreCase("residentEdit"))
+		residentEdit = b;
 	else if (s.equalsIgnoreCase("residentSwitch"))
 		residentSwitch = b;
 	else if (s.equalsIgnoreCase("residentItemUse"))
 		residentItemUse = b;
-	else if (s.equalsIgnoreCase("outsiderBuild"))
-		outsiderBuild = b;
-	else if (s.equalsIgnoreCase("outsiderDestroy"))
-		outsiderDestroy = b;
+	else if (s.equalsIgnoreCase("outsiderEdit"))
+		outsiderEdit = b;
 	else if (s.equalsIgnoreCase("outsiderSwitch"))
 		outsiderSwitch = b;
 	else if (s.equalsIgnoreCase("outsiderItemUse"))
 		outsiderItemUse = b;
-	else if (s.equalsIgnoreCase("allyBuild"))
-		allyBuild = b;
-	else if (s.equalsIgnoreCase("allyDestroy"))
-		allyDestroy = b;
+	else if (s.equalsIgnoreCase("allyEdit"))
+		allyEdit = b;
 	else if (s.equalsIgnoreCase("allySwitch"))
 		allySwitch = b;
 	else if (s.equalsIgnoreCase("allyItemUse"))
@@ -87,26 +81,20 @@ public void set(String s, boolean b) {
 @Override
 public String toString() {
 	String out = "";
-	if (residentBuild)
-		out += "residentBuild";
-	if (residentDestroy)
-		out += (out.length() > 0 ? "," : "") + "residentDestroy";
+	if (residentEdit)
+		out += "residentEdit";
 	if (residentSwitch)
 		out += (out.length() > 0 ? "," : "") + "residentSwitch";
 	if (residentItemUse)
 		out += (out.length() > 0 ? "," : "") + "residentItemUse";
-	if (outsiderBuild)
-		out += (out.length() > 0 ? "," : "") + "outsiderBuild";
-	if (outsiderDestroy)
-		out += (out.length() > 0 ? "," : "") + "outsiderDestroy";
+	if (outsiderEdit)
+		out += (out.length() > 0 ? "," : "") + "outsiderEdit";
 	if (outsiderSwitch)
 		out += (out.length() > 0 ? "," : "") + "outsiderSwitch";
 	if (outsiderItemUse)
 		out += (out.length() > 0 ? "," : "") + "outsiderItemUse";
-	if (allyBuild)
-		out += (out.length() > 0 ? "," : "") + "allyBuild";
-	if (allyDestroy)
-		out += (out.length() > 0 ? "," : "") + "allyDestroy";
+	if (allyEdit)
+		out += (out.length() > 0 ? "," : "") + "allyEdit";
 	if (allySwitch)
 		out += (out.length() > 0 ? "," : "") + "allySwitch";
 	if (allyItemUse)
@@ -125,8 +113,7 @@ public String toString() {
 }
 
 public enum ActionType {
-	BUILD,
-	DESTROY,
+	EDIT,
 	SWITCH,
 	ITEM_USE;
 	
@@ -149,8 +136,7 @@ public enum PermLevel {
 
 public boolean getResidentPerm(ActionType type) {
 	switch (type) {
-		case BUILD: return residentBuild;
-		case DESTROY: return residentDestroy;
+		case EDIT: return residentEdit;
 		case SWITCH: return residentSwitch;
 		case ITEM_USE: return residentItemUse;
 		default: throw new UnsupportedOperationException();
@@ -159,8 +145,7 @@ public boolean getResidentPerm(ActionType type) {
 
 public boolean getOutsiderPerm(ActionType type) {
 	switch (type) {
-		case BUILD: return outsiderBuild;
-		case DESTROY: return outsiderDestroy;
+		case EDIT: return outsiderEdit;
 		case SWITCH: return outsiderSwitch;
 		case ITEM_USE: return outsiderItemUse;
 		default: throw new UnsupportedOperationException();
@@ -169,8 +154,7 @@ public boolean getOutsiderPerm(ActionType type) {
 
 public boolean getAllyPerm(ActionType type) {
 	switch (type) {
-		case BUILD: return allyBuild;
-		case DESTROY: return allyDestroy;
+		case EDIT: return allyEdit;
 		case SWITCH: return allySwitch;
 		case ITEM_USE: return allyItemUse;
 		default: throw new UnsupportedOperationException();
@@ -178,28 +162,22 @@ public boolean getAllyPerm(ActionType type) {
 }
 
 public boolean getPerm(String s){
-	if (s.equalsIgnoreCase("residentBuild"))
-	return residentBuild;
-	else if (s.equalsIgnoreCase("residentDestroy"))
-	return residentDestroy;
+	if (s.equalsIgnoreCase("residentEdit"))
+	return residentEdit;
 	else if (s.equalsIgnoreCase("residentSwitch"))
 	return residentSwitch;
 	else if (s.equalsIgnoreCase("residentItemUse"))
 	return residentItemUse;
 
-	else if (s.equalsIgnoreCase("outsiderBuild"))
-	return outsiderBuild;
-	else if (s.equalsIgnoreCase("outsiderDestroy"))
-	return outsiderDestroy;
+	else if (s.equalsIgnoreCase("outsiderEdit"))
+	return outsiderEdit;
 	else if (s.equalsIgnoreCase("outsiderSwitch"))
 	return outsiderSwitch;
 	else if (s.equalsIgnoreCase("outsiderItemUse"))
 	return outsiderItemUse;
 
-	else if (s.equalsIgnoreCase("allyBuild"))
-	return allyBuild;
-	else if (s.equalsIgnoreCase("allyDestroy"))
-	return allyDestroy;
+	else if (s.equalsIgnoreCase("allyEdit"))
+	return allyEdit;
 	else if (s.equalsIgnoreCase("allySwitch"))
 	return allySwitch;
 	else if (s.equalsIgnoreCase("allyItemUse"))
@@ -207,20 +185,12 @@ public boolean getPerm(String s){
 	return false;
 	}
 
-public boolean isResidentBuild() {
-	return residentBuild;
+public boolean isResidentEdit() {
+	return residentEdit;
 }
 
-public void setResidentBuild(boolean residentBuild) {
-	this.residentBuild = residentBuild;
-}
-
-public boolean isResidentDestroy() {
-	return residentDestroy;
-}
-
-public void setResidentDestroy(boolean residentDestroy) {
-	this.residentDestroy = residentDestroy;
+public void setResidentEdit(boolean residentBuild) {
+	this.residentEdit = residentBuild;
 }
 
 public boolean isResidentSwitch() {
@@ -239,20 +209,12 @@ public void setResidentItemUse(boolean residentItemUse) {
 	this.residentItemUse = residentItemUse;
 }
 
-public boolean isOutsiderBuild() {
-	return outsiderBuild;
+public boolean isOutsiderEdit() {
+	return outsiderEdit;
 }
 
-public void setOutsiderBuild(boolean outsiderBuild) {
-	this.outsiderBuild = outsiderBuild;
-}
-
-public boolean isOutsiderDestroy() {
-	return outsiderDestroy;
-}
-
-public void setOutsiderDestroy(boolean outsiderDestroy) {
-	this.outsiderDestroy = outsiderDestroy;
+public void setOutsiderEdit(boolean outsiderBuild) {
+	this.outsiderEdit = outsiderBuild;
 }
 
 public boolean isOutsiderSwitch() {
@@ -271,20 +233,12 @@ public void setOutsiderItemUse(boolean outsiderItemUse) {
 	this.outsiderItemUse = outsiderItemUse;
 }
 
-public boolean isAllyBuild() {
-	return allyBuild;
+public boolean isAllyEdit() {
+	return allyEdit;
 }
 
-public void setAllyBuild(boolean allyBuild) {
-	this.allyBuild = allyBuild;
-}
-
-public boolean isAllyDestroy() {
-	return allyDestroy;
-}
-
-public void setAllyDestroy(boolean allyDestroy) {
-	this.allyDestroy = allyDestroy;
+public void setAllyEdit(boolean allyBuild) {
+	this.allyEdit = allyBuild;
 }
 
 public boolean isAllySwitch() {

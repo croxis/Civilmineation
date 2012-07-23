@@ -144,30 +144,27 @@ public class SignInteractListener implements Listener{
 						CivAPI.updateCityCharter(CivAPI.getCity(signComp.getEntityID()));
 					} else if (signComp.getType() == SignType.CITY_PERM_RES_BUILD && CivAPI.isCityAdmin(resident)){
 						PermissionComponent perm = CivAPI.getPermissions(resident.getCity().getEntityID());
-						perm.setResidentBuild(!perm.isResidentBuild());
-						perm.setResidentDestroy(!perm.isResidentBuild());
+						perm.setResidentEdit(!perm.isResidentEdit());
 						CivAPI.save(perm);
-						if (perm.isResidentBuild())
+						if (perm.isResidentEdit())
 							sign.setLine(3, ChatColor.GREEN + "Open");
 						else
 							sign.setLine(3, ChatColor.RED + "Closed");
 						sign.update();
 					} else if (signComp.getType() == SignType.CITY_PERM_CIV_BUILD && CivAPI.isCityAdmin(resident)){
 						PermissionComponent perm = CivAPI.getPermissions(resident.getCity().getEntityID());
-						perm.setAllyBuild(!perm.isAllyBuild());
-						perm.setAllyDestroy(!perm.isAllyBuild());
+						perm.setAllyEdit(!perm.isAllyEdit());
 						CivAPI.save(perm);
-						if (perm.isAllyBuild())
+						if (perm.isAllyEdit())
 							sign.setLine(3, ChatColor.GREEN + "Open");
 						else
 							sign.setLine(3, ChatColor.RED + "Closed");
 						sign.update();
 					}  else if (signComp.getType() == SignType.CITY_PERM_OUT_BUILD && CivAPI.isCityAdmin(resident)){
 						PermissionComponent perm = CivAPI.getPermissions(resident.getCity().getEntityID());
-						perm.setOutsiderBuild(!perm.isOutsiderBuild());
-						perm.setOutsiderDestroy(!perm.isOutsiderBuild());
+						perm.setOutsiderEdit(!perm.isOutsiderEdit());
 						CivAPI.save(perm);
-						if (perm.isOutsiderBuild())
+						if (perm.isOutsiderEdit())
 							sign.setLine(3, ChatColor.GREEN + "Open");
 						else
 							sign.setLine(3, ChatColor.RED + "Closed");

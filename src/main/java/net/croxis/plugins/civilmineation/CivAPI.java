@@ -25,7 +25,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -273,7 +272,7 @@ public class CivAPI {
 			block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getState();
 			block.setLine(0, "Civilization");
 			block.setLine(1, "Build/Destroy");
-			if (getPermissions(city.getEntityID()).allyBuild)
+			if (getPermissions(city.getEntityID()).allyEdit)
 				block.setLine(3, ChatColor.GREEN + "Open");
 			else
 				block.setLine(3, ChatColor.RED + "Closed");
@@ -286,7 +285,7 @@ public class CivAPI {
 			block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getState();
 			block.setLine(0, "Resident");
 			block.setLine(1, "Build/Destroy");
-			if (getPermissions(city.getEntityID()).residentBuild)
+			if (getPermissions(city.getEntityID()).residentEdit)
 				block.setLine(3, ChatColor.GREEN + "Open");
 			else
 				block.setLine(3, ChatColor.RED + "Closed");
@@ -299,7 +298,7 @@ public class CivAPI {
 			block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.DOWN).getState();
 			block.setLine(0, "Outsider");
 			block.setLine(1, "Build/Destroy");
-			if (getPermissions(city.getEntityID()).outsiderBuild)
+			if (getPermissions(city.getEntityID()).outsiderEdit)
 				block.setLine(3, ChatColor.GREEN + "Open");
 			else
 				block.setLine(3, ChatColor.RED + "Closed");
@@ -340,7 +339,7 @@ public class CivAPI {
 			block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getState();
 			block.setLine(0, "Civilization");
 			block.setLine(1, "Build/Destroy");
-			if (getPermissions(city.getEntityID()).allyBuild)
+			if (getPermissions(city.getEntityID()).allyEdit)
 				block.setLine(3, ChatColor.GREEN + "Open");
 			else
 				block.setLine(3, ChatColor.RED + "Closed");
@@ -353,7 +352,7 @@ public class CivAPI {
 			block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getState();
 			block.setLine(0, "Resident");
 			block.setLine(1, "Build/Destroy");
-			if (getPermissions(city.getEntityID()).residentBuild)
+			if (getPermissions(city.getEntityID()).residentEdit)
 				block.setLine(3, ChatColor.GREEN + "Open");
 			else
 				block.setLine(3, ChatColor.RED + "Closed");
@@ -366,7 +365,7 @@ public class CivAPI {
 			block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.DOWN).getState();
 			block.setLine(0, "Outsider");
 			block.setLine(1, "Build/Destroy");
-			if (getPermissions(city.getEntityID()).outsiderBuild)
+			if (getPermissions(city.getEntityID()).outsiderEdit)
 				block.setLine(3, ChatColor.GREEN + "Open");
 			else
 				block.setLine(3, ChatColor.RED + "Closed");
@@ -459,8 +458,7 @@ public class CivAPI {
 		Ent cityEntity = createEntity("City " + name);			
 		PermissionComponent cityPerm = new PermissionComponent();
 		cityPerm.setAll(false);
-		cityPerm.setResidentBuild(true);
-		cityPerm.setResidentDestroy(true);
+		cityPerm.setResidentEdit(true);
 		cityPerm.setResidentItemUse(true);
 		cityPerm.setResidentSwitch(true);
 		cityPerm.setName(name + " permissions");
@@ -507,8 +505,7 @@ public class CivAPI {
 		
 		PermissionComponent civPerm = new PermissionComponent();
 		civPerm.setAll(false);
-		civPerm.setResidentBuild(true);
-		civPerm.setResidentDestroy(true);
+		civPerm.setResidentEdit(true);
 		civPerm.setResidentItemUse(true);
 		civPerm.setResidentSwitch(true);
 		civPerm.setName(name + " permissions");

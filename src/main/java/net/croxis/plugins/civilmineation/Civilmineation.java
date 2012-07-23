@@ -408,8 +408,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     		perm.setEntityID(resident.getEntityID());
     		perm.setName(resident.getName());
     		perm.setAll(false);
-    		perm.setResidentBuild(true);
-    		perm.setResidentDestroy(true);
+    		perm.setResidentEdit(true);
     		perm.setResidentItemUse(true);
     		perm.setResidentSwitch(true);
     		getDatabase().save(perm);

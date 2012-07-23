@@ -38,19 +38,19 @@ public class ActionPermissionListener implements Listener{
 		 if (plot.getResident() == null){
 			 if (resident.getCity() == null){
 				 Civilmineation.logDebug("City is null");
-				 if (!cityPerm.isOutsiderBuild()){
+				 if (!cityPerm.isOutsiderEdit()){
 					 event.setCancelled(true);
 					 Civilmineation.logDebug("No outsider build");
 					 return;
 				 }
 			 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
-				 if (!cityPerm.isResidentBuild()){
+				 if (!cityPerm.isResidentEdit()){
 					 event.setCancelled(true);
 					 Civilmineation.logDebug("No res build");
 					 return;
 				 }
 			 } else {
-				 if (!cityPerm.isOutsiderBuild()){
+				 if (!cityPerm.isOutsiderEdit()){
 					 event.setCancelled(true);
 					 Civilmineation.logDebug("No outsider build 2");
 					 return;
@@ -62,20 +62,20 @@ public class ActionPermissionListener implements Listener{
 			 PermissionComponent perm = CivAPI.getPermissions(plot.getResident().getEntityID());
 			 if (resident.getCity() == null){
 				 Civilmineation.logDebug("City is null");
-				 if (!perm.isOutsiderBuild()){
+				 if (!perm.isOutsiderEdit()){
 					 event.setCancelled(true);
 					 Civilmineation.logDebug("No outsider build");
 					 return;
 				 }
 			 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
 				//TODO: Friends list here
-				 if (!perm.isResidentBuild()){
+				 if (!perm.isResidentEdit()){
 					 event.setCancelled(true);
 					 Civilmineation.logDebug("No res build");
 					 return;
 				 }
 			 } else {
-				 if (!perm.isOutsiderBuild()){
+				 if (!perm.isOutsiderEdit()){
 					 event.setCancelled(true);
 					 Civilmineation.logDebug("No outsider build 2");
 					 return;
@@ -232,17 +232,17 @@ public class ActionPermissionListener implements Listener{
 			
 			if (plot.getResident() == null){
 				if (resident.getCity() == null){
-					 if (!cityPerm.isOutsiderDestroy()){
+					 if (!cityPerm.isOutsiderEdit()){
 						 event.setCancelled(true);
 						 return;
 					 }
 				 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
-					 if (!cityPerm.isResidentDestroy()){
+					 if (!cityPerm.isResidentEdit()){
 						 event.setCancelled(true);
 						 return;
 					 }
 				 } else {
-					 if (!cityPerm.isOutsiderDestroy()){
+					 if (!cityPerm.isOutsiderEdit()){
 						 event.setCancelled(true);
 						 return;
 					 }
@@ -252,18 +252,18 @@ public class ActionPermissionListener implements Listener{
 				if (resident.getName().equalsIgnoreCase(plot.getResident().getName()))
 					return;
 				if (resident.getCity() == null){
-					if (!perm.isOutsiderDestroy()){
+					if (!perm.isOutsiderEdit()){
 						event.setCancelled(true);
 						return;
 					}
 				} else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
 					//TODO: Friends list here
-					 if (!perm.isResidentDestroy()){
+					 if (!perm.isResidentEdit()){
 						 event.setCancelled(true);
 						 return;
 					 }
 				} else {
-					 if (!perm.isOutsiderDestroy()){
+					 if (!perm.isOutsiderEdit()){
 						 event.setCancelled(true);
 						 return;
 					 }
