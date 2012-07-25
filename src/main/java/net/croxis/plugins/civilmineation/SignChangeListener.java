@@ -156,95 +156,7 @@ public class SignChangeListener implements Listener{
 			event.setLine(0, resident.getCity().getName());
 			return;
     	} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
-    		event.getBlock().breakNaturally();
-    		if (!CivAPI.isClaimed(plot)){
-    			cancelBreak(event, "This plot is unclaimed");
-    		} else if (!CivAPI.isCityAdmin(resident)){
-    			cancelBreak(event, "You are not a city admin or plot owner");
-    		} else if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-    			cancelBreak(event, "This is not your city");
-    		} else if (event.getLine(1).isEmpty()){
-    			cancelBreak(event, "Invalid building type");
-    		} else if (!plot.getType().equals(CityPlotType.RESIDENTIAL)){
-    			cancelBreak(event, "Can not change existing building");
-    		}
-			if (event.isCancelled())
-				return;
-    		CityPlotType type = CityPlotType.valueOf(event.getLine(1).toUpperCase());
-    		double cost = 0;
-    		double value = 0;
-    		HashSet<Integer> ids = new HashSet<Integer>();
-    		String tech = "";
-    		if (type == null){
-    			event.getPlayer().sendMessage("Invalid building type");
-    			event.setCancelled(true);
-    			return;
-    		}
-    		if (type == CityPlotType.LIBRARY){
-				cost = 25;
-				tech = "Writing";
-				ids.add(47);
-			} else if (type == CityPlotType.UNIVERSITY){
-				cost = 55;
-				tech = "Education";
-				ids.add(47);
-				if (CivAPI.plugin.getDatabase().find(PlotComponent.class).where().eq("city", resident.getCity()).eq("type", CityPlotType.LIBRARY).findList().isEmpty()){
-					event.getPlayer().sendMessage("A library is needed first.");
-	    			event.setCancelled(true);
-	    			return;
-				}
-			}
-
-			if (!TechManager.hasTech(CivAPI.getMayor(resident).getName(), tech)){
-    			event.getPlayer().sendMessage("You need " + tech);
-				event.setCancelled(true);
-				return;
-			}
-			
-    		if (type.equals(CityPlotType.LIBRARY) || type.equals(CityPlotType.UNIVERSITY)){
-    			long time = System.currentTimeMillis();
-    			ChunkSnapshot chunkShot = event.getBlock().getChunk().getChunkSnapshot();
-    			for (int x=0; x<16; x++){
-    				if (value >= cost)
-    					break;
-    				for (int z=0; z<16; z++){
-    					if (value >= cost)
-    						break;
-    					for (int y=16; y<Bukkit.getServer().getWorld("world").getMaxHeight()/2; y++){
-    						if (value >= cost)
-    							break;
-    						if (chunkShot.getBlockTypeId(x, y, z) == 47)
-    							value++;
-    					}
-    				}
-    			}
-    			Civilmineation.logDebug("Library scan time: " + Long.toString(System.currentTimeMillis() - time));    			
-    		}
-    		
-    		if (type.equals(CityPlotType.LIBRARY) || type.equals(CityPlotType.UNIVERSITY)){
-    			if (value < cost){
-    				event.getPlayer().sendMessage("Insufficant books: " + Double.toString(value) + "/" + Double.toString(cost));
-    				event.setCancelled(true);
-    				return;
-    			}    				
-    		} /*else if (5 == 6){//TODO: This is for finance based construction
-    			if (CivAPI.econ.getBalance(plot.getCity().getName()) < cost){
-    	    		event.getPlayer().sendMessage("Insufficant funds");
-    				event.setCancelled(true);
-    				return;
-        		}
-    			CivAPI.econ.withdrawPlayer(plot.getCity().getName(), cost);
-    		}*/
-    		plot.setType(type);
-    		if (plot.getResident() == null)
-    			plot.setName(plot.getCity().getName() + " " + type.toString());
-    		else
-    			if (Bukkit.getServer().getPlayer(plot.getResident().getName()).isOnline())
-    				plot.setName(ChatColor.GREEN + plot.getResident().getName() + " " + type.toString());
-    			else
-    				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
-    		event.getPlayer().sendMessage(type.toString().toLowerCase() + " creation successful");
-    		CivAPI.save(plot);
+    		build(event, resident, plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[civ]")){
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCivAdmin(resident)){
@@ -345,6 +257,101 @@ public class SignChangeListener implements Listener{
         	}
     		
     	}
+	}
+	
+	private void build(SignChangeEvent event, ResidentComponent resident, PlotComponent plot){
+		event.getBlock().breakNaturally();
+		if (!CivAPI.isClaimed(plot)){
+			cancelBreak(event, "This plot is unclaimed");
+		} else if (!CivAPI.isCityAdmin(resident)){
+			cancelBreak(event, "You are not a city admin or plot owner");
+		} else if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
+			cancelBreak(event, "This is not your city");
+		} else if (event.getLine(1).isEmpty()){
+			cancelBreak(event, "Invalid building type");
+		} else if (!plot.getType().equals(CityPlotType.RESIDENTIAL)){
+			cancelBreak(event, "Can not change existing building");
+		}
+		if (event.isCancelled())
+			return;
+		CityPlotType type = CityPlotType.valueOf(event.getLine(1).toUpperCase());
+		double cost = 0;
+		double value = 0;
+		HashSet<Integer> ids = new HashSet<Integer>();
+		String tech = "";
+		if (type == null){
+			event.getPlayer().sendMessage("Invalid building type");
+			event.setCancelled(true);
+			return;
+		}
+		if (type == CityPlotType.LIBRARY){
+			cost = 25;
+			tech = "Writing";
+			ids.add(47);
+		} else if (type == CityPlotType.UNIVERSITY){
+			cost = 55;
+			tech = "Education";
+			ids.add(47);
+			if (CivAPI.plugin.getDatabase().find(PlotComponent.class).where().eq("city", resident.getCity()).eq("type", CityPlotType.LIBRARY).findList().isEmpty()){
+				event.getPlayer().sendMessage("A library is needed first.");
+    			event.setCancelled(true);
+    			return;
+			}
+		} else if (type == CityPlotType.EMBASSY){
+			cost = 20;
+			tech = "Writing";
+		}
+
+		if (!TechManager.hasTech(CivAPI.getMayor(resident).getName(), tech)){
+			event.getPlayer().sendMessage("You need " + tech);
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (type.equals(CityPlotType.LIBRARY) || type.equals(CityPlotType.UNIVERSITY)){
+			long time = System.currentTimeMillis();
+			ChunkSnapshot chunkShot = event.getBlock().getChunk().getChunkSnapshot();
+			for (int x=0; x<16; x++){
+				if (value >= cost)
+					break;
+				for (int z=0; z<16; z++){
+					if (value >= cost)
+						break;
+					for (int y=16; y<Bukkit.getServer().getWorld("world").getMaxHeight()/2; y++){
+						if (value >= cost)
+							break;
+						if (chunkShot.getBlockTypeId(x, y, z) == 47)
+							value++;
+					}
+				}
+			}
+			Civilmineation.logDebug("Library scan time: " + Long.toString(System.currentTimeMillis() - time));    			
+		}
+		
+		if (type.equals(CityPlotType.LIBRARY) || type.equals(CityPlotType.UNIVERSITY)){
+			if (value < cost){
+				event.getPlayer().sendMessage("Insufficant books: " + Double.toString(value) + "/" + Double.toString(cost));
+				event.setCancelled(true);
+				return;
+			}    				
+		} else if (type.equals(CityPlotType.EMBASSY)){
+			if (CivAPI.econ.getBalance(plot.getCity().getName()) < cost){
+	    		event.getPlayer().sendMessage("Insufficant funds");
+				event.setCancelled(true);
+				return;
+    		}
+			CivAPI.econ.withdrawPlayer(plot.getCity().getName(), cost);
+		}
+		plot.setType(type);
+		if (plot.getResident() == null)
+			plot.setName(plot.getCity().getName() + " " + type.toString());
+		else
+			if (Bukkit.getServer().getPlayer(plot.getResident().getName()).isOnline())
+				plot.setName(ChatColor.GREEN + plot.getResident().getName() + " " + type.toString());
+			else
+				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
+		event.getPlayer().sendMessage(type.toString().toLowerCase() + " creation successful");
+		CivAPI.save(plot);
 	}
 	
 	public void cancelBreak(SignChangeEvent event, String message){

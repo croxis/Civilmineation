@@ -12,6 +12,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class SignInteractListener implements Listener{
@@ -51,26 +52,17 @@ public class SignInteractListener implements Listener{
 						try{
 			    			price = Double.parseDouble(sign.getLine(3));
 			    		} catch (NumberFormatException e) {
-			    			event.getPlayer().sendMessage("Bad price value. Try a new [sell] sign.");
-			    			event.setCancelled(true);
+			    			cancelEvent(event, "Bad price value. Try a new [sell] sign.");
 			    			return;
 		    			}
-						if (!TechManager.hasTech(event.getPlayer().getName(), "Currency")){
-							event.getPlayer().sendMessage("You need to learn currency before being able to buy.");
-			    			event.setCancelled(true);
-			    			return;
-						}
-						//TODO: Add exception for embasee plots
-						if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
-							event.getPlayer().sendMessage("Not member of city.");
-			    			event.setCancelled(true);
-			    			return;
-						}
-						if (CivAPI.econ.getBalance(event.getPlayer().getName()) < price){
-							event.getPlayer().sendMessage("Not enough money.");
-			    			event.setCancelled(true);
-			    			return;
-						}
+						if (!TechManager.hasTech(event.getPlayer().getName(), "Currency"))
+							cancelEvent(event, "You need to learn currency before being able to buy.");
+						else if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName()) && !plot.getType().equals(CityPlotType.EMBASSY))
+							cancelEvent(event, "Not member of city.");
+						else if (CivAPI.econ.getBalance(event.getPlayer().getName()) < price)
+							cancelEvent(event, "Not enough money.");
+						if (event.isCancelled())
+							return;
 						CivAPI.econ.withdrawPlayer(event.getPlayer().getName(), price);
 						if(plot.getResident() == null){
 							CivAPI.econ.depositPlayer(plot.getCity().getName(), price);
@@ -174,5 +166,9 @@ public class SignInteractListener implements Listener{
 			}
 		}
 	}
-
+	public void cancelEvent(PlayerInteractEvent event, String message){
+		event.setCancelled(true);
+		event.getPlayer().sendMessage(message);
+		return;
+	}
 }
