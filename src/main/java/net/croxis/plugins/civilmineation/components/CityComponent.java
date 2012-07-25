@@ -40,7 +40,7 @@ public class CityComponent{
 		plotPrice, commercialPlotPrice, embassyPlotPrice;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CIVILIZATION_ID")
-	private CivilizationComponent civilization;
+	private CivComponent civilization;
 	private boolean hasUpkeep, isPublic, isTaxPercentage;
 	private String townBoard = "/city set board [msg]", tag;
 	@Transient
@@ -156,10 +156,10 @@ public class CityComponent{
 	public void setEmbassyPlotPrice(double embassyPlotPrice) {
 		this.embassyPlotPrice = embassyPlotPrice;
 	}
-	public CivilizationComponent getCivilization() {
+	public CivComponent getCivilization() {
 		return civilization;
 	}
-	public void setCivilization(CivilizationComponent civilization) {
+	public void setCivilization(CivComponent civilization) {
 		this.civilization = civilization;
 	}
 	public boolean isHasUpkeep() {

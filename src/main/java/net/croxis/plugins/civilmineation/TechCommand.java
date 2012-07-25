@@ -3,7 +3,7 @@ package net.croxis.plugins.civilmineation;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import net.croxis.plugins.civilmineation.components.CivilizationComponent;
+import net.croxis.plugins.civilmineation.components.CivComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.research.Tech;
 import net.croxis.plugins.research.TechManager;
@@ -71,7 +71,7 @@ public class TechCommand implements CommandExecutor {
     		return true;    		
     	} else if(args[0].equalsIgnoreCase("set") && args.length > 1){
     		if(resident.getCity() != null){    			
-					CivilizationComponent civ = resident.getCity().getCivilization();
+					CivComponent civ = resident.getCity().getCivilization();
 				
     			if(!(resident.isCivAssistant() || CivAPI.isKing(resident))){
     				player.sendMessage("Must be King or Civ assistant");

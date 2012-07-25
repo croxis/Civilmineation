@@ -19,7 +19,7 @@ import org.bukkit.ChatColor;
 
 @Entity()
 @Table(name = "civ_civilization")
-public class CivilizationComponent{
+public class CivComponent{
 	@Id
 	private int id;
 	@OneToOne(fetch = FetchType.LAZY)
@@ -35,26 +35,26 @@ public class CivilizationComponent{
 			joinColumns = @JoinColumn(name="CIV_ID", referencedColumnName="ID"),
 			inverseJoinColumns = @JoinColumn(name="ALLY_ID", referencedColumnName="ID") 
 			)*/
-	@ManyToMany(targetEntity=CivilizationComponent.class)
+	@ManyToMany(targetEntity=CivComponent.class)
 	@JoinTable(
 			name="civ_civ_ally_map",
 			joinColumns=@JoinColumn(name="civ_id", referencedColumnName="ID"),
 			inverseJoinColumns=@JoinColumn(name="ally_id", referencedColumnName="ID")
 			)
-	    private List<CivilizationComponent> allies = new ArrayList<CivilizationComponent>();
+	    private List<CivComponent> allies = new ArrayList<CivComponent>();
 	/*@OneToMany(cascade=CascadeType.ALL)
 	@JoinTable(
 			name="CIV_ENEMIES",
 			joinColumns = @JoinColumn(name="CIV_ID", referencedColumnName="ID"),
 			inverseJoinColumns = @JoinColumn(name="ENEMY_ID", referencedColumnName="ID") 
 			)*/
-	@ManyToMany(targetEntity=CivilizationComponent.class)
+	@ManyToMany(targetEntity=CivComponent.class)
 	@JoinTable(
 			name="civ_civ_enemy_map",
 			joinColumns=@JoinColumn(name="civ_id", referencedColumnName="ID"),
 			inverseJoinColumns=@JoinColumn(name="enemy_id", referencedColumnName="ID")
 			)
-    private List<CivilizationComponent> enemies = new ArrayList<CivilizationComponent>();
+    private List<CivComponent> enemies = new ArrayList<CivComponent>();
 	//@OneToOne
 	//@JoinColumn(name="CITY_ID")
     //private CityComponent capital;
@@ -82,16 +82,16 @@ public class CivilizationComponent{
 	public void setCities(List<CityComponent> cities) {
 		this.cities = cities;
 	}
-	public List<CivilizationComponent> getAllies() {
+	public List<CivComponent> getAllies() {
 		return allies;
 	}
-	public void setAllies(List<CivilizationComponent> allies) {
+	public void setAllies(List<CivComponent> allies) {
 		this.allies = allies;
 	}
-	public List<CivilizationComponent> getEnemies() {
+	public List<CivComponent> getEnemies() {
 		return enemies;
 	}
-	public void setEnemies(List<CivilizationComponent> enemies) {
+	public void setEnemies(List<CivComponent> enemies) {
 		this.enemies = enemies;
 	}
 	public double getTaxes() {

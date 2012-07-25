@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
-import net.croxis.plugins.civilmineation.components.CivilizationComponent;
+import net.croxis.plugins.civilmineation.components.CivComponent;
 import net.croxis.plugins.civilmineation.components.Ent;
 import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
@@ -139,7 +139,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 		list.add(Ent.class);
 		list.add(ResidentComponent.class);
         list.add(CityComponent.class);
-        list.add(CivilizationComponent.class);
+        list.add(CivComponent.class);
         list.add(PlotComponent.class);
         list.add(PermissionComponent.class);
         list.add(SignComponent.class);
@@ -168,78 +168,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     	ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 		// Void plots are ok, if fact required for this set
-    	if (event.getLine(0).equalsIgnoreCase("[civ assist]")){
-    		ResidentComponent king = CivAPI.getResident(event.getPlayer());
-    		event.getBlock().breakNaturally();
-    		if (event.getLine(1).isEmpty()){
-    			event.getPlayer().sendMessage("Assistant name on the second line.");
-    			event.setCancelled(true);
-    			return;
-    		} else if (!CivAPI.isKing(king)){
-    			event.getPlayer().sendMessage("You must be a king.");
-    			event.setCancelled(true);
-    			return;
-    		}
-    		ResidentComponent assistant = CivAPI.getResident(event.getLine(1));
-    		
-    		if (assistant == null){
-    			event.getPlayer().sendMessage("That player does not exist.");
-    			event.setCancelled(true);
-    			return;
-    		}						
-			if (assistant.getCity() == null){
-				event.getPlayer().sendMessage("That player must be in your civ!.");
-				event.setCancelled(true);
-				return;
-			}
-			if (!king.getCity().getCivilization().getName().equalsIgnoreCase(assistant.getCity().getCivilization().getName())){
-				event.getPlayer().sendMessage("That player must be in your civ!.");
-				event.setCancelled(true);
-				return;
-			}
-			assistant.setCivAssistant(!assistant.isCivAssistant());
-			getDatabase().save(assistant);
-			if(assistant.isCivAssistant())
-				CivAPI.broadcastToCiv(assistant.getName() + " is now a civ assistant!", king.getCity().getCivilization());
-			else
-				CivAPI.broadcastToCiv(assistant.getName() + " is no longer a civ assistant!", king.getCity().getCivilization());
-			return;
-    	} else if (event.getLine(0).equalsIgnoreCase("[city assist]")){
-    		ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
-    		event.getBlock().breakNaturally();
-    		if (event.getLine(1).isEmpty()){
-    			event.getPlayer().sendMessage("Assistant name on the second line.");
-    			event.setCancelled(true);
-    			return;
-    		} else if (!mayor.isMayor()){
-    			event.getPlayer().sendMessage("You must be a mayor.");
-    			event.setCancelled(true);
-    			return;
-    		}
-    		ResidentComponent assistant = CivAPI.getResident(event.getLine(1));
-    		if (assistant == null){
-    			event.getPlayer().sendMessage("That player does not exist.");
-    			event.setCancelled(true);
-    			return;
-    		}						
-			if (assistant.getCity() == null){
-				event.getPlayer().sendMessage("That player must be in your city!.");
-				event.setCancelled(true);
-				return;
-			}
-			if (!mayor.getCity().getName().equalsIgnoreCase(assistant.getCity().getName())){
-				event.getPlayer().sendMessage("That player must be in your city!.");
-				event.setCancelled(true);
-				return;
-			}
-			assistant.setCityAssistant(!assistant.isCityAssistant());
-			getDatabase().save(assistant);
-			if(assistant.isCityAssistant())
-				CivAPI.broadcastToCity(assistant.getName() + " is now a city assistant!", mayor.getCity());
-			else
-				CivAPI.broadcastToCity(assistant.getName() + " is no longer a city assistant!", mayor.getCity());
-			return;
-    	}  else if (event.getLine(0).equalsIgnoreCase("[kick]")) {
+    	if (event.getLine(0).equalsIgnoreCase("[kick]")) {
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCityAdmin(resident)){
     			event.getPlayer().sendMessage("You are not a city admin");
@@ -484,8 +413,8 @@ public class Civilmineation extends JavaPlugin implements Listener {
         if (resident.getCity() == null)
         	prefix = "[" + ChatColor.RED + "Barbarian" + ChatColor.WHITE + "]";
         else
-        	prefix = "[" + ChatColor.getByChar(resident.getCity().getCivilization().getChatcolor()) + resident.getCity().getCivilization().getName() + ChatColor.WHITE + "]" 
-        		+ "[" + ChatColor.getByChar(resident.getCity().getChatcolor()) + resident.getCity().getName() + ChatColor.WHITE + "]";
+        	prefix = "[" + ChatColor.getByChar(resident.getCity().getCivilization().getChatcolor()) + resident.getCity().getCivilization().getTag() + ChatColor.WHITE + "]" 
+        		+ "[" + ChatColor.getByChar(resident.getCity().getChatcolor()) + resident.getCity().getTag() + ChatColor.WHITE + "]";
         event.setFormat(prefix + event.getFormat());
 
     }

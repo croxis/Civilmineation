@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import javax.persistence.OptimisticLockException;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
-import net.croxis.plugins.civilmineation.components.CivilizationComponent;
+import net.croxis.plugins.civilmineation.components.CivComponent;
 import net.croxis.plugins.civilmineation.components.Ent;
 import net.croxis.plugins.civilmineation.components.PermissionComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
@@ -48,7 +48,7 @@ public class CivAPI {
     	return plugin.getDatabase().find(ResidentComponent.class).where().ieq("name", player.getName()).findUnique();
     }
     
-    public static HashSet<ResidentComponent> getResidents(CivilizationComponent civ){
+    public static HashSet<ResidentComponent> getResidents(CivComponent civ){
     	Set<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", civ).findSet();
     	HashSet<ResidentComponent> residents = new HashSet<ResidentComponent>();
     	for (CityComponent city : cities){
@@ -86,8 +86,8 @@ public class CivAPI {
     	return plugin.getDatabase().find(PermissionComponent.class).where().eq("entityID", ent).findUnique();
     }
     
-    public static CivilizationComponent getCiv(String name){
-    	return plugin.getDatabase().find(CivilizationComponent.class).where().ieq("name", name).findUnique();
+    public static CivComponent getCiv(String name){
+    	return plugin.getDatabase().find(CivComponent.class).where().ieq("name", name).findUnique();
     }
     
 	public static CityComponent getCity(Ent entityID) {
@@ -454,7 +454,7 @@ public class CivAPI {
     }
     
 	public static CityComponent createCity(String name, Player player, ResidentComponent mayor, Block charter,
-			CivilizationComponent civ, boolean capital) {
+			CivComponent civ, boolean capital) {
 		Ent cityEntity = createEntity("City " + name);			
 		PermissionComponent cityPerm = new PermissionComponent();
 		cityPerm.setAll(false);
@@ -470,6 +470,7 @@ public class CivAPI {
 		//addComponent(cityEntity, city);
 		city.setEntityID(cityEntity);
 		city.setName(name);
+		city.setTag(name);
 		city.setCivilization(civ);
 		city.setCapital(capital);
 		city.setTaxes(0);
@@ -492,14 +493,15 @@ public class CivAPI {
 		return city;
 	}
 	
-	public static CivilizationComponent createCiv(String name){
+	public static CivComponent createCiv(String name){
 		Ent civEntity = createEntity("Civ " + name);
-		CivilizationComponent civ = new CivilizationComponent();
+		CivComponent civ = new CivComponent();
 		civ.setName(name);
 		//addComponent(civEntity, civ);
 		civ.setEntityID(civEntity);
 		civ.setRegistered(System.currentTimeMillis());
 		civ.setTaxes(0);
+		civ.setTag(name);
 		//civ.setChatcolor(ChatColor.valueOf("YELLOW"));
     	plugin.getDatabase().save(civ);
 		
@@ -556,7 +558,7 @@ public class CivAPI {
     	}
     }
     
-    public static void broadcastToCiv(String message, CivilizationComponent civ){
+    public static void broadcastToCiv(String message, CivComponent civ){
     	List<CityComponent> cities = plugin.getDatabase().find(CityComponent.class).where().eq("civilization", civ).findList();
     	for (CityComponent city : cities){
     		broadcastToCity(message, city);
@@ -614,7 +616,7 @@ public class CivAPI {
 		plugin.getDatabase().delete(getAllSigns(city));
 		
 		Ent civEnt = city.getCivilization().getEntityID();
-		CivilizationComponent civ = city.getCivilization();
+		CivComponent civ = city.getCivilization();
 		
 		Ent cityEnt = city.getEntityID();
 		Bukkit.getServer().getPluginManager().callEvent(new DeleteCityEvent(city.getName(), city.getEntityID().getId()));
@@ -743,7 +745,7 @@ public class CivAPI {
 		plugin.getDatabase().save(plot);
 	}
 	
-	public static void save(CivilizationComponent component){
+	public static void save(CivComponent component){
 		plugin.getDatabase().save(component);
 	}
 	
@@ -763,6 +765,10 @@ public class CivAPI {
 	public static void save(PermissionComponent component){
 		//Flag perm cache for full rebuild
 		PlotCache.flushDatabase();
+		plugin.getDatabase().save(component);
+	}
+	
+	public static void save(ResidentComponent component){
 		plugin.getDatabase().save(component);
 	}
 }

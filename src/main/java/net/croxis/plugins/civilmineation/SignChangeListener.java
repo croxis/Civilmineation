@@ -3,7 +3,7 @@ package net.croxis.plugins.civilmineation;
 import java.util.HashSet;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
-import net.croxis.plugins.civilmineation.components.CivilizationComponent;
+import net.croxis.plugins.civilmineation.components.CivComponent;
 import net.croxis.plugins.civilmineation.components.PlotComponent;
 import net.croxis.plugins.civilmineation.components.ResidentComponent;
 import net.croxis.plugins.civilmineation.components.SignComponent;
@@ -24,7 +24,7 @@ public class SignChangeListener implements Listener{
 		ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
 		if (event.getLine(0).equalsIgnoreCase("[New Civ]")){
-			CivilizationComponent civComponent = CivAPI.getCiv(event.getLine(1));
+			CivComponent civComponent = CivAPI.getCiv(event.getLine(1));
 			CityComponent cityComponent = CivAPI.getCity(event.getLine(2));
     		if (CivAPI.isClaimed(plot)){
     			cancelBreak(event, "This plot is claimed");
@@ -41,7 +41,7 @@ public class SignChangeListener implements Listener{
     			return;
 			//TODO: Distance check to another city
 			//TODO: Check for room for interface placements
-			CivilizationComponent civ = CivAPI.createCiv(event.getLine(1));
+			CivComponent civ = CivAPI.createCiv(event.getLine(1));
 	    	ResidentComponent mayor = CivAPI.getResident(event.getPlayer());
 	    	CityComponent city = CivAPI.createCity(event.getLine(2), event.getPlayer(), mayor, event.getBlock(), civ, true);
 	    	SignComponent signComp = CivAPI.createSign(event.getBlock(), city.getName() + " charter", SignType.CITY_CHARTER, city.getEntityID());
@@ -92,7 +92,6 @@ public class SignChangeListener implements Listener{
 			SignComponent signComp = CivAPI.createSign(event.getBlock(), city.getName() + " charter", SignType.CITY_CHARTER, city.getEntityID());
 			CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), city.getName() + " Founding Square", event.getBlock().getRelative(BlockFace.UP), mayor.getCity());
 			event.getBlock().getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
-			Sign plotSign = (Sign) event.getBlock().getRelative(BlockFace.UP).getState();
 			event.setLine(0, ChatColor.BLUE + "City Charter");
 			event.setLine(1, city.getCivilization().getName());
 			event.setLine(2, city.getName());
@@ -261,10 +260,40 @@ public class SignChangeListener implements Listener{
     				cancelBreak(event, "Invalid color");
     				return;
     			}
-    			CivilizationComponent civ = resident.getCity().getCivilization();
+    			CivComponent civ = resident.getCity().getCivilization();
     			civ.setChatcolor(color.getChar());
     			CivAPI.save(civ);
-    		}
+    		} else if (event.getLine(1).equalsIgnoreCase("[assist]")){
+    			ResidentComponent assistant = CivAPI.getResident(event.getLine(2));
+        		if (event.getLine(2).isEmpty()){
+        			cancelBreak(event, "Assistant name on the third line.");
+        		} else if (!CivAPI.isKing(resident)){
+        			cancelBreak(event, "You must be a king.");
+        		} else if (assistant == null){
+        			cancelBreak(event, "That player does not exist.");
+        		} else if (assistant.getCity() == null){
+    				cancelBreak(event, "That player must be in your civ!.");
+    			} else if (!resident.getCity().getCivilization().getName().equalsIgnoreCase(assistant.getCity().getCivilization().getName())){
+    				cancelBreak(event, "That player must be in your civ!.");
+    			}
+        		if (event.isCancelled())
+        			return;
+    			assistant.setCivAssistant(!assistant.isCivAssistant());
+    			CivAPI.save(assistant);
+    			if(assistant.isCivAssistant())
+    				CivAPI.broadcastToCiv(assistant.getName() + " is now a civ assistant!", resident.getCity().getCivilization());
+    			else
+    				CivAPI.broadcastToCiv(assistant.getName() + " is no longer a civ assistant!", resident.getCity().getCivilization());
+    			return;
+        	} else if (event.getLine(1).equalsIgnoreCase("[tag]")){
+        		if (event.getLine(2).isEmpty())
+        			cancelBreak(event, "Tag name on the third line.");
+        		if (event.isCancelled())
+        			return;
+        		CivComponent civ = resident.getCity().getCivilization();
+        		civ.setTag(event.getLine(2));
+        		CivAPI.save(civ);
+        	}
     	} else if (event.getLine(0).equalsIgnoreCase("[city]")){
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCityAdmin(resident)){
@@ -283,7 +312,37 @@ public class SignChangeListener implements Listener{
     			CityComponent city = resident.getCity();
     			city.setChatcolor(color.getChar());
     			CivAPI.save(city);
-    		}
+    		} else if (event.getLine(1).equalsIgnoreCase("[assist]")){
+        		ResidentComponent assistant = CivAPI.getResident(event.getLine(2));
+        		event.getBlock().breakNaturally();
+        		if (event.getLine(2).isEmpty())
+        			cancelBreak(event, "Assistant name on the second line.");
+        		else if (!resident.isMayor())
+        			cancelBreak(event, "You must be a mayor.");
+        		else if (assistant == null)
+        			cancelBreak(event, "That player does not exist.");
+        		else if (assistant.getCity() == null)
+    				cancelBreak(event, "That player must be in your city!.");
+    			else if (!resident.getCity().getName().equalsIgnoreCase(assistant.getCity().getName()))
+    				cancelBreak(event, "That player must be in your city!.");
+        		if (event.isCancelled())
+        			return;
+    			assistant.setCityAssistant(!assistant.isCityAssistant());
+    			CivAPI.save(assistant);
+    			if(assistant.isCityAssistant())
+    				CivAPI.broadcastToCity(assistant.getName() + " is now a city assistant!", resident.getCity());
+    			else
+    				CivAPI.broadcastToCity(assistant.getName() + " is no longer a city assistant!", resident.getCity());
+    			return;
+        	} else if (event.getLine(1).equalsIgnoreCase("[tag]")){
+        		if (event.getLine(2).isEmpty())
+        			cancelBreak(event, "Tag name on the third line.");
+        		if (event.isCancelled())
+        			return;
+        		CityComponent city = resident.getCity();
+        		city.setTag(event.getLine(2));
+        		CivAPI.save(city);
+        	}
     		
     	}
 	}
