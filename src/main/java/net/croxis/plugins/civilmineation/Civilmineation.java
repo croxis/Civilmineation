@@ -89,7 +89,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new SignChangeListener(), this);
         
         getCommand("tech").setExecutor(new TechCommand(this));
-        getCommand("civ").setExecutor(new CommandDebug(this));
+        getCommand("civ").setExecutor(new CommandDebug());
         
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
         	public void run(){

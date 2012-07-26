@@ -8,8 +8,10 @@ import net.croxis.plugins.civilmineation.components.SignComponent;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 public class ActionPermissionListener implements Listener{
 	private long time;
@@ -28,15 +30,15 @@ public class ActionPermissionListener implements Listener{
 			return;
 		
 		// Determine player's relationship to chunk
-		 CityComponent city = plot.getCity();
-		 //CivilizationComponent civ = city.getCivilization();
-		 
-		 PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());		 
-		 ResidentComponent resident = CivAPI.getResident(event.getPlayer());
-		 
-		 // TODO: apply plot specific permissions
-		 if (plot.getResident() == null){
-			 if (resident.getCity() == null){
+		CityComponent city = plot.getCity();
+		//CivilizationComponent civ = city.getCivilization();
+		
+		PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());		 
+		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
+		
+		// TODO: apply plot specific permissions
+		if (plot.getResident() == null){
+			if (resident.getCity() == null){
 				 Civilmineation.logDebug("City is null");
 				 if (!cityPerm.isOutsiderEdit()){
 					 event.setCancelled(true);
@@ -270,7 +272,6 @@ public class ActionPermissionListener implements Listener{
 				}
 			}
 		}
-	
 		// Prevent destruction of charter except for mayor
 		if (event.getBlock().getX() == signComp.getX() && 
 				event.getBlock().getY() == signComp.getY() &&
@@ -285,6 +286,79 @@ public class ActionPermissionListener implements Listener{
 		}
 		if (event.getPlayer().getName().equalsIgnoreCase("croxis"))
 			Civilmineation.logDebug("Block break event: " + Long.toString(System.currentTimeMillis() - time) + " ms");
+	}
+	@EventHandler
+	public void onInteract(PlayerInteractEvent event){
+		if (event.isCancelled())
+			return;
+		time = System.currentTimeMillis();
+		if (event.getPlayer().hasPermission("civilmineation.admin"))
+			return;
+		if (event.getClickedBlock().getTypeId() == 68)
+			return;
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK){
+			PlotComponent plot = CivAPI.getPlot(event.getClickedBlock().getChunk());
+			if (plot.getCity() == null)
+				return;
+			
+			// Determine player's relationship to chunk
+			CityComponent city = plot.getCity();
+			//CivilizationComponent civ = city.getCivilization();
+			
+			PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());		 
+			ResidentComponent resident = CivAPI.getResident(event.getPlayer());
+			
+			// TODO: apply plot specific permissions
+			if (plot.getResident() == null){
+				if (resident.getCity() == null){
+					 Civilmineation.logDebug("City is null");
+					 if (!cityPerm.isOutsiderItemUse()){
+						 event.setCancelled(true);
+						 Civilmineation.logDebug("No outsider item");
+						 return;
+					 }
+				 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
+					 if (!cityPerm.isResidentItemUse()){
+						 event.setCancelled(true);
+						 Civilmineation.logDebug("No res item");
+						 return;
+					 }
+				 } else {
+					 if (!cityPerm.isOutsiderItemUse()){
+						 event.setCancelled(true);
+						 Civilmineation.logDebug("No outsider item 2");
+						 return;
+					 }
+				 }
+			 } else {
+				 if (resident.getName().equalsIgnoreCase(plot.getResident().getName()))
+						return;
+				 PermissionComponent perm = CivAPI.getPermissions(plot.getResident().getEntityID());
+				 if (resident.getCity() == null){
+					 Civilmineation.logDebug("City is null");
+					 if (!perm.isOutsiderItemUse()){
+						 event.setCancelled(true);
+						 Civilmineation.logDebug("No outsider item use");
+						 return;
+					 }
+				 } else if (resident.getCity().getName().equalsIgnoreCase(city.getName())){
+					//TODO: Friends list here
+					 if (!perm.isResidentItemUse()){
+						 event.setCancelled(true);
+						 Civilmineation.logDebug("No res item use");
+						 return;
+					 }
+				 } else {
+					 if (!perm.isOutsiderItemUse()){
+						 event.setCancelled(true);
+						 Civilmineation.logDebug("No outsider item use 2");
+						 return;
+					 }
+				 }
+			 }
+			 if (event.getPlayer().getName().equalsIgnoreCase("croxis"))
+				 Civilmineation.logDebug("Block place event: " + Long.toString(System.currentTimeMillis() - time) + " ms");
+		}
 	}
 
 }
