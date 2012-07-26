@@ -223,7 +223,8 @@ public class CivAPI {
 		charterBlock.setLine(2, city.getName());
 		charterBlock.setLine(3, "Mayor " + getMayor(city).getName());
 		charterBlock.update();		
-    	Sign block = (Sign) charter.getRelative(BlockFace.DOWN).getState();
+    	//Sign block = (Sign) charter.getRelative(BlockFace.DOWN).getState();
+		Sign block = getSign(charter.getRelative(BlockFace.DOWN), charterBlock.getRawData());
 		block.setLine(0, "=Demographics=");
 		block.setLine(1, "Population: " + Integer.toString(CivAPI.getResidents(city).size()));
 		block.setLine(2, "=Immigration=");
@@ -238,8 +239,7 @@ public class CivAPI {
 			signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.DEMOGRAPHICS, city.getEntityID());
 		try{
 			if (signComp.getRotation() == 4 || signComp.getRotation() == 5){
-	    		charter.getRelative(BlockFace.EAST).setTypeIdAndData(68, signComp.getRotation(), true);
-				block = (Sign) charter.getRelative(BlockFace.EAST).getState();
+				block = getSign(charter.getRelative(BlockFace.EAST), signComp.getRotation());
 				if (TechManager.hasTech(getMayor(city).getName(), "Currency"))
 					block.setLine(0, ChatColor.YELLOW + "Money: " + Double.toString(econ.getBalance(city.getName())));
 				else
@@ -775,5 +775,37 @@ public class CivAPI {
 	
 	public static void save(ResidentComponent component){
 		plugin.getDatabase().save(component);
+	}
+	
+	public static Sign getSign(Block block, byte rotation){
+		Sign sign;
+		try{
+			sign = (Sign) block.getState();
+		} catch (Exception e) {
+			block.setTypeIdAndData(68, rotation, true);
+			sign = (Sign) block.getState();
+		}
+		return sign;
+	}
+	
+	public static void setName(String name, CivComponent civ){
+		civ.setName(name);
+		civ.setTag(name);
+		save(civ);
+	}
+	
+	public static void setName(String name, CityComponent city){
+		Set<PlotComponent> plots = getPlots(city);
+		for (PlotComponent plot : plots){
+			if (plot.getName().contains(city.getName())){
+				String newName = plot.getName().replaceAll(city.getName(), name);
+				plot.setName(newName);
+				save(plot);
+				updatePlotSign(plot);
+			}
+		}
+		city.setName(name);
+		city.setTag(name);
+		save(city);
 	}
 }

@@ -167,7 +167,6 @@ public class Civilmineation extends JavaPlugin implements Listener {
     public void onSignChangeEvent(SignChangeEvent event){
     	ResidentComponent resident = CivAPI.getResident(event.getPlayer().getName());
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
-		// Void plots are ok, if fact required for this set
     	if (event.getLine(0).equalsIgnoreCase("[kick]")) {
     		event.getBlock().breakNaturally();
     		if (!CivAPI.isCityAdmin(resident)){

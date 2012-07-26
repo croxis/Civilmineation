@@ -164,6 +164,7 @@ public class SignChangeListener implements Listener{
     		}
     		if (event.isCancelled())
     			return;
+    		CivComponent civ = resident.getCity().getCivilization();
     		if (event.getLine(1).equalsIgnoreCase("[color]") || event.getLine(1).equalsIgnoreCase("[colour]") ){
     			ChatColor color = ChatColor.YELLOW;
     			try{
@@ -172,7 +173,6 @@ public class SignChangeListener implements Listener{
     				cancelBreak(event, "Invalid color");
     				return;
     			}
-    			CivComponent civ = resident.getCity().getCivilization();
     			civ.setChatcolor(color.getChar());
     			CivAPI.save(civ);
     		} else if (event.getLine(1).equalsIgnoreCase("[assist]")){
@@ -202,9 +202,18 @@ public class SignChangeListener implements Listener{
         			cancelBreak(event, "Tag name on the third line.");
         		if (event.isCancelled())
         			return;
-        		CivComponent civ = resident.getCity().getCivilization();
         		civ.setTag(event.getLine(2));
         		CivAPI.save(civ);
+        	} else if (event.getLine(1).equalsIgnoreCase("[rename]")) {
+        		if (event.getLine(2).isEmpty())
+        			cancelBreak(event, "New name on the third line.");
+        		else if (!CivAPI.isKing(resident))
+        			cancelBreak(event, "You must be a king.");
+        		else if (CivAPI.getCiv(event.getLine(2)) == null)
+        			cancelBreak(event, "That civ already exists.");
+        		if (event.isCancelled())
+        			return;
+        		CivAPI.setName(event.getLine(2), civ);
         	}
     	} else if (event.getLine(0).equalsIgnoreCase("[city]")){
     		event.getBlock().breakNaturally();
@@ -213,6 +222,7 @@ public class SignChangeListener implements Listener{
     		}
     		if (event.isCancelled())
     			return;
+    		CityComponent city = resident.getCity();
     		if (event.getLine(1).equalsIgnoreCase("[color]") || event.getLine(1).equalsIgnoreCase("[colour]") ){
     			ChatColor color = ChatColor.YELLOW;
     			try{
@@ -221,7 +231,6 @@ public class SignChangeListener implements Listener{
     				cancelBreak(event, "Invalid color");
     				return;
     			}
-    			CityComponent city = resident.getCity();
     			city.setChatcolor(color.getChar());
     			CivAPI.save(city);
     		} else if (event.getLine(1).equalsIgnoreCase("[assist]")){
@@ -251,11 +260,19 @@ public class SignChangeListener implements Listener{
         			cancelBreak(event, "Tag name on the third line.");
         		if (event.isCancelled())
         			return;
-        		CityComponent city = resident.getCity();
         		city.setTag(event.getLine(2));
         		CivAPI.save(city);
+        	} else if (event.getLine(1).equalsIgnoreCase("[rename]")) {
+        		if (event.getLine(2).isEmpty())
+        			cancelBreak(event, "New name on the third line.");
+        		else if (!resident.isMayor())
+        			cancelBreak(event, "You must be mayor.");
+        		else if (CivAPI.getCity(event.getLine(2)) == null)
+        			cancelBreak(event, "That city already exists.");
+        		if (event.isCancelled())
+        			return;
+        		CivAPI.setName(event.getLine(2), city);
         	}
-    		
     	}
 	}
 	
