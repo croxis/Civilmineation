@@ -271,7 +271,7 @@ public class CivAPI {
 				charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).setTypeIdAndData(68, signComp.getRotation(), true);
 				block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getState();
 				block.setLine(0, "Civilization");
-				block.setLine(1, "Build/Destroy");
+				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).allyEdit)
 					block.setLine(3, ChatColor.GREEN + "Open");
 				else
@@ -284,7 +284,7 @@ public class CivAPI {
 				charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
 				block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getState();
 				block.setLine(0, "Resident");
-				block.setLine(1, "Build/Destroy");
+				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).residentEdit)
 					block.setLine(3, ChatColor.GREEN + "Open");
 				else
@@ -297,7 +297,7 @@ public class CivAPI {
 				charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
 				block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.DOWN).getState();
 				block.setLine(0, "Outsider");
-				block.setLine(1, "Build/Destroy");
+				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).outsiderEdit)
 					block.setLine(3, ChatColor.GREEN + "Open");
 				else
@@ -338,7 +338,7 @@ public class CivAPI {
 				charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).setTypeIdAndData(68, signComp.getRotation(), true);
 				block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getState();
 				block.setLine(0, "Civilization");
-				block.setLine(1, "Build/Destroy");
+				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).allyEdit)
 					block.setLine(3, ChatColor.GREEN + "Open");
 				else
@@ -351,7 +351,7 @@ public class CivAPI {
 				charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
 				block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getState();
 				block.setLine(0, "Resident");
-				block.setLine(1, "Build/Destroy");
+				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).residentEdit)
 					block.setLine(3, ChatColor.GREEN + "Open");
 				else
@@ -364,7 +364,7 @@ public class CivAPI {
 				charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
 				block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.DOWN).getState();
 				block.setLine(0, "Outsider");
-				block.setLine(1, "Build/Destroy");
+				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).outsiderEdit)
 					block.setLine(3, ChatColor.GREEN + "Open");
 				else

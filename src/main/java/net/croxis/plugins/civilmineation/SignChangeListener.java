@@ -103,7 +103,7 @@ public class SignChangeListener implements Listener{
     	} else if (event.getLine(0).equalsIgnoreCase("[city charter]")){
     		 if (!CivAPI.isCityAdmin(resident)){
      			cancelBreak(event, "You must be a city administrator.");
-     		} else if (CivAPI.isClaimedByCity(plot, resident.getCity())){
+     		} else if (!CivAPI.isClaimedByCity(plot, resident.getCity())){
     			cancelBreak(event, "This plot is not part of your city");
     		}  
     		CityComponent city = resident.getCity();
