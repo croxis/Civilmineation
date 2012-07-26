@@ -209,7 +209,7 @@ public class SignChangeListener implements Listener{
         			cancelBreak(event, "New name on the third line.");
         		else if (!CivAPI.isKing(resident))
         			cancelBreak(event, "You must be a king.");
-        		else if (CivAPI.getCiv(event.getLine(2)) == null)
+        		else if (CivAPI.getCiv(event.getLine(2)) != null)
         			cancelBreak(event, "That civ already exists.");
         		if (event.isCancelled())
         			return;
@@ -267,7 +267,7 @@ public class SignChangeListener implements Listener{
         			cancelBreak(event, "New name on the third line.");
         		else if (!resident.isMayor())
         			cancelBreak(event, "You must be mayor.");
-        		else if (CivAPI.getCity(event.getLine(2)) == null)
+        		else if (CivAPI.getCity(event.getLine(2)) != null)
         			cancelBreak(event, "That city already exists.");
         		if (event.isCancelled())
         			return;
