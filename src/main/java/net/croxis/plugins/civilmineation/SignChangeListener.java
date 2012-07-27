@@ -263,16 +263,18 @@ public class SignChangeListener implements Listener{
 		}
 		if (event.isCancelled())
 			return;
-		CityPlotType type = CityPlotType.valueOf(event.getLine(1).toUpperCase());
-		double cost = 0;
-		double value = 0;
-		HashSet<Integer> ids = new HashSet<Integer>();
-		String tech = "";
-		if (type == null){
+		CityPlotType type;
+		try{
+			type = CityPlotType.valueOf(event.getLine(1).toUpperCase());
+		} catch (IllegalArgumentException e){
 			event.getPlayer().sendMessage("Invalid building type");
 			event.setCancelled(true);
 			return;
 		}
+		double cost = 0;
+		double value = 0;
+		HashSet<Integer> ids = new HashSet<Integer>();
+		String tech = "";
 		if (type == CityPlotType.LIBRARY){
 			cost = 25;
 			tech = "Writing";
