@@ -122,39 +122,11 @@ public class SignChangeListener implements Listener{
 			event.setLine(1, city.getCivilization().getName());
 			event.setLine(2, city.getName());
 			event.setLine(3, "Mayor " + CivAPI.getMayor(city).getName());
-			event.getBlock().getRelative(BlockFace.DOWN).setTypeIdAndData(68, signComp.getRotation(), true);
 			//event.getBlock().getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).setTypeIdAndData(68, rotation, true);
 			CivAPI.updateCityCharter(city);
 			event.getPlayer().sendMessage("Charter moved successfully. Please manually break old charter signs.");
     	} else if (event.getLine(0).equalsIgnoreCase("[claim]")){
-    		if (!CivAPI.isCityAdmin(resident)){
-    			cancelBreak(event, "You must be a city admin");
-    		} else if (plot.getCity() != null){
-				cancelBreak(event, "A city has already claimed this chunk");
-			} 
-    		
-    		PlotComponent p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() + 1, event.getBlock().getChunk().getZ());
-    		if (!CivAPI.isClaimedByCity(p, resident.getCity())){
-    			p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() - 1, event.getBlock().getChunk().getZ());
-    			if (!CivAPI.isClaimedByCity(p, resident.getCity())){
-    				p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
-    				if (!CivAPI.isClaimedByCity(p, resident.getCity())){
-    					p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() - 1);
-    					if (!CivAPI.isClaimedByCity(p, resident.getCity())){
-    						cancelBreak(event, "This claim must be adjacent to an existing claim.");
-    					}
-    				}
-    			}
-    		} 
-    		Civilmineation.logDebug("You do not have enough culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(resident.getCity().getCulture()) + ChatColor.BLACK + "/" + ChatColor.LIGHT_PURPLE + Double.toString(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
-    		if (resident.getCity().getCulture() < Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)){
-				cancelBreak(event, "You do not have enough culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(resident.getCity().getCulture()) + ChatColor.BLACK + "/" + ChatColor.LIGHT_PURPLE + Double.toString(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
-    		}
-    		if(event.isCancelled())
-    			return;
-    		CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), event.getBlock(), resident.getCity());
-			event.setLine(0, resident.getCity().getName());
-			return;
+    		claimPlot(event, resident, plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[build]")) {
     		build(event, resident, plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[civ]")){
@@ -317,6 +289,8 @@ public class SignChangeListener implements Listener{
 		} else if (type == CityPlotType.EMBASSY){
 			cost = 20;
 			tech = "Writing";
+		} else if (type == CityPlotType.MONUMENT){
+			cost = 40;
 		}
 
 		if (!TechManager.hasTech(CivAPI.getMayor(resident).getName(), tech)){
@@ -342,7 +316,26 @@ public class SignChangeListener implements Listener{
 					}
 				}
 			}
-			Civilmineation.logDebug("Library scan time: " + Long.toString(System.currentTimeMillis() - time));    			
+			Civilmineation.log("Library scan time: " + Long.toString(System.currentTimeMillis() - time));    			
+		}
+		if (type.equals(CityPlotType.MONUMENT)){
+			long time = System.currentTimeMillis();
+			ChunkSnapshot chunkShot = event.getBlock().getChunk().getChunkSnapshot();
+			for (int x=0; x<16; x++){
+				if (value >= cost)
+					break;
+				for (int z=0; z<16; z++){
+					if (value >= cost)
+						break;
+					for (int y=16; y<Bukkit.getServer().getWorld("world").getMaxHeight()/2; y++){
+						if (value >= cost)
+							break;
+						if (chunkShot.getBlockTypeId(x, y, z) == 24 && (chunkShot.getBlockData(x, y, z) == 1 || chunkShot.getBlockData(x, y, z) == 2))
+							value++;
+					}
+				}
+			}
+			Civilmineation.log("Monument scan time: " + Long.toString(System.currentTimeMillis() - time));    			
 		}
 		
 		if (type.equals(CityPlotType.LIBRARY) || type.equals(CityPlotType.UNIVERSITY)){
@@ -369,6 +362,37 @@ public class SignChangeListener implements Listener{
 				plot.setName(ChatColor.RED + plot.getResident().getName() + " " + type.toString());
 		event.getPlayer().sendMessage(type.toString().toLowerCase() + " creation successful");
 		CivAPI.save(plot);
+	}
+	
+	private void claimPlot(SignChangeEvent event, ResidentComponent resident, PlotComponent plot){
+		if (!CivAPI.isCityAdmin(resident)){
+			cancelBreak(event, "You must be a city admin");
+		} else if (plot.getCity() != null){
+			cancelBreak(event, "A city has already claimed this chunk");
+		} 
+		
+		PlotComponent p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() + 1, event.getBlock().getChunk().getZ());
+		if (!CivAPI.isClaimedByCity(p, resident.getCity())){
+			p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX() - 1, event.getBlock().getChunk().getZ());
+			if (!CivAPI.isClaimedByCity(p, resident.getCity())){
+				p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() + 1);
+				if (!CivAPI.isClaimedByCity(p, resident.getCity())){
+					p = CivAPI.getPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ() - 1);
+					if (!CivAPI.isClaimedByCity(p, resident.getCity())){
+						cancelBreak(event, "This claim must be adjacent to an existing claim.");
+					}
+				}
+			}
+		} 
+		Civilmineation.logDebug("You do not have enough culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(resident.getCity().getCulture()) + ChatColor.BLACK + "/" + ChatColor.LIGHT_PURPLE + Double.toString(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
+		if (resident.getCity().getCulture() < Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)){
+			cancelBreak(event, "You do not have enough culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(resident.getCity().getCulture()) + ChatColor.BLACK + "/" + ChatColor.LIGHT_PURPLE + Double.toString(Math.pow(CivAPI.getPlots(resident.getCity()).size(), 1.5)));
+		}
+		if(event.isCancelled())
+			return;
+		CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), event.getBlock(), resident.getCity());
+		event.setLine(0, resident.getCity().getName());
+		return;
 	}
 	
 	public void cancelBreak(SignChangeEvent event, String message){

@@ -7,6 +7,7 @@ public enum CityPlotType {
     WILDS,//Follows wilderness protection settings, but town owned.
     LIBRARY,
     UNIVERSITY,
+    MONUMENT,
     ;	
     // These are subject to change:
 /*

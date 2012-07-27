@@ -206,6 +206,12 @@ public class CivAPI {
 		return points;
 	}
 	
+	public static int getCulturePoints(CityComponent city){
+		int points = 0;
+		points += plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.MONUMENT).findList().size();
+		return points;
+	}
+	
 	public static void generateCitySigns(Block charterBlock){
 		
 	}
@@ -258,18 +264,14 @@ public class CivAPI {
 				signComp = getSign(SignType.CITY_CHARTER_MONEY, city.getEntityID());
 				if (signComp == null)
 					signComp = createSign(block.getBlock(), city.getName() + " money", SignType.CITY_CHARTER_MONEY, city.getEntityID());
-				
-				charter.getRelative(BlockFace.WEST).setTypeIdAndData(68, signComp.getRotation(), true);
-				block = (Sign) charter.getRelative(BlockFace.WEST).getState();
+				block = getSign(charter.getRelative(BlockFace.WEST), signComp.getRotation());
 				block.setLine(1, "Plots: " + Integer.toString(getPlots(city).size()));
 				block.setLine(2, "Culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(city.getCulture()));
 				block.update();
 				signComp = getSign(SignType.CITY_CHARTER_CULTURE, city.getEntityID());
 				if (signComp == null)
 					signComp = createSign(block.getBlock(), city.getName() + " culture", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
-				
-				charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).setTypeIdAndData(68, signComp.getRotation(), true);
-				block = (Sign) charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getState();
+				block = getSign(charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST), signComp.getRotation());
 				block.setLine(0, "Civilization");
 				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).allyEdit)
@@ -308,8 +310,7 @@ public class CivAPI {
 					signComp = createSign(block.getBlock(), city.getName() + " perm out build", SignType.CITY_PERM_OUT_BUILD, city.getEntityID());
 				
 			} else if (signComp.getRotation() == 2 || signComp.getRotation() == 3) {
-				charter.getRelative(BlockFace.NORTH).setTypeIdAndData(68, signComp.getRotation(), true);
-				block = (Sign) charter.getRelative(BlockFace.NORTH).getState();
+				block = getSign(charter.getRelative(BlockFace.NORTH), signComp.getRotation());
 				block.setLine(0, "Money: N/A");
 				Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 				if (tech == null){
@@ -325,9 +326,8 @@ public class CivAPI {
 				signComp = getSign(SignType.CITY_CHARTER_MONEY, city.getEntityID());
 				if (signComp == null)
 					signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_MONEY, city.getEntityID());
-				
-				charter.getRelative(BlockFace.SOUTH).setTypeIdAndData(68, signComp.getRotation(), true);
-				block = (Sign) charter.getRelative(BlockFace.SOUTH).getState();
+
+				block = getSign(charter.getRelative(BlockFace.SOUTH), signComp.getRotation());
 				block.setLine(1, "Plots: N/A");
 				block.setLine(2, "Culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(city.getCulture()));
 				block.update();
@@ -335,8 +335,7 @@ public class CivAPI {
 				if (signComp == null)
 					createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
 				
-				charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).setTypeIdAndData(68, signComp.getRotation(), true);
-				block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getState();
+				block = getSign(charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH), signComp.getRotation());
 				block.setLine(0, "Civilization");
 				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).allyEdit)
@@ -348,8 +347,7 @@ public class CivAPI {
 				if (signComp == null)
 					signComp = createSign(block.getBlock(), city.getName() + " perm civ build", SignType.CITY_PERM_CIV_BUILD, city.getEntityID());
 				
-				charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).setTypeIdAndData(68, signComp.getRotation(), true);
-				block = (Sign) charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getState();
+				block = getSign(charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP), signComp.getRotation());
 				block.setLine(0, "Resident");
 				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).residentEdit)
