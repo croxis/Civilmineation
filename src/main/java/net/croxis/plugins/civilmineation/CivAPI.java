@@ -1,11 +1,13 @@
 package net.croxis.plugins.civilmineation;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
 import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivComponent;
@@ -75,7 +77,20 @@ public class CivAPI {
     }
     
     public static Sign getPlotSign(PlotComponent plot){
-    	SignComponent signComp = getSign(SignType.PLOT_INFO, plot.getEntityID());
+    	SignComponent signComp;
+    	try{
+    		signComp = getSign(SignType.PLOT_INFO, plot.getEntityID());
+    	} catch (PersistenceException e){
+    		Set<SignComponent> signs = CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.PLOT_INFO).eq("entityID", plot.getEntityID()).findSet();
+    		Set<SignComponent> deleteSigns = new HashSet<SignComponent>();
+    		Iterator<SignComponent> signsi = signs.iterator();
+    		signsi.next();
+    		while (signsi.hasNext()){
+    			deleteSigns.add(signsi.next());
+    		}
+    		CivAPI.plugin.getDatabase().delete(deleteSigns);
+    		signComp = getSign(SignType.PLOT_INFO, plot.getEntityID());
+    	}
     	Block block = plugin.getServer().getWorld(plot.getWorld()).getBlockAt(signComp.getX(), signComp.getY(), signComp.getZ());
     	if(block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN || block.getType() == Material.SIGN_POST)
 			return (Sign) block.getState();
