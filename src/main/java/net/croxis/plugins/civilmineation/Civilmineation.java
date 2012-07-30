@@ -114,7 +114,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         		}
         		for (CityComponent city : CivAPI.getCities()){
         			for (PlotComponent plot : CivAPI.getPlots(CityPlotType.LIBRARY, city)){
-        				int cost = 35;
+        				int cost = 30;
         				int value = 0;
     					long scantime = System.currentTimeMillis();
     					ChunkSnapshot chunkShot = Bukkit.getWorld(plot.getWorld()).getChunkAt(plot.getX(), plot.getZ()).getChunkSnapshot();
@@ -136,6 +136,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     					if (cost > value){
     						CivAPI.broadcastToCity("A library has fallen into disrepair", city);
     						plot.setType(CityPlotType.RESIDENTIAL);
+    						plot.setName(city.getName());
     						CivAPI.save(plot);
     					}
         			}
