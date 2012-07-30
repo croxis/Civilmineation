@@ -23,6 +23,7 @@ import net.croxis.plugins.research.TechManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.ChunkSnapshot;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -112,6 +113,32 @@ public class Civilmineation extends JavaPlugin implements Listener {
         			}
         		}
         		for (CityComponent city : CivAPI.getCities()){
+        			for (PlotComponent plot : CivAPI.getPlots(CityPlotType.LIBRARY, city)){
+        				int cost = 35;
+        				int value = 0;
+    					long scantime = System.currentTimeMillis();
+    					ChunkSnapshot chunkShot = Bukkit.getWorld(plot.getWorld()).getChunkAt(plot.getX(), plot.getZ()).getChunkSnapshot();
+    					for (int x=0; x<16; x++){
+    						if (value >= cost)
+    							break;
+    						for (int z=0; z<16; z++){
+    							if (value >= cost)
+    								break;
+    							for (int y=16; y<Bukkit.getServer().getWorld("world").getMaxHeight()/2; y++){
+    								if (value >= cost)
+    									break;
+    								if (chunkShot.getBlockTypeId(x, y, z) == 47)
+    									value++;
+    							}
+    						}
+    					}
+    					Civilmineation.log("Library scan time: " + Long.toString(System.currentTimeMillis() - scantime));
+    					if (cost > value){
+    						CivAPI.broadcastToCity("A library has fallen into disrepair", city);
+    						plot.setType(CityPlotType.RESIDENTIAL);
+    						CivAPI.save(plot);
+    					}
+        			}
         			CivAPI.addResearch(city, CivAPI.getResearchPoints(city));
         			CivAPI.addCulture(city, CivAPI.getCulturePoints(city));
         			CivAPI.updateCityCharter(city);
@@ -351,7 +378,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
 	    	if (resident.getCity().isCapital())
 	    		title = "King ";
     	} else if (resident.getCity() == null)
-    		title = "Wild ";
+    		title = "Barbarian ";
         event.getPlayer().sendMessage("Welcome, " + title + event.getPlayer().getDisplayName() + "!");
         ResidentJoinEvent resEvent = new ResidentJoinEvent(resident.getName(), resident.getEntityID().getId());
         Bukkit.getServer().getPluginManager().callEvent(resEvent);

@@ -114,6 +114,10 @@ public class CivAPI {
     	return plugin.getDatabase().find(PlotComponent.class).where().eq("resident", resident).findSet();
     }
     
+    public static Set<PlotComponent> getPlots(CityPlotType type, CityComponent city){
+    	return plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", type).findSet();
+    }
+    
     public static ResidentComponent getMayor(ResidentComponent resident){
     	if (resident.getCity() == null)
     		return null;

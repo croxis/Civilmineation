@@ -276,11 +276,11 @@ public class SignChangeListener implements Listener{
 		HashSet<Integer> ids = new HashSet<Integer>();
 		String tech = "";
 		if (type == CityPlotType.LIBRARY){
-			cost = 25;
+			cost = 30;
 			tech = "Writing";
 			ids.add(47);
 		} else if (type == CityPlotType.UNIVERSITY){
-			cost = 55;
+			cost = 65;
 			tech = "Education";
 			ids.add(47);
 			if (CivAPI.plugin.getDatabase().find(PlotComponent.class).where().eq("city", resident.getCity()).eq("type", CityPlotType.LIBRARY).findList().isEmpty()){
