@@ -1,6 +1,8 @@
 package net.croxis.plugins.civilmineation;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivComponent;
@@ -134,8 +136,10 @@ public class SignChangeListener implements Listener{
     		if (!CivAPI.isCivAdmin(resident)){
     			cancelBreak(event, "You must be a civ administrator!");
     		}
-    		if (event.isCancelled())
+    		if (event.isCancelled()){
+    			event.getPlayer().sendMessage("Another plugin has cancled your event");
     			return;
+    		}
     		CivComponent civ = resident.getCity().getCivilization();
     		if (event.getLine(1).equalsIgnoreCase("[color]") || event.getLine(1).equalsIgnoreCase("[colour]") ){
     			ChatColor color = ChatColor.YELLOW;
@@ -160,8 +164,10 @@ public class SignChangeListener implements Listener{
     			} else if (!resident.getCity().getCivilization().getName().equalsIgnoreCase(assistant.getCity().getCivilization().getName())){
     				cancelBreak(event, "That player must be in your civ!.");
     			}
-        		if (event.isCancelled())
+        		if (event.isCancelled()){
+        			event.getPlayer().sendMessage("Another plugin has cancled your event");
         			return;
+        		}
     			assistant.setCivAssistant(!assistant.isCivAssistant());
     			CivAPI.save(assistant);
     			if(assistant.isCivAssistant())
@@ -245,7 +251,107 @@ public class SignChangeListener implements Listener{
         			return;
         		CivAPI.setName(event.getLine(2), city);
         	}
-    	}
+    	} else if (event.getLine(0).equalsIgnoreCase("[sell]")) {
+    		double price = 0;
+    		if (!CivAPI.isClaimed(plot)){
+    			event.getPlayer().sendMessage("This plot is unclaimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}  
+    		if(!event.getLine(1).isEmpty())
+	    		try{
+	    			price = Double.parseDouble(event.getLine(1));
+	    		} catch (NumberFormatException e) {
+	    			event.getPlayer().sendMessage("Bad price value");
+	    			event.setCancelled(true);
+	    			event.getBlock().breakNaturally();
+	    			return;
+    			}
+    		if(plot.getResident() == null){
+    			if(!CivAPI.isCityAdmin(resident)){
+    				event.getPlayer().sendMessage("You are not a city admin");
+        			event.setCancelled(true);
+        			event.getBlock().breakNaturally();
+        			return;
+    			}
+    			Sign sign = CivAPI.getPlotSign(plot);
+    			if(sign == null){
+    				CivAPI.setPlotSign((Sign) event.getBlock().getState());
+    				plot = CivAPI.getPlot(event.getBlock().getChunk());
+    				CivAPI.updatePlotSign(plot);
+    			} else {
+    				event.getBlock().breakNaturally();
+    			}
+    			sign = CivAPI.getPlotSign(plot);
+    			sign.setLine(2, "=For Sale=");
+    			sign.setLine(3, Double.toString(price));
+    			sign.update();
+    			event.getBlock().breakNaturally();
+    			return;
+    		} else {
+    			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
+    				Sign sign = CivAPI.getPlotSign(plot);
+        			if(sign == null){
+        				CivAPI.setPlotSign((Sign) event.getBlock().getState());
+        				plot = CivAPI.getPlot(event.getBlock().getChunk());
+        				CivAPI.updatePlotSign(plot);
+        			} else {
+        				event.getBlock().breakNaturally();
+        			}
+        			sign = CivAPI.getPlotSign(plot);
+        			sign.setLine(2, "=For Sale=");
+        			sign.setLine(3, Double.toString(price));
+        			return;
+    			} else {
+    				event.getPlayer().sendMessage("You are not a city admin or plot owner");
+        			event.setCancelled(true);
+        			event.getBlock().breakNaturally();
+        			return;
+    			}
+    		}
+    	} else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
+    		//NOTE: This has to be set inside event. Cannot cast as block as
+    		//event will override sign.setLine() 
+    		if (!CivAPI.isClaimed(plot)){
+    			event.getPlayer().sendMessage("This plot is unclaimed");
+    			event.setCancelled(true);
+    			event.getBlock().breakNaturally();
+    			return;
+    		}
+    		Set<SignComponent> signs = CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.PLOT_INFO).eq("entityID", plot.getEntityID()).findSet();
+    		Set<SignComponent> deleteSigns = new HashSet<SignComponent>();
+    		Iterator<SignComponent> signsi = signs.iterator();
+    		signsi.next();
+    		while (signsi.hasNext()){
+    			deleteSigns.add(signsi.next());
+    		}
+    		CivAPI.plugin.getDatabase().delete(deleteSigns);
+    		try{
+    			CivAPI.getPlotSign(plot).getBlock().breakNaturally();
+    		} catch (Exception e){
+    		}
+    		if(plot.getResident() == null){
+    			if(!CivAPI.isCityAdmin(resident)){
+    				event.getPlayer().sendMessage("You are not a city admin");
+        			event.setCancelled(true);
+        			event.getBlock().breakNaturally();
+        			return;
+    			}
+    			event.setLine(0, plot.getCity().getName());
+    			event.getPlayer().sendMessage("Plot sign updated");
+    		} else {
+    			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
+    				CivAPI.setPlotSign((Sign) event.getBlock().getState());    				
+    				if(Bukkit.getServer().getPlayer(plot.getResident().getName()).isOnline()){
+    					event.setLine(0, ChatColor.GREEN + plot.getResident().getName());
+    				} else {
+    					event.setLine(0, ChatColor.RED + plot.getResident().getName());
+    				}
+    				event.getPlayer().sendMessage("Plot sign updated");
+    			}
+    		}
+		} 
 	}
 	
 	private void build(SignChangeEvent event, ResidentComponent resident, PlotComponent plot){
