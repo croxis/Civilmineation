@@ -293,7 +293,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
         Bukkit.getServer().getPluginManager().callEvent(resEvent);
         
         for (PlotComponent plot:CivAPI.getPlots(resident)){
-        	Sign sign = CivAPI.getPlotSign(plot);
+        	Sign sign = CivAPI.getPlotSignBlock(plot);
         	if (sign.getLine(0).contains(event.getPlayer().getName())){
 	        	sign.setLine(0, ChatColor.GREEN + sign.getLine(0).substring(2));
 	        	sign.setLine(1, "");
@@ -305,7 +305,7 @@ public class Civilmineation extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
     	for (PlotComponent plot:CivAPI.getPlots(CivAPI.getResident(event.getPlayer()))){
-        	Sign sign = CivAPI.getPlotSign(plot);
+        	Sign sign = CivAPI.getPlotSignBlock(plot);
         	if (sign.getLine(0).contains(event.getPlayer().getName())){
         		DateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yy");
         		Date date = new Date();

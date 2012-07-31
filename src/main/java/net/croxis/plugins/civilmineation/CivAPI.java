@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
 
 import net.croxis.plugins.civilmineation.components.CityComponent;
 import net.croxis.plugins.civilmineation.components.CivComponent;
@@ -76,25 +75,22 @@ public class CivAPI {
     	return getPlot(sign.getWorld().getName(), sign.getChunk().getX(), sign.getChunk().getZ());
     }
     
-    public static Sign getPlotSign(PlotComponent plot){
-    	SignComponent signComp;
-    	try{
-    		signComp = getSign(SignType.PLOT_INFO, plot.getEntityID());
-    	} catch (PersistenceException e){
-    		Set<SignComponent> signs = CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.PLOT_INFO).eq("entityID", plot.getEntityID()).findSet();
-    		Set<SignComponent> deleteSigns = new HashSet<SignComponent>();
-    		Iterator<SignComponent> signsi = signs.iterator();
-    		signsi.next();
-    		while (signsi.hasNext()){
-    			deleteSigns.add(signsi.next());
-    		}
-    		CivAPI.plugin.getDatabase().delete(deleteSigns);
-    		signComp = getSign(SignType.PLOT_INFO, plot.getEntityID());
-    	}
-    	Block block = plugin.getServer().getWorld(plot.getWorld()).getBlockAt(signComp.getX(), signComp.getY(), signComp.getZ());
+    public static Sign getPlotSignBlock(PlotComponent plot){
+    	SignComponent sign = getPlotSign(plot);
+		Block block = plugin.getServer().getWorld(plot.getWorld()).getBlockAt(sign.getX(), sign.getY(), sign.getZ());
     	if(block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN || block.getType() == Material.SIGN_POST)
 			return (Sign) block.getState();
     	return null;
+    }
+    
+    public static SignComponent getPlotSign(PlotComponent plot){
+    	Iterator<SignComponent> signs = CivAPI.getSigns(SignType.PLOT_INFO, plot.getEntityID()).iterator();
+    	SignComponent sign = signs.next();
+    	while (signs.hasNext()){
+    		plugin.getDatabase().delete(signs.next());
+    	}
+    	return sign;
+    	
     }
     
     public static PermissionComponent getPermissions(Ent ent){
@@ -249,7 +245,7 @@ public class CivAPI {
 		charterBlock.setLine(3, "Mayor " + getMayor(city).getName());
 		charterBlock.update();		
     	//Sign block = (Sign) charter.getRelative(BlockFace.DOWN).getState();
-		Sign block = getSign(charter.getRelative(BlockFace.DOWN), charterBlock.getRawData());
+		Sign block = getSignBlock(charter.getRelative(BlockFace.DOWN), charterBlock.getRawData());
 		block.setLine(0, "=Demographics=");
 		block.setLine(1, "Population: " + Integer.toString(CivAPI.getResidents(city).size()));
 		block.setLine(2, "=Immigration=");
@@ -264,7 +260,7 @@ public class CivAPI {
 			signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.DEMOGRAPHICS, city.getEntityID());
 		try{
 			if (signComp.getRotation() == 4 || signComp.getRotation() == 5){
-				block = getSign(charter.getRelative(BlockFace.EAST), signComp.getRotation());
+				block = getSignBlock(charter.getRelative(BlockFace.EAST), signComp.getRotation());
 				if (TechManager.hasTech(getMayor(city).getName(), "Currency"))
 					block.setLine(0, ChatColor.YELLOW + "Money: " + Double.toString(econ.getBalance(city.getName())));
 				else
@@ -283,14 +279,14 @@ public class CivAPI {
 				signComp = getSign(SignType.CITY_CHARTER_MONEY, city.getEntityID());
 				if (signComp == null)
 					signComp = createSign(block.getBlock(), city.getName() + " money", SignType.CITY_CHARTER_MONEY, city.getEntityID());
-				block = getSign(charter.getRelative(BlockFace.WEST), signComp.getRotation());
+				block = getSignBlock(charter.getRelative(BlockFace.WEST), signComp.getRotation());
 				block.setLine(1, "Plots: " + Integer.toString(getPlots(city).size()));
 				block.setLine(2, "Culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(city.getCulture()));
 				block.update();
 				signComp = getSign(SignType.CITY_CHARTER_CULTURE, city.getEntityID());
 				if (signComp == null)
 					signComp = createSign(block.getBlock(), city.getName() + " culture", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
-				block = getSign(charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST), signComp.getRotation());
+				block = getSignBlock(charter.getRelative(BlockFace.EAST).getRelative(BlockFace.EAST), signComp.getRotation());
 				block.setLine(0, "Civilization");
 				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).allyEdit)
@@ -329,7 +325,7 @@ public class CivAPI {
 					signComp = createSign(block.getBlock(), city.getName() + " perm out build", SignType.CITY_PERM_OUT_BUILD, city.getEntityID());
 				
 			} else if (signComp.getRotation() == 2 || signComp.getRotation() == 3) {
-				block = getSign(charter.getRelative(BlockFace.NORTH), signComp.getRotation());
+				block = getSignBlock(charter.getRelative(BlockFace.NORTH), signComp.getRotation());
 				block.setLine(0, "Money: N/A");
 				Tech tech = TechManager.getCurrentResearch(getKing(city).getName());
 				if (tech == null){
@@ -346,7 +342,7 @@ public class CivAPI {
 				if (signComp == null)
 					signComp = createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_MONEY, city.getEntityID());
 
-				block = getSign(charter.getRelative(BlockFace.SOUTH), signComp.getRotation());
+				block = getSignBlock(charter.getRelative(BlockFace.SOUTH), signComp.getRotation());
 				block.setLine(1, "Plots: N/A");
 				block.setLine(2, "Culture: " + ChatColor.LIGHT_PURPLE + Integer.toString(city.getCulture()));
 				block.update();
@@ -354,7 +350,7 @@ public class CivAPI {
 				if (signComp == null)
 					createSign(block.getBlock(), city.getName() + " demographics", SignType.CITY_CHARTER_CULTURE, city.getEntityID());
 				
-				block = getSign(charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH), signComp.getRotation());
+				block = getSignBlock(charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH), signComp.getRotation());
 				block.setLine(0, "Civilization");
 				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).allyEdit)
@@ -366,7 +362,7 @@ public class CivAPI {
 				if (signComp == null)
 					signComp = createSign(block.getBlock(), city.getName() + " perm civ build", SignType.CITY_PERM_CIV_BUILD, city.getEntityID());
 				
-				block = getSign(charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP), signComp.getRotation());
+				block = getSignBlock(charter.getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP), signComp.getRotation());
 				block.setLine(0, "Resident");
 				block.setLine(1, "Edit");
 				if (getPermissions(city.getEntityID()).residentEdit)
@@ -399,10 +395,10 @@ public class CivAPI {
 		}
     }
     
-    public static void setPlotSign(Sign plotSign){
+    public static void setPlotSign(Sign plotSign, PlotComponent plot){
     	SignComponent signComp = getSign(SignType.PLOT_INFO, plotSign);
     	if (signComp == null)
-    		signComp = createSign(plotSign.getBlock(), "unknown plot", SignType.PLOT_INFO, getPlot(plotSign).getEntityID());
+    		signComp = createSign(plotSign.getBlock(), "unknown plot", SignType.PLOT_INFO, plot.getEntityID());
     	signComp.setX(plotSign.getX());
     	signComp.setY(plotSign.getY());
     	signComp.setZ(plotSign.getZ());
@@ -415,7 +411,7 @@ public class CivAPI {
     
     public static void updatePlotSign(PlotComponent plot) {
     	Civilmineation.logDebug("Updating plot sign");
-		Sign sign = getPlotSign(plot);
+		Sign sign = getPlotSignBlock(plot);
 		if(plot.getResident()!=null){
 			if(plugin.getServer().getPlayer(plot.getResident().getName()).isOnline()){
 				sign.setLine(0, ChatColor.GREEN + plot.getResident().getName());
@@ -669,9 +665,6 @@ public class CivAPI {
 			plugin.getDatabase().save(city);
 			broadcastToCiv(city.getName() + " is now the Capital City!", civ);
 		}
-		
-		
-
 		plugin.getServer().broadcastMessage(name + " has fallen to dust!"); 
 	}
 	
@@ -707,8 +700,19 @@ public class CivAPI {
 		return sign;
 	}
 	
+	public static Set<SignComponent> getSigns(SignType type, Ent entity){
+		return plugin.getDatabase().find(SignComponent.class).where().eq("entityID", entity).eq("type", type).findSet();
+	}
+	
+	/**
+	 * @param type
+	 * @param entity
+	 * @return
+	 * 
+	 * Returns a single sign of a given type of an entity if only one is expected.
+	 */
 	public static SignComponent getSign(SignType type, Ent entity){
-		return plugin.getDatabase().find(SignComponent.class).where().eq("entityID", entity).eq("type", type).findUnique();
+		return getSigns(type, entity).iterator().next();
 	}
 	
 	public static SignComponent getSign(SignType type, Block block){
@@ -735,6 +739,17 @@ public class CivAPI {
 				.eq("x", block.getX())
 				.eq("y", block.getY())
 				.eq("z", block.getZ()).findUnique();
+	}
+	
+	public static Sign getSignBlock(Block block, byte rotation){
+		Sign sign;
+		try{
+			sign = (Sign) block.getState();
+		} catch (Exception e) {
+			block.setTypeIdAndData(68, rotation, true);
+			sign = (Sign) block.getState();
+		}
+		return sign;
 	}
 	
 	public static Set<SignComponent> getSigns(PlotComponent plot) {
@@ -792,17 +807,6 @@ public class CivAPI {
 	
 	public static void save(ResidentComponent component){
 		plugin.getDatabase().save(component);
-	}
-	
-	public static Sign getSign(Block block, byte rotation){
-		Sign sign;
-		try{
-			sign = (Sign) block.getState();
-		} catch (Exception e) {
-			block.setTypeIdAndData(68, rotation, true);
-			sign = (Sign) block.getState();
-		}
-		return sign;
 	}
 	
 	public static void setName(String name, CivComponent civ){

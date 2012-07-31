@@ -252,64 +252,7 @@ public class SignChangeListener implements Listener{
         		CivAPI.setName(event.getLine(2), city);
         	}
     	} else if (event.getLine(0).equalsIgnoreCase("[sell]")) {
-    		double price = 0;
-    		if (!CivAPI.isClaimed(plot)){
-    			event.getPlayer().sendMessage("This plot is unclaimed");
-    			event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-    			return;
-    		}  
-    		if(!event.getLine(1).isEmpty())
-	    		try{
-	    			price = Double.parseDouble(event.getLine(1));
-	    		} catch (NumberFormatException e) {
-	    			event.getPlayer().sendMessage("Bad price value");
-	    			event.setCancelled(true);
-	    			event.getBlock().breakNaturally();
-	    			return;
-    			}
-    		if(plot.getResident() == null){
-    			if(!CivAPI.isCityAdmin(resident)){
-    				event.getPlayer().sendMessage("You are not a city admin");
-        			event.setCancelled(true);
-        			event.getBlock().breakNaturally();
-        			return;
-    			}
-    			Sign sign = CivAPI.getPlotSign(plot);
-    			if(sign == null){
-    				CivAPI.setPlotSign((Sign) event.getBlock().getState());
-    				plot = CivAPI.getPlot(event.getBlock().getChunk());
-    				CivAPI.updatePlotSign(plot);
-    			} else {
-    				event.getBlock().breakNaturally();
-    			}
-    			sign = CivAPI.getPlotSign(plot);
-    			sign.setLine(2, "=For Sale=");
-    			sign.setLine(3, Double.toString(price));
-    			sign.update();
-    			event.getBlock().breakNaturally();
-    			return;
-    		} else {
-    			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
-    				Sign sign = CivAPI.getPlotSign(plot);
-        			if(sign == null){
-        				CivAPI.setPlotSign((Sign) event.getBlock().getState());
-        				plot = CivAPI.getPlot(event.getBlock().getChunk());
-        				CivAPI.updatePlotSign(plot);
-        			} else {
-        				event.getBlock().breakNaturally();
-        			}
-        			sign = CivAPI.getPlotSign(plot);
-        			sign.setLine(2, "=For Sale=");
-        			sign.setLine(3, Double.toString(price));
-        			return;
-    			} else {
-    				event.getPlayer().sendMessage("You are not a city admin or plot owner");
-        			event.setCancelled(true);
-        			event.getBlock().breakNaturally();
-        			return;
-    			}
-    		}
+    		sellPlot(event, resident, plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
     		//NOTE: This has to be set inside event. Cannot cast as block as
     		//event will override sign.setLine() 
@@ -328,7 +271,7 @@ public class SignChangeListener implements Listener{
     		}
     		CivAPI.plugin.getDatabase().delete(deleteSigns);
     		try{
-    			CivAPI.getPlotSign(plot).getBlock().breakNaturally();
+    			CivAPI.getPlotSignBlock(plot).getBlock().breakNaturally();
     		} catch (Exception e){
     		}
     		if(plot.getResident() == null){
@@ -342,7 +285,7 @@ public class SignChangeListener implements Listener{
     			event.getPlayer().sendMessage("Plot sign updated");
     		} else {
     			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
-    				CivAPI.setPlotSign((Sign) event.getBlock().getState());    				
+    				CivAPI.setPlotSign((Sign) event.getBlock().getState(), plot);    				
     				if(Bukkit.getServer().getPlayer(plot.getResident().getName()).isOnline()){
     					event.setLine(0, ChatColor.GREEN + plot.getResident().getName());
     				} else {
@@ -379,33 +322,42 @@ public class SignChangeListener implements Listener{
 		}
 		double cost = 0;
 		double value = 0;
+		int maxBuildings = 0;
 		HashSet<Integer> ids = new HashSet<Integer>();
 		String tech = "";
 		if (type == CityPlotType.LIBRARY){
 			cost = 30;
 			tech = "Writing";
 			ids.add(47);
+			maxBuildings = 2;
 		} else if (type == CityPlotType.UNIVERSITY){
 			cost = 65;
 			tech = "Education";
 			ids.add(47);
-			if (CivAPI.plugin.getDatabase().find(PlotComponent.class).where().eq("city", resident.getCity()).eq("type", CityPlotType.LIBRARY).findList().isEmpty()){
-				event.getPlayer().sendMessage("A library is needed first.");
-    			event.setCancelled(true);
-    			return;
-			}
+			maxBuildings = 4;
+			if (CivAPI.getPlots(type, resident.getCity()).isEmpty())
+				cancelBreak(event, "A library is needed first.");
+			
 		} else if (type == CityPlotType.EMBASSY){
 			cost = 20;
 			tech = "Writing";
+			maxBuildings = -1;
 		} else if (type == CityPlotType.MONUMENT){
 			cost = 40;
+			tech = "None";
+			maxBuildings = 2;
 		}
 
 		if (!TechManager.hasTech(CivAPI.getMayor(resident).getName(), tech)){
-			event.getPlayer().sendMessage("You need " + tech);
-			event.setCancelled(true);
-			return;
+			cancelBreak(event, "You need " + tech);
+		} else if (maxBuildings == -1){
+		} else {
+			if (CivAPI.getPlots(type, resident.getCity()).size() >= maxBuildings)
+				cancelBreak(event, "You have too many buildings of that type!");
 		}
+		
+		if (event.isCancelled())
+			return;
 		
 		if (type.equals(CityPlotType.LIBRARY) || type.equals(CityPlotType.UNIVERSITY)){
 			long time = System.currentTimeMillis();
@@ -501,6 +453,55 @@ public class SignChangeListener implements Listener{
 		CivAPI.claimPlot(event.getBlock().getWorld().getName(), event.getBlock().getChunk().getX(), event.getBlock().getChunk().getZ(), event.getBlock(), resident.getCity());
 		event.setLine(0, resident.getCity().getName());
 		return;
+	}
+	
+	private void sellPlot(SignChangeEvent event, ResidentComponent resident, PlotComponent plot){
+		double price = 0;
+		if (!CivAPI.isClaimed(plot))
+			cancelBreak(event, "This plot is unclaimed");
+		if(!event.getLine(1).isEmpty())
+    		try{
+    			price = Double.parseDouble(event.getLine(1));
+    		} catch (NumberFormatException e) {
+    			cancelBreak(event, "Bad price value");
+			}
+		if (event.isCancelled())
+			return;
+		if(plot.getResident() == null){
+			if(!CivAPI.isCityAdmin(resident)){
+				cancelBreak(event, "You are not a city admin");
+				return;
+			}
+			Sign sign = CivAPI.getPlotSignBlock(plot);
+			if(sign == null){
+				CivAPI.setPlotSign((Sign) event.getBlock().getState(), plot);
+				CivAPI.updatePlotSign(plot);
+			} else {
+				event.getBlock().breakNaturally();
+			}
+			sign = CivAPI.getPlotSignBlock(plot);
+			sign.setLine(2, "=For Sale=");
+			sign.setLine(3, Double.toString(price));
+			sign.update();
+			return;
+		} else {
+			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
+				Sign sign = CivAPI.getPlotSignBlock(plot);
+    			if(sign == null){
+    				CivAPI.setPlotSign((Sign) event.getBlock().getState(), plot);
+    				CivAPI.updatePlotSign(plot);
+    			} else {
+    				event.getBlock().breakNaturally();
+    			}
+    			sign = CivAPI.getPlotSignBlock(plot);
+    			sign.setLine(2, "=For Sale=");
+    			sign.setLine(3, Double.toString(price));
+    			return;
+			} else {
+				cancelBreak(event, "You are not a city admin or plot owner");
+    			return;
+			}
+		}
 	}
 	
 	public void cancelBreak(SignChangeEvent event, String message){
