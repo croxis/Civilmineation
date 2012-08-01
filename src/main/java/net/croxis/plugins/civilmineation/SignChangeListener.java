@@ -479,6 +479,7 @@ public class SignChangeListener implements Listener{
 			} else {
 				event.getBlock().breakNaturally();
 			}
+			
 			sign = CivAPI.getPlotSignBlock(plot);
 			sign.setLine(2, "=For Sale=");
 			sign.setLine(3, Double.toString(price));

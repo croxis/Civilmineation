@@ -304,14 +304,15 @@ public class Civilmineation extends JavaPlugin implements Listener {
     
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
-    	for (PlotComponent plot:CivAPI.getPlots(CivAPI.getResident(event.getPlayer()))){
+    	for (PlotComponent plot : CivAPI.getPlots(CivAPI.getResident(event.getPlayer()))){
         	Sign sign = CivAPI.getPlotSignBlock(plot);
-        	if (sign.getLine(0).contains(event.getPlayer().getName())){
-        		DateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yy");
-        		Date date = new Date();
-	        	sign.setLine(0, ChatColor.RED + sign.getLine(0).substring(2));
-	        	sign.setLine(1, dateFormat.format(date));
-	        	sign.update();
+        	if (sign != null)
+	        	if (sign.getLine(0).contains(event.getPlayer().getName())){
+	        		DateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yy");
+	        		Date date = new Date();
+		        	sign.setLine(0, ChatColor.RED + sign.getLine(0).substring(2));
+		        	sign.setLine(1, dateFormat.format(date));
+		        	sign.update();
         	}
         }
     }

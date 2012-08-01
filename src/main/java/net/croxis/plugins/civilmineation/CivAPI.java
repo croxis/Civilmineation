@@ -396,9 +396,10 @@ public class CivAPI {
     }
     
     public static void setPlotSign(Sign plotSign, PlotComponent plot){
-    	SignComponent signComp = getSign(SignType.PLOT_INFO, plotSign);
+    	Civilmineation.logDebug("setPlotSign");
+    	SignComponent signComp = getPlotSign(plot);
     	if (signComp == null)
-    		signComp = createSign(plotSign.getBlock(), "unknown plot", SignType.PLOT_INFO, plot.getEntityID());
+    		signComp = createSign(plotSign.getBlock(), plot.getName(), SignType.PLOT_INFO, plot.getEntityID());
     	signComp.setX(plotSign.getX());
     	signComp.setY(plotSign.getY());
     	signComp.setZ(plotSign.getZ());
@@ -687,6 +688,7 @@ public class CivAPI {
 	}
 	
 	public static SignComponent createSign(Block block, String name, SignType type, Ent entity){
+		Civilmineation.logDebug("createSign");
 		SignComponent sign = new SignComponent();
 		sign.setEntityID(entity);
 		sign.setName(name);
