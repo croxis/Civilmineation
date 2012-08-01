@@ -714,7 +714,10 @@ public class CivAPI {
 	 * Returns a single sign of a given type of an entity if only one is expected.
 	 */
 	public static SignComponent getSign(SignType type, Ent entity){
-		return getSigns(type, entity).iterator().next();
+		Iterator<SignComponent> iterator = getSigns(type, entity).iterator();
+		if (iterator.hasNext())
+			return getSigns(type, entity).iterator().next();
+		return null;
 	}
 	
 	public static SignComponent getSign(SignType type, Block block){
