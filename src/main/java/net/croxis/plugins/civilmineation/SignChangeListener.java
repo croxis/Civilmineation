@@ -254,49 +254,54 @@ public class SignChangeListener implements Listener{
     	} else if (event.getLine(0).equalsIgnoreCase("[sell]")) {
     		sellPlot(event, resident, plot);
     	} else if (event.getLine(0).equalsIgnoreCase("[plot]")) {
-    		//NOTE: This has to be set inside event. Cannot cast as block as
-    		//event will override sign.setLine() 
-    		if (!CivAPI.isClaimed(plot)){
-    			event.getPlayer().sendMessage("This plot is unclaimed");
-    			event.setCancelled(true);
-    			event.getBlock().breakNaturally();
-    			return;
-    		}
-    		Set<SignComponent> signs = CivAPI.plugin.getDatabase().find(SignComponent.class).where().eq("type", SignType.PLOT_INFO).eq("entityID", plot.getEntityID()).findSet();
-    		Set<SignComponent> deleteSigns = new HashSet<SignComponent>();
-    		Iterator<SignComponent> signsi = signs.iterator();
-    		signsi.next();
-    		while (signsi.hasNext()){
-    			deleteSigns.add(signsi.next());
-    		}
-    		CivAPI.plugin.getDatabase().delete(deleteSigns);
-    		try{
-    			CivAPI.getPlotSignBlock(plot).getBlock().breakNaturally();
-    		} catch (Exception e){
-    		}
-    		if(plot.getResident() == null){
-    			if(!CivAPI.isCityAdmin(resident)){
-    				event.getPlayer().sendMessage("You are not a city admin");
-        			event.setCancelled(true);
-        			event.getBlock().breakNaturally();
-        			return;
-    			}
-    			event.setLine(0, plot.getCity().getName());
-    			event.getPlayer().sendMessage("Plot sign updated");
-    		} else {
-    			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
-    				CivAPI.setPlotSign((Sign) event.getBlock().getState(), plot);    				
-    				if(Bukkit.getServer().getPlayer(plot.getResident().getName()).isOnline()){
-    					event.setLine(0, ChatColor.GREEN + plot.getResident().getName());
-    				} else {
-    					event.setLine(0, ChatColor.RED + plot.getResident().getName());
-    				}
-    				event.getPlayer().sendMessage("Plot sign updated");
-    			}
-    		}
-		} 
+    		movePlotSign(event, resident, plot);
+    	}
 	}
 	
+	private void movePlotSign(SignChangeEvent event,
+			ResidentComponent resident, PlotComponent plot) {
+		//NOTE: This has to be set inside event. Cannot cast as block as
+		//event will override sign.setLine() 
+		if (!CivAPI.isClaimed(plot)){
+			cancelBreak(event, "This plot is unclaimed");
+			return;
+		}
+		SignComponent signComp = CivAPI.getPlotSign(plot);
+		try{
+			if (signComp.getX() != event.getBlock().getX() &&
+					signComp.getY() != event.getBlock().getY() &&
+					signComp.getZ() != event.getBlock().getX())
+				CivAPI.getPlotSignBlock(plot).getBlock().breakNaturally();
+		} catch (Exception e){
+		}
+		if(plot.getResident() == null){
+			if(!CivAPI.isCityAdmin(resident)){
+				cancelBreak(event, "You are not a city admin");
+    			return;
+			}
+			event.setLine(0, plot.getCity().getName());
+			event.getPlayer().sendMessage("Plot sign updated");
+			signComp.setX(event.getBlock().getX());
+			signComp.setX(event.getBlock().getY());
+			signComp.setX(event.getBlock().getZ());
+			CivAPI.save(signComp);
+		} else {
+			if(CivAPI.isCityAdmin(resident) || plot.getResident().getName().equalsIgnoreCase(resident.getName())){
+				CivAPI.setPlotSign((Sign) event.getBlock().getState(), plot);    				
+				if(Bukkit.getServer().getPlayer(plot.getResident().getName()).isOnline()){
+					event.setLine(0, ChatColor.GREEN + plot.getResident().getName());
+				} else {
+					event.setLine(0, ChatColor.RED + plot.getResident().getName());
+				}
+				event.getPlayer().sendMessage("Plot sign updated");
+				signComp.setX(event.getBlock().getX());
+				signComp.setX(event.getBlock().getY());
+				signComp.setX(event.getBlock().getZ());
+				CivAPI.save(signComp);
+			}
+		}
+	}
+
 	private void build(SignChangeEvent event, ResidentComponent resident, PlotComponent plot){
 		event.getBlock().breakNaturally();
 		if (!CivAPI.isClaimed(plot))

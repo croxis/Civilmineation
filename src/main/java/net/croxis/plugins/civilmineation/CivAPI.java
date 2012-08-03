@@ -814,6 +814,10 @@ public class CivAPI {
 		plugin.getDatabase().save(component);
 	}
 	
+	public static void save(SignComponent component){
+		plugin.getDatabase().save(component);
+	}
+	
 	public static void setName(String name, CivComponent civ){
 		civ.setName(name);
 		civ.setTag(name);
