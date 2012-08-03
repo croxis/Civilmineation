@@ -299,19 +299,20 @@ public class SignChangeListener implements Listener{
 	
 	private void build(SignChangeEvent event, ResidentComponent resident, PlotComponent plot){
 		event.getBlock().breakNaturally();
-		if (!CivAPI.isClaimed(plot)){
+		if (!CivAPI.isClaimed(plot))
 			cancelBreak(event, "This plot is unclaimed");
-		} else if (!CivAPI.isCityAdmin(resident)){
+		else if (!CivAPI.isCityAdmin(resident))
 			cancelBreak(event, "You are not a city admin or plot owner");
-		} else if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName())){
+		else if (!plot.getCity().getName().equalsIgnoreCase(resident.getCity().getName()))
 			cancelBreak(event, "This is not your city");
-		} else if (event.getLine(1).isEmpty()){
+		else if (event.getLine(1).isEmpty())
 			cancelBreak(event, "Invalid building type");
-		} else if (!plot.getType().equals(CityPlotType.RESIDENTIAL)){
+		else if (!plot.getType().equals(CityPlotType.RESIDENTIAL))
 			cancelBreak(event, "Can not change existing building");
-		}
+		
 		if (event.isCancelled())
 			return;
+		
 		CityPlotType type;
 		try{
 			type = CityPlotType.valueOf(event.getLine(1).toUpperCase());
@@ -335,7 +336,7 @@ public class SignChangeListener implements Listener{
 			tech = "Education";
 			ids.add(47);
 			maxBuildings = 4;
-			if (CivAPI.getPlots(type, resident.getCity()).isEmpty())
+			if (CivAPI.getPlots(CityPlotType.LIBRARY, resident.getCity()).isEmpty())
 				cancelBreak(event, "A library is needed first.");
 			
 		} else if (type == CityPlotType.EMBASSY){
