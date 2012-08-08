@@ -68,6 +68,8 @@ public class TechCommand implements CommandExecutor {
     		}
     		player.sendMessage("Requires: " + parents.replaceAll("\\s+$", ""));
     		player.sendMessage("Enables: " + children.replaceAll("\\s+$", ""));
+    		player.sendMessage("Can Place: " + tech.canPlace.toString());
+    		player.sendMessage("Can Craft: " + tech.canCraft.toString());
     		return true;    		
     	} else if(args[0].equalsIgnoreCase("set") && args.length > 1){
     		if(resident.getCity() != null){    			
