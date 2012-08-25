@@ -112,6 +112,13 @@ public class ActionPermissionListener implements Listener{
 		PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());
 		 
 		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
+		if (resident == null){
+			try {
+				Civilmineation.logDebug("Not a player: " + event.getPlayer().toString());
+			} catch (Exception e){
+			}
+			return;
+		}
 		SignComponent signComp = CivAPI.getSign(SignType.CITY_CHARTER, city.getEntityID());	
 		
 		if (!event.getPlayer().hasPermission("civilmineation.admin")){
