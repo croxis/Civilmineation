@@ -35,6 +35,14 @@ public class ActionPermissionListener implements Listener{
 		
 		PermissionComponent cityPerm = CivAPI.getPermissions(city.getEntityID());		 
 		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
+		// If resident is null, like a quary, return
+		if (resident == null){
+			try {
+				Civilmineation.logDebug("Not a player: " + event.getPlayer().toString());
+			} catch (Exception e){
+			}
+			return;
+		}
 		
 		// TODO: apply plot specific permissions
 		if (plot.getResident() == null){
