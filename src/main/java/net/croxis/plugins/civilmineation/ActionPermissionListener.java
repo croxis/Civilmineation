@@ -18,16 +18,21 @@ public class ActionPermissionListener implements Listener{
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event){
-		if (event.isCancelled())
+		if (event.isCancelled()){
+			Civilmineation.logDebug("Previously canceled event");
 			return;
+		}
 		time = System.currentTimeMillis();
-		if (event.getPlayer().hasPermission("civilmineation.admin"))
+		if (event.getPlayer().hasPermission("civilmineation.admin")){
+			Civilmineation.logDebug("Player is admin");
 			return;
-		//Block block = event.getBlock();
+		}
 		
 		PlotComponent plot = CivAPI.getPlot(event.getBlock().getChunk());
-		if (plot.getCity() == null)
+		if (plot.getCity() == null){
+			Civilmineation.logDebug("Plot not registered");
 			return;
+		}
 		
 		// Determine player's relationship to chunk
 		CityComponent city = plot.getCity();
@@ -37,10 +42,7 @@ public class ActionPermissionListener implements Listener{
 		ResidentComponent resident = CivAPI.getResident(event.getPlayer());
 		// If resident is null, like a quary, return
 		if (resident == null){
-			try {
-				Civilmineation.logDebug("Not a player: " + event.getPlayer().toString());
-			} catch (Exception e){
-			}
+			Civilmineation.logDebug("Not a player: " + event.getPlayer().toString());
 			return;
 		}
 		
