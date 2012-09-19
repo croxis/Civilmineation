@@ -343,7 +343,15 @@ public class SignChangeListener implements Listener{
 			maxBuildings = 4;
 			if (CivAPI.getPlots(CityPlotType.LIBRARY, resident.getCity()).isEmpty())
 				cancelBreak(event, "A library is needed first.");
-			
+		} else if (type == CityPlotType.LAB){ 
+			cost = 30;
+			tech = "Scientific Theory";
+			ids.add(116);
+			ids.add(117);
+			ids.add(118);
+			maxBuildings = 2;
+			if (CivAPI.getPlots(CityPlotType.UNIVERSITY, resident.getCity()).isEmpty())
+				cancelBreak(event, "A university is needed first.");
 		} else if (type == CityPlotType.EMBASSY){
 			cost = 20;
 			tech = "Writing";
@@ -365,7 +373,7 @@ public class SignChangeListener implements Listener{
 		if (event.isCancelled())
 			return;
 		
-		if (type.equals(CityPlotType.LIBRARY) || type.equals(CityPlotType.UNIVERSITY)){
+		if (type.equals(CityPlotType.LIBRARY) || type.equals(CityPlotType.UNIVERSITY) || type.equals(CityPlotType.LAB)){
 			long time = System.currentTimeMillis();
 			ChunkSnapshot chunkShot = event.getBlock().getChunk().getChunkSnapshot();
 			for (int x=0; x<16; x++){
@@ -377,7 +385,7 @@ public class SignChangeListener implements Listener{
 					for (int y=16; y<Bukkit.getServer().getWorld("world").getMaxHeight()/2; y++){
 						if (value >= cost)
 							break;
-						if (chunkShot.getBlockTypeId(x, y, z) == 47)
+						if (ids.contains(chunkShot.getBlockTypeId(x, y, z)))
 							value++;
 					}
 				}

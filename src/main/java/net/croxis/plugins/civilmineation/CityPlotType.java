@@ -8,6 +8,7 @@ public enum CityPlotType {
     LIBRARY,
     UNIVERSITY,
     MONUMENT,
+    LAB,
     ;	
     // These are subject to change:
 /*
