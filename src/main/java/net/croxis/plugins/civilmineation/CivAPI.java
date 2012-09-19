@@ -218,6 +218,7 @@ public class CivAPI {
 		int points = 0;
 		points += plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LIBRARY).findList().size();
 		points += plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.UNIVERSITY).findList().size();
+		points += plugin.getDatabase().find(PlotComponent.class).where().eq("city", city).eq("type", CityPlotType.LAB).findList().size() * 3;
 		return points;
 	}
 	
